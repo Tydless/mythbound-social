@@ -39,36 +39,79 @@ renderFeed();
 const MYTHBOUND_PORTAL_URL = "./mythbound/";
 let portalNoticeShown = false;
 
-// A soft, original two-note "whisper received" chime, synthesized locally.
-// Browsers commonly require a click or keypress before they permit sound.
+// A soft, original two-note chime, synthesized locally.
+// Browsers block unsolicited audio. An explicit "Enable audio" control offers
+// a reliable way to unlock sound before the scroll-triggered whisper arrives.
 let mythboundAudio = null;
+let mythboundAudioReady = false;
 let mythboundSoundEnabled = true;
+let mythboundAudioButton = null;
+let syncPopupAudioControls = () => {};
 try { mythboundSoundEnabled = localStorage.getItem("afterhours-mythbound-sound") !== "off"; } catch {}
-function primeMythboundAudio(){
-  if(!mythboundSoundEnabled)return;
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if(!AudioContextClass)return;
-  try {
-    if(!mythboundAudio)mythboundAudio=new AudioContextClass();
-    if(mythboundAudio.state==="suspended")mythboundAudio.resume().catch(()=>{});
-  } catch {}
+
+function saveMythboundSoundPreference(){
+  try { localStorage.setItem("afterhours-mythbound-sound",mythboundSoundEnabled?"on":"off"); } catch {}
 }
-document.addEventListener("pointerdown",primeMythboundAudio,{passive:true});
-document.addEventListener("keydown",primeMythboundAudio,{passive:true});
+function syncMythboundAudioUI(){
+  if(mythboundAudioButton){
+    mythboundAudioButton.textContent = !mythboundSoundEnabled
+      ? "🔇 Sound muted"
+      : mythboundAudioReady ? "🔊 Sound ready" : "♫ Enable audio";
+    mythboundAudioButton.setAttribute("aria-pressed", String(mythboundSoundEnabled && mythboundAudioReady));
+    mythboundAudioButton.title = mythboundSoundEnabled && mythboundAudioReady
+      ? "Notification chimes enabled. Click to mute."
+      : "Click to enable notification sound before scrolling.";
+  }
+  syncPopupAudioControls();
+}
+async function primeMythboundAudio(){
+  if(!mythboundSoundEnabled)return false;
+  const Context = window.AudioContext || window.webkitAudioContext;
+  if(!Context)return false;
+  try{
+    // Create or resume the context directly from a user gesture.
+    if(!mythboundAudio)mythboundAudio=new Context();
+    if(mythboundAudio.state!=="running")await mythboundAudio.resume();
+    mythboundAudioReady=mythboundAudio.state==="running";
+  }catch{
+    mythboundAudioReady=false;
+  }
+  syncMythboundAudioUI();
+  return mythboundAudioReady;
+}
+function installEarlyAudioControl(){
+  const bar=document.querySelector(".topbar");
+  if(!bar)return;
+  const button=document.createElement("button");
+  button.type="button";
+  button.className="afterhours-audio-enable";
+  button.setAttribute("aria-label","Enable website notification audio");
+  bar.insertBefore(button,bar.querySelector(".topbar-star"));
+  mythboundAudioButton=button;
+  button.addEventListener("click",()=>{
+    if(mythboundSoundEnabled && mythboundAudioReady){
+      mythboundSoundEnabled=false;
+      saveMythboundSoundPreference();
+      syncMythboundAudioUI();
+    }else{
+      mythboundSoundEnabled=true;
+      saveMythboundSoundPreference();
+      void primeMythboundAudio();
+    }
+  });
+  syncMythboundAudioUI();
+}
+// Any normal user interaction also unlocks sound silently.
+document.addEventListener("pointerdown",()=>{void primeMythboundAudio()},{passive:true});
+document.addEventListener("keydown",()=>{void primeMythboundAudio()},{passive:true});
 
 async function playMythboundChime(fromUserAction=false){
   if(!mythboundSoundEnabled)return false;
-  if(fromUserAction)primeMythboundAudio();
+  if(fromUserAction)await primeMythboundAudio();
   const ctx=mythboundAudio;
-  if(!ctx)return false;
-  try {
-    if(ctx.state!=="running"){
-      if(!fromUserAction)return false;
-      await ctx.resume();
-    }
-    if(ctx.state!=="running")return false;
+  if(!ctx || ctx.state!=="running")return false;
+  try{
     const now=ctx.currentTime+0.015;
-    // Short, warm rising two-note sound; quiet enough to resemble a phone notification.
     [[740,0,.23,.035],[1109.8,.145,.33,.03]].forEach(([pitch,delay,length,volume])=>{
       const tone=ctx.createOscillator();
       const envelope=ctx.createGain();
@@ -83,8 +126,9 @@ async function playMythboundChime(fromUserAction=false){
       tone.stop(now+delay+length+.01);
     });
     return true;
-  } catch {return false}
+  }catch{return false}
 }
+installEarlyAudioControl();
 
 function openMythboundPortal(){
   window.open(MYTHBOUND_PORTAL_URL,"_blank","noopener,noreferrer");
@@ -114,16 +158,26 @@ function installMythboundNotice(){
   replaySound.className="mythbound-notice-replay";
   replaySound.textContent="♫ Replay chime";
   function syncSoundControl(){
-    toggleSound.textContent=mythboundSoundEnabled?"🔊 Sound on":"🔇 Sound off";
-    toggleSound.setAttribute("aria-pressed",String(mythboundSoundEnabled));
-    toggleSound.setAttribute("aria-label",mythboundSoundEnabled?"Mute Mythbound notification sounds":"Enable Mythbound notification sounds");
+    toggleSound.textContent=!mythboundSoundEnabled?"🔇 Sound off"
+      : mythboundAudioReady?"🔊 Sound on":"♫ Enable sound";
+    toggleSound.setAttribute("aria-pressed",String(mythboundSoundEnabled && mythboundAudioReady));
+    toggleSound.setAttribute("aria-label",!mythboundSoundEnabled
+      ? "Enable Mythbound notification sounds"
+      : mythboundAudioReady?"Mute Mythbound notification sounds":"Enable Mythbound audio in your browser");
     replaySound.disabled=!mythboundSoundEnabled;
   }
+  syncPopupAudioControls=syncSoundControl;
   toggleSound.addEventListener("click",()=>{
-    mythboundSoundEnabled=!mythboundSoundEnabled;
-    try{localStorage.setItem("afterhours-mythbound-sound",mythboundSoundEnabled?"on":"off")}catch{}
-    syncSoundControl();
-    if(mythboundSoundEnabled)void playMythboundChime(true);
+    if(mythboundSoundEnabled && mythboundAudioReady){
+      mythboundSoundEnabled=false;
+      saveMythboundSoundPreference();
+      syncMythboundAudioUI();
+    }else{
+      mythboundSoundEnabled=true;
+      saveMythboundSoundPreference();
+      // Activating sound from a button press is permitted by browser autoplay rules.
+      void playMythboundChime(true).then(()=>syncMythboundAudioUI());
+    }
   });
   replaySound.addEventListener("click",()=>{void playMythboundChime(true)});
   audioControls.append(toggleSound,replaySound);
