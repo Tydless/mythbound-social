@@ -140,7 +140,7 @@ function installAfterhoursEntry(){
   cover.setAttribute("role","dialog");
   cover.setAttribute("aria-modal","true");
   cover.setAttribute("aria-labelledby","afterhours-entry-title");
-  cover.innerHTML='<div class="afterhours-entry-card"><div class="afterhours-entry-mark">afterhours<span>.</span></div><p class="afterhours-entry-eyebrow">A STORY IN POSTS</p><h2 id="afterhours-entry-title">There's more to the story.</h2><p>Take a look around. Some things are easier to find than others.</p><button type="button" class="afterhours-enter">Enter Afterhours <span aria-hidden="true">↗</span></button><button type="button" class="afterhours-enter-silent">Enter without sound</button><span class="afterhours-entry-hint">Sound is on by default. You can mute it anytime.</span></div>';
+  cover.innerHTML='<div class="afterhours-entry-card"><div class="afterhours-entry-mark">afterhours<span>.</span></div><p class="afterhours-entry-eyebrow">A STORY IN POSTS</p><h2 id="afterhours-entry-title">There is more to the story.</h2><p>Take a look around. Some things are easier to find than others.</p><button type="button" class="afterhours-enter">Enter Afterhours <span aria-hidden="true">↗</span></button><button type="button" class="afterhours-enter-silent">Enter without sound</button><span class="afterhours-entry-hint">Sound is on by default. You can mute it anytime.</span></div>';
   document.body.append(cover);
   document.body.classList.add("afterhours-entry-open");
   const enter=cover.querySelector(".afterhours-enter");
