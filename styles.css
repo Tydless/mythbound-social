@@ -27,3 +27,19 @@
 .afterhours-audio-enable:hover{background:#383040;border-color:#d6b0c8}
 .afterhours-audio-enable:focus-visible{outline:2px solid #efaac2;outline-offset:2px}
 @media(max-width:460px){.afterhours-audio-enable{font-size:10px;padding:5px 8px}.topbar{gap:6px;padding:12px 10px}.topbar-star{display:none}}
+
+
+/* Afterhours entry: one click lets browsers play the later surprise chime. */
+body.afterhours-entry-open{overflow:hidden}
+.afterhours-entry{position:fixed;inset:0;z-index:100;background:radial-gradient(ellipse at 80% 10%,#512b4a,#171420 53%,#0d1018);display:grid;place-items:center;padding:22px}
+.afterhours-entry-card{width:min(100%,420px);padding:40px 30px 34px;text-align:center;border:1px solid #755969;border-radius:16px;box-shadow:0 25px 70px #0009;background:#1e1b28}
+.afterhours-entry-mark{font:700 40px/1.1 Georgia,serif;letter-spacing:-2px;margin-bottom:20px;color:#fff}
+.afterhours-entry-mark span{color:#da6379}
+.afterhours-entry-eyebrow{font-size:10px;letter-spacing:.19em;font-weight:800;color:#df98af;margin-bottom:10px}
+.afterhours-entry-card h2{font:500 27px/1.3 Georgia,serif;margin:0 0 12px}
+.afterhours-entry-card>p:not(.afterhours-entry-eyebrow){font-size:14px;color:#c9c2cc;line-height:1.6;margin:0 0 24px}
+.afterhours-enter{display:block;width:100%;padding:13px;border:0;border-radius:9px;background:linear-gradient(135deg,#db6380,#ae506d);color:white;font-weight:800}
+.afterhours-enter-silent{display:block;margin:13px auto 10px;border:0;background:none;color:#d5c5d2;text-decoration:underline;text-underline-offset:3px;font-size:12px}
+.afterhours-entry-hint{font-size:11px;color:#a89bab;display:block}
+.afterhours-enter:focus-visible,.afterhours-enter-silent:focus-visible{outline:2px solid #f3bfd1;outline-offset:3px}
+@media(max-width:480px){.afterhours-entry-card{padding:32px 22px}.afterhours-entry-mark{font-size:35px}}
