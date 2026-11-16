@@ -38,6 +38,54 @@ renderFeed();
    Visitors can keep reading; clicking opens the fictional game portal in a new tab. */
 const MYTHBOUND_PORTAL_URL = "./mythbound/";
 let portalNoticeShown = false;
+
+// A soft, original two-note "whisper received" chime, synthesized locally.
+// Browsers commonly require a click or keypress before they permit sound.
+let mythboundAudio = null;
+let mythboundSoundEnabled = true;
+try { mythboundSoundEnabled = localStorage.getItem("afterhours-mythbound-sound") !== "off"; } catch {}
+function primeMythboundAudio(){
+  if(!mythboundSoundEnabled)return;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if(!AudioContextClass)return;
+  try {
+    if(!mythboundAudio)mythboundAudio=new AudioContextClass();
+    if(mythboundAudio.state==="suspended")mythboundAudio.resume().catch(()=>{});
+  } catch {}
+}
+document.addEventListener("pointerdown",primeMythboundAudio,{passive:true});
+document.addEventListener("keydown",primeMythboundAudio,{passive:true});
+
+async function playMythboundChime(fromUserAction=false){
+  if(!mythboundSoundEnabled)return false;
+  if(fromUserAction)primeMythboundAudio();
+  const ctx=mythboundAudio;
+  if(!ctx)return false;
+  try {
+    if(ctx.state!=="running"){
+      if(!fromUserAction)return false;
+      await ctx.resume();
+    }
+    if(ctx.state!=="running")return false;
+    const now=ctx.currentTime+0.015;
+    // Short, warm rising two-note sound; quiet enough to resemble a phone notification.
+    [[740,0,.23,.035],[1109.8,.145,.33,.03]].forEach(([pitch,delay,length,volume])=>{
+      const tone=ctx.createOscillator();
+      const envelope=ctx.createGain();
+      tone.type="sine";
+      tone.frequency.setValueAtTime(pitch,now+delay);
+      envelope.gain.setValueAtTime(0.0001,now+delay);
+      envelope.gain.exponentialRampToValueAtTime(volume,now+delay+.018);
+      envelope.gain.exponentialRampToValueAtTime(0.0001,now+delay+length);
+      tone.connect(envelope);
+      envelope.connect(ctx.destination);
+      tone.start(now+delay);
+      tone.stop(now+delay+length+.01);
+    });
+    return true;
+  } catch {return false}
+}
+
 function openMythboundPortal(){
   window.open(MYTHBOUND_PORTAL_URL,"_blank","noopener,noreferrer");
 }
@@ -55,6 +103,32 @@ function installMythboundNotice(){
   badge.textContent="✧ Mythbound · 1 new whisper";
   badge.setAttribute("aria-label","Reopen minimized Mythbound message");
   document.body.append(notice,badge);
+  // Keep optional audio controls subtle and separate from the navigation.
+  const audioControls=document.createElement("div");
+  audioControls.className="mythbound-notice-audio";
+  const toggleSound=document.createElement("button");
+  toggleSound.type="button";
+  toggleSound.className="mythbound-notice-sound";
+  const replaySound=document.createElement("button");
+  replaySound.type="button";
+  replaySound.className="mythbound-notice-replay";
+  replaySound.textContent="♫ Replay chime";
+  function syncSoundControl(){
+    toggleSound.textContent=mythboundSoundEnabled?"🔊 Sound on":"🔇 Sound off";
+    toggleSound.setAttribute("aria-pressed",String(mythboundSoundEnabled));
+    toggleSound.setAttribute("aria-label",mythboundSoundEnabled?"Mute Mythbound notification sounds":"Enable Mythbound notification sounds");
+    replaySound.disabled=!mythboundSoundEnabled;
+  }
+  toggleSound.addEventListener("click",()=>{
+    mythboundSoundEnabled=!mythboundSoundEnabled;
+    try{localStorage.setItem("afterhours-mythbound-sound",mythboundSoundEnabled?"on":"off")}catch{}
+    syncSoundControl();
+    if(mythboundSoundEnabled)void playMythboundChime(true);
+  });
+  replaySound.addEventListener("click",()=>{void playMythboundChime(true)});
+  audioControls.append(toggleSound,replaySound);
+  notice.insertBefore(audioControls,notice.querySelector(".mythbound-notice-open"));
+  syncSoundControl();
   const dismiss=notice.querySelector(".mythbound-notice-dismiss");
   dismiss.addEventListener("click",()=>{notice.classList.remove("is-visible");badge.hidden=false});
   badge.addEventListener("click",()=>{badge.hidden=true;notice.classList.add("is-visible")});
@@ -66,6 +140,7 @@ function installMythboundNotice(){
     if(window.scrollY<threshold)return;
     portalNoticeShown=true;
     notice.classList.add("is-visible");
+    void playMythboundChime();
     window.removeEventListener("scroll",showAtNaturalMoment);
   }
   window.addEventListener("scroll",showAtNaturalMoment,{passive:true});
