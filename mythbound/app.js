@@ -72,8 +72,13 @@ function handleReply(e){
     status.textContent="The Dreamjourney character URL hasn't been configured yet. Add it to DREAMJOURNEY_URL in mythbound/app.js before publishing the full experience.";
     return;
   }
-  // Must be opened from the direct user interaction to avoid most popup blockers.
-  const newTab=window.open(DREAMJOURNEY_URL,"_blank","noopener,noreferrer");
-  if(!newTab)status.textContent="Your browser blocked the new tab. Please allow pop-ups or open the character page manually.";
+  // An ordinary new-tab link keeps Mythbound open and avoids misleading popup status.
+  const link=document.createElement("a");
+  link.href=DREAMJOURNEY_URL;
+  link.target="_blank";
+  link.rel="noopener noreferrer";
+  document.body.append(link);
+  link.click();
+  link.remove();
 }
 const route=location.hash.slice(1);navigate(route||"home",true);selectClass("saint");
