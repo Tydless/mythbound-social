@@ -85,98 +85,51 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
 
 
 /* MYTHBOUND WEBSITE SOUNDTRACK
-   Full original composition, repeated from beginning (no cropped loop).
-   Browsers may block audible autoplay. Default preference is ON, and the
-   first visitor interaction retries playback when autoplay was blocked. */
+   Plays the complete original recording, then repeats it.
+   Sound is on by default unless the visitor chooses mute.
+   Audible autoplay is restricted by browsers, so a first interaction can start it. */
 (function installMythboundTheme(){
   const audio=document.getElementById("mythbound-theme");
   const toggle=document.getElementById("music-toggle");
-  const stateText=toggle?.querySelector(".music-state");
-  const status=document.getElementById("music-announcement");
-  if(!audio || !toggle || !stateText)return;
-
-  let musicOn=true;
-  try { musicOn=localStorage.getItem("mythbound-music-enabled")!=="false"; } catch {}
-  let audioUnavailable=false;
-  let awaitingGesture=false;
+  const label=toggle?.querySelector(".music-state");
+  const live=document.getElementById("music-announcement");
+  if(!audio||!toggle||!label)return;
+  let enabled=true;
+  try{enabled=localStorage.getItem("mythbound-music-enabled")!=="false"}catch{}
+  let blocked=false, missing=false;
   audio.volume=0.30;
   audio.loop=true;
-
-  function announce(text){ if(status)status.textContent=text; }
-  function updateUI(){
-    toggle.setAttribute("aria-pressed",String(musicOn));
-    toggle.classList.toggle("needs-gesture",musicOn&&awaitingGesture);
-    if(!musicOn){
-      stateText.textContent="Music Off";
-      toggle.setAttribute("aria-label","Unmute Mythbound background music");
-      toggle.title="Turn soundtrack on";
-    }else if(audioUnavailable){
-      stateText.textContent="Music On";
-      toggle.setAttribute("aria-label","Music on; audio file unavailable");
-      toggle.title="Soundtrack file not found yet";
-    }else if(awaitingGesture && audio.paused){
-      stateText.textContent="Music On";
-      toggle.setAttribute("aria-label","Start Mythbound background music");
-      toggle.title="Music is enabled. Click to start if your browser blocks autoplay.";
-    }else{
-      stateText.textContent="Music On";
-      toggle.setAttribute("aria-label","Mute Mythbound background music");
-      toggle.title="Turn soundtrack off";
+  const announce=s=>{if(live)live.textContent=s};
+  function sync(){
+    toggle.setAttribute("aria-pressed",String(enabled));
+    toggle.classList.toggle("needs-gesture",enabled&&blocked&&audio.paused);
+    label.textContent=enabled?"Music On":"Music Off";
+    toggle.setAttribute("aria-label",enabled?"Mute Mythbound background music":"Unmute Mythbound background music");
+    toggle.title=enabled?(missing?"Audio file unavailable":blocked?"Music enabled; click anywhere to allow playback":"Mute music"):"Unmute music";
+  }
+  function persist(){try{localStorage.setItem("mythbound-music-enabled",String(enabled))}catch{}}
+  function tryPlay(){
+    if(!enabled||missing||!audio.paused)return;
+    const attempt=audio.play();
+    if(attempt && typeof attempt.then==="function"){
+      attempt.then(()=>{blocked=false;sync()}).catch(()=>{blocked=true;sync()});
     }
   }
-
-  function storePreference(){
-    try{localStorage.setItem("mythbound-music-enabled",String(musicOn))}catch{}
-  }
-
-  async function startMusic(){
-    if(!musicOn || audioUnavailable)return;
-    try{
-      if(audio.paused)await audio.play();
-      awaitingGesture=false;
-    }catch{
-      // Browser autoplay restrictions require a subsequent click or keypress.
-      awaitingGesture=true;
-    }
-    updateUI();
-  }
-
-  function firstInteraction(){
-    if(musicOn && audio.paused && !audioUnavailable)void startMusic();
-  }
-  document.addEventListener("pointerdown",firstInteraction,{passive:true});
-  document.addEventListener("keydown",firstInteraction);
-  audio.addEventListener("play",()=>{awaitingGesture=false;updateUI()});
-  audio.addEventListener("error",()=>{
-    audioUnavailable=true;
-    updateUI();
-    announce("The Mythbound soundtrack file is not available yet.");
-  });
+  // User's explicit click ALWAYS toggles the setting, even if sound was blocked.
   toggle.addEventListener("click",()=>{
-    // When ON but blocked, a click starts music; otherwise clicking mutes it.
-    if(musicOn && audio.paused && awaitingGesture){
-      void startMusic();
-      return;
-    }
-    musicOn=!musicOn;
-    storePreference();
-    if(!musicOn){
-      audio.pause();
-      awaitingGesture=false;
-      announce("Background music muted.");
-    }else{
-      audioUnavailable=false;
-      void startMusic();
-      announce("Background music enabled.");
-    }
-    updateUI();
+    enabled=!enabled;
+    persist();
+    if(enabled){blocked=false;tryPlay();announce("Music enabled")}
+    else{audio.pause();blocked=false;announce("Music muted")}
+    sync();
   });
-
-  if(musicOn){
-    updateUI();
-    void startMusic();
-  }else{
-    audio.pause();
-    updateUI();
-  }
+  // Most browsers allow playback after an ordinary click or keyboard gesture.
+  // The music button is excluded so a click to mute never immediately restarts.
+  document.addEventListener("pointerdown",e=>{if(!toggle.contains(e.target))tryPlay()}, {passive:true});
+  document.addEventListener("keydown",e=>{if(!toggle.contains(e.target))tryPlay()});
+  audio.addEventListener("error",()=>{missing=true;sync();announce("Music file could not be loaded")});
+  audio.addEventListener("play",()=>{blocked=false;sync()});
+  audio.addEventListener("pause",sync);
+  sync();
+  if(enabled)tryPlay();else audio.pause();
 })();
