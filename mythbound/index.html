@@ -21,6 +21,7 @@
       <button type="button" data-page="classes" class="nav-item">Classes</button>
     </nav>
     <div class="header-actions">
+      <button type="button" class="music-toggle" id="music-toggle" aria-label="Pause Mythbound soundtrack" aria-pressed="true" title="Toggle background music"><span class="music-note" aria-hidden="true">♫</span><span class="music-state">Music On</span></button>
       <button type="button" id="header-whisper" class="notification-button" aria-label="Open unread whisper"><span aria-hidden="true">✉</span><span class="notification-count">1</span></button>
       <button type="button" id="account-button" class="account-chip"><span class="account-sigil">T</span><span class="account-label">Traveler <small>Online</small></span></button>
       <button type="button" id="download-button" class="download-button">Download <span aria-hidden="true">↗</span></button>
@@ -117,5 +118,7 @@
     <div class="conversation"><p class="timestamp">JUST NOW</p><div class="received-message">Yo, I've got time. You in for a raid?</div></div>
     <form id="reply-form" class="reply-form"><label for="reply-message">Your reply</label><textarea id="reply-message" rows="2" placeholder="Write a reply…" maxlength="500"></textarea><p class="reply-hint">Continuing opens Dreamjourney in a <strong>new tab</strong>. This preview does not send messages itself.</p><button type="submit" class="solid-action wide">Send / Continue in Dreamjourney ↗</button><p id="reply-status" class="reply-status" aria-live="polite"></p></form>
   </template>
+  <audio id="mythbound-theme" src="audio/mythbound-theme.mp3" preload="auto" autoplay loop aria-hidden="true"></audio>
+  <span id="music-announcement" class="screen-reader-only" role="status" aria-live="polite"></span>
 </body>
 </html>
