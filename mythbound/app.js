@@ -82,3 +82,101 @@ function handleReply(e){
   link.remove();
 }
 const route=location.hash.slice(1);navigate(route||"home",true);selectClass("saint");
+
+
+/* MYTHBOUND WEBSITE SOUNDTRACK
+   Full original composition, repeated from beginning (no cropped loop).
+   Browsers may block audible autoplay. Default preference is ON, and the
+   first visitor interaction retries playback when autoplay was blocked. */
+(function installMythboundTheme(){
+  const audio=document.getElementById("mythbound-theme");
+  const toggle=document.getElementById("music-toggle");
+  const stateText=toggle?.querySelector(".music-state");
+  const status=document.getElementById("music-announcement");
+  if(!audio || !toggle || !stateText)return;
+
+  let musicOn=true;
+  try { musicOn=localStorage.getItem("mythbound-music-enabled")!=="false"; } catch {}
+  let audioUnavailable=false;
+  let awaitingGesture=false;
+  audio.volume=0.30;
+  audio.loop=true;
+
+  function announce(text){ if(status)status.textContent=text; }
+  function updateUI(){
+    toggle.setAttribute("aria-pressed",String(musicOn));
+    toggle.classList.toggle("needs-gesture",musicOn&&awaitingGesture);
+    if(!musicOn){
+      stateText.textContent="Music Off";
+      toggle.setAttribute("aria-label","Unmute Mythbound background music");
+      toggle.title="Turn soundtrack on";
+    }else if(audioUnavailable){
+      stateText.textContent="Music On";
+      toggle.setAttribute("aria-label","Music on; audio file unavailable");
+      toggle.title="Soundtrack file not found yet";
+    }else if(awaitingGesture && audio.paused){
+      stateText.textContent="Music On";
+      toggle.setAttribute("aria-label","Start Mythbound background music");
+      toggle.title="Music is enabled. Click to start if your browser blocks autoplay.";
+    }else{
+      stateText.textContent="Music On";
+      toggle.setAttribute("aria-label","Mute Mythbound background music");
+      toggle.title="Turn soundtrack off";
+    }
+  }
+
+  function storePreference(){
+    try{localStorage.setItem("mythbound-music-enabled",String(musicOn))}catch{}
+  }
+
+  async function startMusic(){
+    if(!musicOn || audioUnavailable)return;
+    try{
+      if(audio.paused)await audio.play();
+      awaitingGesture=false;
+    }catch{
+      // Browser autoplay restrictions require a subsequent click or keypress.
+      awaitingGesture=true;
+    }
+    updateUI();
+  }
+
+  function firstInteraction(){
+    if(musicOn && audio.paused && !audioUnavailable)void startMusic();
+  }
+  document.addEventListener("pointerdown",firstInteraction,{passive:true});
+  document.addEventListener("keydown",firstInteraction);
+  audio.addEventListener("play",()=>{awaitingGesture=false;updateUI()});
+  audio.addEventListener("error",()=>{
+    audioUnavailable=true;
+    updateUI();
+    announce("The Mythbound soundtrack file is not available yet.");
+  });
+  toggle.addEventListener("click",()=>{
+    // When ON but blocked, a click starts music; otherwise clicking mutes it.
+    if(musicOn && audio.paused && awaitingGesture){
+      void startMusic();
+      return;
+    }
+    musicOn=!musicOn;
+    storePreference();
+    if(!musicOn){
+      audio.pause();
+      awaitingGesture=false;
+      announce("Background music muted.");
+    }else{
+      audioUnavailable=false;
+      void startMusic();
+      announce("Background music enabled.");
+    }
+    updateUI();
+  });
+
+  if(musicOn){
+    updateUI();
+    void startMusic();
+  }else{
+    audio.pause();
+    updateUI();
+  }
+})();
