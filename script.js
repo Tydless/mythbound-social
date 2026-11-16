@@ -130,6 +130,51 @@ async function playMythboundChime(fromUserAction=false){
 }
 installEarlyAudioControl();
 
+/* Before visitors scroll, give the browser one deliberate interaction to
+   unlock the chime. This preserves the surprise without revealing Mythbound.
+   Silent entry remains available for visitors who do not want audio. */
+function installAfterhoursEntry(){
+  if(!mythboundSoundEnabled)return;
+  const cover=document.createElement("div");
+  cover.className="afterhours-entry";
+  cover.setAttribute("role","dialog");
+  cover.setAttribute("aria-modal","true");
+  cover.setAttribute("aria-labelledby","afterhours-entry-title");
+  cover.innerHTML='<div class="afterhours-entry-card"><div class="afterhours-entry-mark">afterhours<span>.</span></div><p class="afterhours-entry-eyebrow">A STORY IN POSTS</p><h2 id="afterhours-entry-title">There's more to the story.</h2><p>Take a look around. Some things are easier to find than others.</p><button type="button" class="afterhours-enter">Enter Afterhours <span aria-hidden="true">↗</span></button><button type="button" class="afterhours-enter-silent">Enter without sound</button><span class="afterhours-entry-hint">Sound is on by default. You can mute it anytime.</span></div>';
+  document.body.append(cover);
+  document.body.classList.add("afterhours-entry-open");
+  const enter=cover.querySelector(".afterhours-enter");
+  const silent=cover.querySelector(".afterhours-enter-silent");
+  let complete=false;
+  function finish(){
+    if(complete)return;
+    complete=true;
+    cover.remove();
+    document.body.classList.remove("afterhours-entry-open");
+    document.getElementById("follow-button")?.focus({preventScroll:true});
+  }
+  enter.addEventListener("click",()=>{
+    // Prime the Web Audio context synchronously during this click.
+    void primeMythboundAudio();
+    finish();
+  });
+  silent.addEventListener("click",()=>{
+    mythboundSoundEnabled=false;
+    saveMythboundSoundPreference();
+    syncMythboundAudioUI();
+    finish();
+  });
+  // Keep keyboard navigation inside the entry dialog until a choice is made.
+  cover.addEventListener("keydown",event=>{
+    if(event.key!=="Tab")return;
+    const controls=[enter,silent],idx=controls.indexOf(document.activeElement);
+    if(event.shiftKey && idx===0){event.preventDefault();silent.focus()}
+    else if(!event.shiftKey && idx===1){event.preventDefault();enter.focus()}
+  });
+  enter.focus({preventScroll:true});
+}
+installAfterhoursEntry();
+
 function openMythboundPortal(){
   window.open(MYTHBOUND_PORTAL_URL,"_blank","noopener,noreferrer");
 }
