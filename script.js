@@ -25,10 +25,48 @@ function openAd(){showModal("MYTHBOUND ONLINE · PROMOTION","Design the Legend")
 function openDM(){showModal("MYTHBOUND ONLINE · DIRECT MESSAGE","New message");const chat=el("div","chat-preview"),profile=el("div","chat-profile"),info=el("div");info.append(el("strong","","Your ridiculously gorgeous party member"),el("small","","Online now · Mythbound Online"));profile.append(el("span","chat-avatar","♛"),info);chat.append(profile,el("p","chat-date","Just now"),el("div","chat-bubble","Yo. I'm waiting. Come online!"),el("p","chat-narration","And this is where your roleplay begins."));if(ROLEPLAY_URL){const a=el("a","primary continue","Open the roleplay ↗");a.href=ROLEPLAY_URL;a.target="_blank";a.rel="noopener noreferrer";chat.append(a)}else chat.append(el("p","modal-note","When your DreamJourney bot is ready, add its URL to ROLEPLAY_URL in script.js."));modalContent.append(chat)}
 document.getElementById("follow-button").addEventListener("click",e=>{following=!following;e.currentTarget.textContent=following?"Following ✓":"Follow";e.currentTarget.setAttribute("aria-pressed",String(following))});
 document.getElementById("sort-button").addEventListener("click",e=>{oldestFirst=!oldestFirst;e.currentTarget.textContent=oldestFirst?"Oldest first ↓":"Newest first ↓";renderFeed()});
-document.getElementById("message-button").addEventListener("click",openDM);
-document.getElementById("open-dm").addEventListener("click",openDM);
+document.getElementById("message-button").addEventListener("click",openMythboundPortal);
+document.getElementById("open-dm").addEventListener("click",openMythboundPortal);
 document.querySelectorAll("[data-open-post]").forEach(b=>b.addEventListener("click",()=>{const p=posts.find(x=>x.id===b.dataset.openPost);if(p)openPost(p)}));
 document.getElementById("modal-close").addEventListener("click",hideModal);
 backdrop.addEventListener("click",e=>{if(e.target===backdrop)hideModal()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!backdrop.hidden)hideModal();if(e.key==="Tab"&&!backdrop.hidden){const focusable=[...backdrop.querySelectorAll("button,a[href]")].filter(x=>!x.disabled);if(!focusable.length)return;const first=focusable[0],last=focusable[focusable.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 renderFeed();
+
+
+/* AFTERHOURS → MYTHBOUND: Optional persistent game whisper.
+   Visitors can keep reading; clicking opens the fictional game portal in a new tab. */
+const MYTHBOUND_PORTAL_URL = "./mythbound/";
+let portalNoticeShown = false;
+function openMythboundPortal(){
+  window.open(MYTHBOUND_PORTAL_URL,"_blank","noopener,noreferrer");
+}
+function installMythboundNotice(){
+  const notice=document.createElement("aside");
+  notice.id="mythbound-notice";
+  notice.className="mythbound-notice";
+  notice.setAttribute("aria-label","Mythbound message notification");
+  notice.innerHTML='<div class="mythbound-notice-head"><span>✧ MYTHBOUND ONLINE</span><button type="button" class="mythbound-notice-dismiss" aria-label="Minimize Mythbound notification">×</button></div><div class="mythbound-notice-body"><span class="mythbound-notice-avatar" aria-hidden="true">✥</span><div><strong>Fighter · New Whisper</strong><p>Yo, I\'ve got time. You in for a raid?</p></div></div><button type="button" class="mythbound-notice-open">Open Mythbound ↗</button>';
+  const badge=document.createElement("button");
+  badge.id="mythbound-notice-badge";
+  badge.type="button";
+  badge.className="mythbound-notice-badge";
+  badge.hidden=true;
+  badge.textContent="✧ Mythbound · 1 new whisper";
+  badge.setAttribute("aria-label","Reopen minimized Mythbound message");
+  document.body.append(notice,badge);
+  const dismiss=notice.querySelector(".mythbound-notice-dismiss");
+  dismiss.addEventListener("click",()=>{notice.classList.remove("is-visible");badge.hidden=false});
+  badge.addEventListener("click",()=>{badge.hidden=true;notice.classList.add("is-visible")});
+  notice.querySelector(".mythbound-notice-open").addEventListener("click",openMythboundPortal);
+  function showAtNaturalMoment(){
+    if(portalNoticeShown)return;
+    if(window.scrollY<Math.max(300,document.documentElement.scrollHeight*.3))return;
+    portalNoticeShown=true;
+    notice.classList.add("is-visible");
+    window.removeEventListener("scroll",showAtNaturalMoment);
+  }
+  window.addEventListener("scroll",showAtNaturalMoment,{passive:true});
+  showAtNaturalMoment();
+}
+installMythboundNotice();
