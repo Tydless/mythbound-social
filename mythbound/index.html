@@ -8,6 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <link rel="stylesheet" href="styles.css">
   <script defer src="app.js"></script>
+  <script defer src="class-showcase.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -70,7 +71,55 @@
           <button type="button" class="class-tile" data-class="strider"><span class="class-glyph">⚔</span><span class="class-role">MELEE · DUELIST</span><strong>Strider</strong><small>Precision and speed</small></button>
           <button type="button" class="class-tile" data-class="saint"><span class="class-glyph">✥</span><span class="class-role">SUPPORT · HOLY MAGIC</span><strong>Saint</strong><small>Sanctuary and healing</small></button>
         </div>
-        <section id="class-details" class="class-details" aria-live="polite"><div class="details-emblem" id="class-emblem">✥</div><div><span class="eyebrow" id="class-type">SUPPORT · HOLY MAGIC</span><h2 id="class-name">Saint</h2><p id="class-description">A holy protector who heals wounded allies and channels sacred power to defend the party.</p><p class="details-footnote">Character illustrations and 3D model previews can be added here later.</p></div></section>
+
+        <section id="class-details" class="class-details class-showcase" aria-labelledby="class-name">
+          <div class="showcase-overline"><span>THE CLASS CODEX <span aria-hidden="true">/</span> BASIC PATH</span><span id="class-index">06 / 06</span></div>
+          <div class="showcase-columns">
+            <div class="showcase-info">
+              <div class="showcase-heading">
+                <div class="showcase-seal" id="class-emblem" aria-hidden="true">✥</div>
+                <div>
+                  <span class="eyebrow" id="class-type">SUPPORT · HOLY MAGIC</span>
+                  <h2 id="class-name">Saint</h2>
+                </div>
+              </div>
+              <p id="class-description" class="class-intro">A holy protector who heals wounded allies and channels sacred power to defend the party.</p>
+              <div class="class-meta"><span id="class-combat">HEALER / PROTECTOR</span><span id="class-difficulty">DIFFICULTY · 2 / 5</span></div>
+
+              <div class="showcase-section-title"><h3>Class strengths</h3><span>BASE RATINGS</span></div>
+              <div id="class-stats" class="class-stat-list" aria-label="Strength ratings"></div>
+
+              <div class="showcase-section-title skills-title"><h3>Core abilities</h3><span>SELECT TO INSPECT</span></div>
+              <div id="class-skills" class="skill-row" role="group" aria-label="Base class skills"></div>
+              <div id="skill-detail" class="skill-detail" aria-live="polite" aria-atomic="true"></div>
+            </div>
+
+            <div class="showcase-visual">
+              <div class="preview-toolbar">
+                <div><span class="eyebrow">CLASS AVATAR</span><strong>Appearance preview</strong></div>
+                <div class="gender-switch" role="group" aria-label="Avatar version">
+                  <button type="button" class="gender-option" data-gender="male" aria-pressed="false">Male</button>
+                  <button type="button" class="gender-option is-active" data-gender="female" aria-pressed="true">Female</button>
+                </div>
+              </div>
+              <div class="class-preview" id="class-preview" aria-label="Female Saint concept avatar preview"></div>
+              <div class="preview-footer">
+                <span id="preview-caption">FEMALE · DEFAULT FORM</span>
+                <span class="preview-disclaimer">Illustration placeholder · final models coming later</span>
+              </div>
+            </div>
+          </div>
+          <div class="subclass-section">
+            <div class="subclass-intro"><div><span class="eyebrow">BEYOND THE STARTING PATH</span><h3>Future specializations</h3></div><span class="soon-label">COMING LATER</span></div>
+            <p>Every legend has more than one way forward. Advanced paths are under development and not available for selection yet.</p>
+            <div class="subclass-slots" aria-label="Future subclass teasers">
+              <div class="subclass-slot"><span aria-hidden="true">◇</span><strong>???</strong><small>Subclass path · locked</small></div>
+              <div class="subclass-slot"><span aria-hidden="true">✧</span><strong>???</strong><small>Subclass path · locked</small></div>
+              <div class="subclass-slot"><span aria-hidden="true">◈</span><strong>???</strong><small>Subclass path · locked</small></div>
+            </div>
+          </div>
+          <p class="concept-disclaimer">Preview values and skill effects are illustrative game-design concepts, not finalized balance numbers. Male and female base avatars have the exact same class abilities and stats.</p>
+        </section>
       </section>
 
       <footer class="site-footer"><span>MYTHBOUND ✧ ONLINE</span><p>Mythbound is a fictional game created for an interactive story experience. There are no real downloads, purchases, game accounts or online players.</p></footer>
