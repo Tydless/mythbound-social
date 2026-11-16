@@ -61,7 +61,9 @@ function installMythboundNotice(){
   notice.querySelector(".mythbound-notice-open").addEventListener("click",openMythboundPortal);
   function showAtNaturalMoment(){
     if(portalNoticeShown)return;
-    if(window.scrollY<Math.max(300,document.documentElement.scrollHeight*.3))return;
+    // Reveal after a little browsing, not after 30% of the entire long feed.
+    const threshold=Math.max(220,Math.min(650,window.innerHeight*.85));
+    if(window.scrollY<threshold)return;
     portalNoticeShown=true;
     notice.classList.add("is-visible");
     window.removeEventListener("scroll",showAtNaturalMoment);
