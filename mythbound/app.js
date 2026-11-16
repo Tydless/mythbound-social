@@ -1,6 +1,6 @@
 /* Mythbound fictional game portal.
    Set the public Dreamjourney bot URL here when ready. */
-const DREAMJOURNEY_URL = ""; 
+const DREAMJOURNEY_URL = "https://dreamjourneyai.com/creation/2b0418fb-ca3d-41b2-9638-ad9809062406"; 
 const CLASS_DATA = {
   breaker:{name:"Breaker",role:"FRONTLINE · TANK",emblem:"✊",description:"A relentless martial arts master. Breakers meet danger with bare hands, staggering enemies and protecting allies through sheer endurance."},
   animar:{name:"Animar",role:"ADAPTIVE · EXPERT",emblem:"◈",description:"The shapeshifter who adapts to the moment. Animars exchange forms for melee, ranged attacks, defense and support; mastering their flexibility takes extraordinary practice."},
