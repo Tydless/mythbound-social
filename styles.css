@@ -21,3 +21,9 @@
 .mythbound-notice-sound:hover,.mythbound-notice-replay:hover{background:#40516e}
 .mythbound-notice-replay:disabled{opacity:.45;cursor:not-allowed}
 .mythbound-notice-sound:focus-visible,.mythbound-notice-replay:focus-visible{outline:2px solid #b5ecdf;outline-offset:2px}
+
+/* Early opt-in for browser-safe automatic whisper chimes */
+.afterhours-audio-enable{border:1px solid #6d5969;background:#24222f;color:#e5dce9;border-radius:20px;padding:6px 11px;font:700 11px/1.4 system-ui,sans-serif;white-space:nowrap;cursor:pointer}
+.afterhours-audio-enable:hover{background:#383040;border-color:#d6b0c8}
+.afterhours-audio-enable:focus-visible{outline:2px solid #efaac2;outline-offset:2px}
+@media(max-width:460px){.afterhours-audio-enable{font-size:10px;padding:5px 8px}.topbar{gap:6px;padding:12px 10px}.topbar-star{display:none}}
