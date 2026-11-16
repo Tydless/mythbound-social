@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#11152a">
+  <meta name="description" content="Explore Mythbound: a fictional MMORPG companion website and interactive story experience.">
+  <title>Mythbound — Every legend leaves a trace</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="Mythbound home"><span class="brand-mark" aria-hidden="true">✧</span><span>MYTHBOUND</span><small>ONLINE</small></a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <button type="button" data-page="home" class="nav-item is-active" aria-current="page">Home</button>
+      <button type="button" data-page="discover" class="nav-item">Discover</button>
+      <button type="button" data-page="news" class="nav-item">News</button>
+      <button type="button" data-page="classes" class="nav-item">Classes</button>
+    </nav>
+    <div class="header-actions">
+      <button type="button" id="header-whisper" class="notification-button" aria-label="Open unread whisper"><span aria-hidden="true">✉</span><span class="notification-count">1</span></button>
+      <button type="button" id="account-button" class="account-chip"><span class="account-sigil">T</span><span class="account-label">Traveler <small>Online</small></span></button>
+      <button type="button" id="download-button" class="download-button">Download <span aria-hidden="true">↗</span></button>
+    </div>
+  </header>
+
+  <div class="site-layout">
+    <main id="main-content">
+      <section id="page-home" class="page is-visible" aria-labelledby="home-title">
+        <div class="hero">
+          <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="star star-one">✧</div><div class="star star-two">✦</div><div class="world-gate"><div class="gate-center">✶</div></div><div class="horizon"></div><div class="land land-one"></div><div class="land land-two"></div></div>
+          <div class="hero-copy"><span class="overline">A WORLD WRITTEN IN LEGENDS</span><h1 id="home-title">Every myth<br>begins with <em>you.</em></h1><p>Beyond the veil of remembered stories, six paths await. Find your calling. Forge your legend. Leave a trace in the world of Mythbound.</p><div class="hero-buttons"><button type="button" data-go="classes" class="solid-action">Explore the classes <span aria-hidden="true">↗</span></button><button type="button" data-go="discover" class="outline-action">Discover the world <span aria-hidden="true">→</span></button></div></div>
+          <span class="hero-edition">CHRONICLE I · THE FIRST AWAKENING</span>
+        </div>
+        <div class="section-heading"><span class="eyebrow">A GLIMPSE BEYOND THE VEIL</span><h2>Choose the legend you become</h2><p>Every path tells a different story. No two journeys need feel the same.</p></div>
+        <div class="preview-classes">
+          <button type="button" data-class="saint" class="preview-class"><span class="preview-symbol">✥</span><strong>Saint</strong><small>Grace and protection</small></button>
+          <button type="button" data-class="animar" class="preview-class"><span class="preview-symbol">◈</span><strong>Animar</strong><small>Master many forms</small></button>
+          <button type="button" data-class="herder" class="preview-class"><span class="preview-symbol">❃</span><strong>Herder</strong><small>Never travel alone</small></button>
+        </div>
+        <div class="dispatch"><div><span class="eyebrow">LATEST DISPATCH</span><h2>Letters from the Threshold</h2><p>New looks, new legends, and rumors from beyond the gates.</p></div><button type="button" data-go="news" class="outline-action">Read the news →</button></div>
+      </section>
+
+      <section id="page-discover" class="page" aria-labelledby="discover-title" hidden>
+        <div class="inner-hero mint"><span class="eyebrow">DISCOVER / THE WORLD</span><h1 id="discover-title">The world remembers.</h1><p>Its stories have not all been told.</p><div class="world-symbol" aria-hidden="true">✧</div></div>
+        <div class="article-width"><span class="eyebrow">THE CHRONICLES</span><h2>A place between legend and possibility</h2><p>Across forgotten paths and living landscapes, adventurers seek the echoes of an older world. The Chronicle Gates are said to hold stories that no one remembers telling.</p><p>Mythbound's worldbuilding is still taking shape. This preview is a fictional game-site experience; future regions, settlements, and mysteries can take their place here as they are developed.</p></div>
+        <div class="feature-grid"><article><span>01 / EXPLORE</span><h3>Find the unknown</h3><p>Wander into regions where every ruin has a rumor and every trail has a history.</p></article><article><span>02 / GROW</span><h3>Walk your own path</h3><p>Become the fighter, protector, scout or steadfast companion your party needs.</p></article><article><span>03 / BELONG</span><h3>Build your party</h3><p>Meet other players, find a crew and collect the memories worth keeping.</p></article></div>
+      </section>
+
+      <section id="page-news" class="page" aria-labelledby="news-title" hidden>
+        <div class="inner-hero coral"><span class="eyebrow">NEWS / CHRONICLE BOARD</span><h1 id="news-title">What's new in Mythbound?</h1><p>From the world beyond the gates.</p></div>
+        <div class="news-list">
+          <article class="news-entry"><div class="news-image news-skin">✥</div><div><span class="eyebrow">FEATURED · COSMETICS</span><h2>Saint wardrobe spotlight</h2><p>It's time to make a little room in your collection. An upcoming wardrobe showcase celebrates expressive class styles and the players who love them.</p><span class="news-meta">Fictional preview announcement</span></div></article>
+          <article class="news-entry"><div class="news-image news-event">✧</div><div><span class="eyebrow">COMMUNITY · EVENT</span><h2>Design the Legend</h2><p>Dream up an outfit worthy of the chronicles. The contest that has everyone arguing about cape colors returns in this fictional event preview.</p><span class="news-meta">Fictional preview announcement</span></div></article>
+          <article class="news-entry"><div class="news-image news-update">✶</div><div><span class="eyebrow">GAME UPDATE</span><h2>Chronicle Board: notes from the developers</h2><p>More adventures are waiting to be written. This section is ready for future patch notes, class changes and pretend maintenance announcements.</p><span class="news-meta">Fictional preview announcement</span></div></article>
+        </div>
+      </section>
+
+      <section id="page-classes" class="page" aria-labelledby="classes-title" hidden>
+        <div class="inner-hero violet"><span class="eyebrow">CHARACTER CREATION / SIX PATHS</span><h1 id="classes-title">What will you become?</h1><p>Each class has male and female avatars, adjustable face, height and coloring, and a signature style. Rare cosmetic skins can transform appearances and effects.</p></div>
+        <div class="class-grid">
+          <button type="button" class="class-tile" data-class="breaker"><span class="class-glyph">✊</span><span class="class-role">FRONTLINE · TANK</span><strong>Breaker</strong><small>Martial arts powerhouse</small></button>
+          <button type="button" class="class-tile" data-class="animar"><span class="class-glyph">◈</span><span class="class-role">ADAPTIVE · EXPERT</span><strong>Animar</strong><small>Shapeshifting specialist</small></button>
+          <button type="button" class="class-tile" data-class="herder"><span class="class-glyph">❃</span><span class="class-role">SUPPORT · COMPANIONS</span><strong>Herder</strong><small>Mounted animal commander</small></button>
+          <button type="button" class="class-tile" data-class="elemis"><span class="class-glyph">✳</span><span class="class-role">MAGIC · ELEMENTS</span><strong>Elemis</strong><small>Elemental fairy caster</small></button>
+          <button type="button" class="class-tile" data-class="strider"><span class="class-glyph">⚔</span><span class="class-role">MELEE · DUELIST</span><strong>Strider</strong><small>Precision and speed</small></button>
+          <button type="button" class="class-tile" data-class="saint"><span class="class-glyph">✥</span><span class="class-role">SUPPORT · HOLY MAGIC</span><strong>Saint</strong><small>Sanctuary and healing</small></button>
+        </div>
+        <section id="class-details" class="class-details" aria-live="polite"><div class="details-emblem" id="class-emblem">✥</div><div><span class="eyebrow" id="class-type">SUPPORT · HOLY MAGIC</span><h2 id="class-name">Saint</h2><p id="class-description">A holy protector who heals wounded allies and channels sacred power to defend the party.</p><p class="details-footnote">Character illustrations and 3D model previews can be added here later.</p></div></section>
+      </section>
+
+      <footer class="site-footer"><span>MYTHBOUND ✧ ONLINE</span><p>Mythbound is a fictional game created for an interactive story experience. There are no real downloads, purchases, game accounts or online players.</p></footer>
+    </main>
+
+    <aside class="social-rail" aria-label="Game social sidebar">
+      <div class="rail-header"><span class="eyebrow">YOUR ADVENTURE</span><strong>Traveler</strong><small><span class="online-dot"></span> Online · Lv. 1</small></div>
+      <section class="rail-panel" aria-labelledby="friends-title"><div class="rail-title"><h2 id="friends-title">Friends</h2><span>1 / 1</span></div>
+        <button type="button" class="friend-row" id="fighter-friend"><span class="friend-avatar saint-avatar" aria-hidden="true">✥</span><span class="friend-meta"><strong>Fighter</strong><small>Saint · Lv. 84</small><small class="online-label">● Online</small></span><span class="friend-chevron">›</span></button>
+        <p class="rail-note">Your only friend is online. Convenient timing, huh?</p>
+      </section>
+      <section class="rail-panel whispers-panel" aria-labelledby="rail-whispers-title"><div class="rail-title"><h2 id="rail-whispers-title">Whispers</h2><span class="mini-count">1 new</span></div>
+        <button type="button" class="whisper-preview" id="rail-whisper"><span class="friend-avatar saint-avatar" aria-hidden="true">✥</span><span><strong>Fighter</strong><small>Yo, I've got time. You in for a raid?</small></span><span class="unread-dot"></span></button>
+      </section>
+      <p class="rail-caption">Fictional in-game companion interface</p>
+    </aside>
+  </div>
+
+  <button type="button" id="floating-whisper" class="floating-whisper" aria-label="Read new whisper"><span aria-hidden="true">✉</span> <span>1 new whisper</span></button>
+
+  <div id="overlay" class="overlay" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <div class="sheet-top"><span class="eyebrow" id="sheet-kicker">MYTHBOUND</span><button type="button" id="sheet-close" class="sheet-close" aria-label="Close panel">✕</button></div>
+      <div id="sheet-content"></div>
+    </div>
+  </div>
+
+  <template id="profile-template">
+    <div class="profile-banner"><div class="profile-rune">✥</div><span class="profile-banner-label">SAINT · CHARACTER PROFILE</span></div>
+    <div class="profile-heading"><span class="profile-avatar">✥</span><div><h2 id="sheet-title">Fighter</h2><p class="profile-byline">Saint · Lv. 84 · <span class="online-label">● Online now</span></p></div></div>
+    <div class="profile-content">
+      <div class="profile-quote">“I have enough heals. You, apparently, don't have enough brain cells.”</div>
+      <div class="profile-stat-grid"><div><span>Main class</span><strong>Saint</strong></div><div><span>Playstyle</span><strong>Raid support</strong></div><div><span>Favorite thing</span><strong>Outfit collecting</strong></div></div>
+      <h3>About my character</h3><p>Perfect dye combinations. Beautiful armor. Good healing rotations. I know what I'm doing, so please stop running into the boss.</p>
+      <h3>My crew <small>2 friends</small></h3>
+      <div class="crew-row"><span>✦</span><div><strong>Chaotic Buddy</strong><small>Lv. 118 · Online</small></div></div>
+      <div class="crew-row"><span>◇</span><div><strong>Responsible Buddy</strong><small>Lv. 12 · Last online 39 days ago</small></div></div>
+      <p class="crew-note">Only names, levels and activity are visible for these players.</p>
+      <button type="button" id="profile-message" class="solid-action wide">Open Fighter's whisper ↗</button>
+    </div>
+  </template>
+
+  <template id="whisper-template">
+    <div class="whisper-heading"><span class="friend-avatar saint-avatar large">✥</span><div><h2 id="sheet-title">Fighter</h2><p class="online-label">● Online · Saint · Lv. 84</p></div></div>
+    <div class="conversation"><p class="timestamp">JUST NOW</p><div class="received-message">Yo, I've got time. You in for a raid?</div></div>
+    <form id="reply-form" class="reply-form"><label for="reply-message">Your reply</label><textarea id="reply-message" rows="2" placeholder="Write a reply…" maxlength="500"></textarea><p class="reply-hint">Continuing opens Dreamjourney in a <strong>new tab</strong>. This preview does not send messages itself.</p><button type="submit" class="solid-action wide">Send / Continue in Dreamjourney ↗</button><p id="reply-status" class="reply-status" aria-live="polite"></p></form>
+  </template>
+</body>
+</html>
