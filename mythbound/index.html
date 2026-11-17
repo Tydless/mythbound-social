@@ -162,7 +162,9 @@
 .class-showcase .showcase-info{border:1px solid var(--codex-border,#536078);border-radius:10px;background:linear-gradient(140deg,var(--codex-tint,#23304a),var(--codex-base,#182237));padding:clamp(20px,3vw,40px)}
 .class-showcase .showcase-visual{background:none;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;min-height:0}
 .class-showcase .preview-toolbar{justify-content:flex-end;padding:0 0 6px}
-.class-showcase .gender-option{font-size:22px;line-height:1;padding:5px 9px;min-width:34px}
+.class-showcase .gender-option{display:grid;place-items:center;box-sizing:border-box;width:36px;height:34px;min-width:36px;padding:0;line-height:1;flex:none}
+.class-showcase .gender-option svg{display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+@media(max-width:760px){.class-showcase .gender-option{width:44px;height:40px;min-width:44px}.class-showcase .gender-option svg{width:23px;height:23px}}
 .class-showcase .class-preview{min-height:0;overflow:visible;flex:none}
 .class-showcase .class-preview.has-saint-art{padding:0;min-height:0}
 .class-showcase .class-preview .saint-portrait{width:100%;max-width:600px;max-height:740px;height:auto;object-fit:contain}
@@ -363,8 +365,8 @@
             <div class="showcase-visual">
               <div class="preview-toolbar">
                 <div class="gender-switch" role="group" aria-label="Avatar version">
-                  <button type="button" class="gender-option" data-gender="male" aria-label="Male" title="Male" aria-pressed="false">♂</button>
-                  <button type="button" class="gender-option is-active" data-gender="female" aria-label="Female" title="Female" aria-pressed="true">♀</button>
+                  <button type="button" class="gender-option" data-gender="male" aria-label="Male" title="Male" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="15" r="5.5"/><path d="M13 11 21 3M15 3h6v6"/></svg></button>
+                  <button type="button" class="gender-option is-active" data-gender="female" aria-label="Female" title="Female" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8.5" r="5.5"/><path d="M12 14v7.5M8 18h8"/></svg></button>
                 </div>
               </div>
               <div class="class-preview" id="class-preview" aria-label="Class artwork"></div>
