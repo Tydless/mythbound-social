@@ -39,6 +39,67 @@ if(!stats||!skills||!detail||!preview)return;
 const statLabels=["Damage","Defense","Support","Mobility","Control"];
 let active="saint",gender="female",chosen=0;
 
+/* A fixed gender greeting plus three independent, cyclic voice previews.
+   Assets: ../VoiceSaintMaleSwitch.mp3, ../VoiceSaintMale1.mp3, etc.
+   One player at a time; missing recordings never break the codex. */
+const voiceNext=Object.create(null);
+let voicePlaying=null,musicVolume=null;
+const music=$("mythbound-theme");
+const voiceButton=document.createElement("button");
+voiceButton.type="button";voiceButton.className="class-voice-button";
+voiceButton.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></svg>';
+const voiceStatus=document.createElement("span");voiceStatus.className="class-voice-status";voiceStatus.setAttribute("role","status");
+const controls=document.createElement("div");controls.className="class-preview-controls";
+const genderSwitch=document.querySelector(".gender-switch");
+genderSwitch.before(controls);controls.append(genderSwitch,voiceButton);
+document.querySelector(".preview-toolbar").after(voiceStatus);
+const cap=s=>s[0].toUpperCase()+s.slice(1);
+const voiceKey=()=>active+":"+gender;
+const nextVoice=()=>voiceNext[voiceKey()]||1;
+function updateVoiceButton(){
+ const label="Play "+cap(active)+" "+gender+" voice line "+nextVoice()+" of 3";
+ voiceButton.title=label;voiceButton.setAttribute("aria-label",label);
+ voiceButton.classList.toggle("is-speaking",!!voicePlaying);
+}
+function restoreMusic(){
+ if(music&&musicVolume!==null){try{music.volume=musicVolume}catch{}}
+ musicVolume=null;
+}
+function stopVoice(clearStatus=true){
+ const old=voicePlaying;voicePlaying=null;
+ if(old){old.pause();old.removeAttribute("src");old.load()}
+ restoreMusic();
+ if(clearStatus)voiceStatus.textContent="";
+ updateVoiceButton();
+}
+function playVoice(kind){
+ stopVoice();
+ const filename="Voice"+cap(active)+cap(gender)+kind+".mp3";
+ const audio=new Audio();audio.preload="auto";voicePlaying=audio;
+ const fail=()=>{if(voicePlaying!==audio)return;stopVoice(false);voiceStatus.textContent="Voice preview unavailable — recording pending or playback blocked."};
+ audio.addEventListener("playing",()=>{
+  if(voicePlaying!==audio)return;
+  if(music&&musicVolume===null){try{musicVolume=music.volume;music.volume=musicVolume*.28}catch{}}
+ },{once:true});
+ audio.addEventListener("ended",()=>{if(voicePlaying===audio)stopVoice()},{once:true});
+ audio.addEventListener("error",fail,{once:true});
+ audio.src="../"+filename;updateVoiceButton();
+ try{const result=audio.play();if(result&&typeof result.catch==="function")result.catch(fail)}catch{fail()}
+}
+voiceButton.addEventListener("click",()=>{
+ const key=voiceKey(),line=nextVoice();
+ voiceNext[key]=line%3+1;playVoice(String(line));
+});
+const classPage=$("page-classes");
+const voiceVisibility=new MutationObserver(()=>{
+ if(classPage.hidden||document.body.classList.contains("mythbound-login-open"))stopVoice();
+});
+voiceVisibility.observe(classPage,{attributes:true,attributeFilter:["hidden"]});
+voiceVisibility.observe(document.body,{attributes:true,attributeFilter:["class"]});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)stopVoice()});
+window.addEventListener("pagehide",()=>stopVoice());
+
+
 function avatarArt(){
  const c=DATA[active],male=gender==="male",size=male?44:37;
  const skin="#e6c5ae",hair=c.color;
@@ -143,11 +204,12 @@ function draw(){
 document.querySelectorAll("[data-class]").forEach(button=>{
  button.addEventListener("click",()=>{
   if(!DATA[button.dataset.class])return;
-  active=button.dataset.class;chosen=0;gender="female";draw();
+  stopVoice();active=button.dataset.class;chosen=0;gender="female";draw();updateVoiceButton();
  });
 });
 document.querySelectorAll(".gender-option").forEach(button=>button.addEventListener("click",()=>{
- gender=button.dataset.gender;renderPreview();
+ const next=button.dataset.gender;if(next===gender||!["male","female"].includes(next))return;
+ gender=next;renderPreview();playVoice("Switch");
 }));
-draw();
+draw();updateVoiceButton();
 })();
