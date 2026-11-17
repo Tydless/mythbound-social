@@ -37,7 +37,11 @@ const $=id=>document.getElementById(id);
 const stats=$("class-stats"),skills=$("class-skills"),detail=$("skill-detail"),preview=$("class-preview");
 if(!stats||!skills||!detail||!preview)return;
 const statLabels=["Damage","Defense","Support","Mobility","Control"];
-let active="saint",gender="female",chosen=0;
+let active="saint",gender="female",chosen=0,activePath=0;
+// Add approved specialization content here, grouped by class and path number.
+// Each entry may provide name, description, icon, skills (same format as DATA), and signatureMoves.
+const SPECIALIZATIONS={};
+const pathData=()=>activePath===0?{name:cap(active),description:"Master the foundations of your class.",skills:DATA[active].skills,signatureMoves:[]}:SPECIALIZATIONS[active]?.[activePath]||{name:"Specialization "+activePath,description:"This advanced path has yet to be revealed.",skills:[],signatureMoves:[]};
 
 /* A fixed gender greeting plus three independent, cyclic voice previews.
    Assets: ../VoiceSaintMaleSwitch.mp3, ../VoiceSaintMale1.mp3, etc.
@@ -147,7 +151,7 @@ function renderPreview(){
  }else{
   preview.innerHTML=avatarArt();
  }
- $("preview-caption").textContent=gender.toUpperCase()+" · DEFAULT FORM";
+ const caption=$("preview-caption");if(caption)caption.textContent=gender.toUpperCase()+" · DEFAULT FORM";
  document.querySelectorAll(".gender-option").forEach(b=>{
   const on=b.dataset.gender===gender;
   b.classList.toggle("is-active",on);
@@ -169,8 +173,9 @@ function renderStats(){
  });
 }
 function skillDetail(){
- const s=DATA[active].skills[chosen];
+ const s=pathData().skills[chosen];
  detail.replaceChildren();
+ if(!s){const p=document.createElement("p");p.className="path-pending";p.textContent="✧  Advanced abilities have yet to be revealed.";detail.append(p);return;}
  const head=document.createElement("div");head.className="skill-detail-head";
  const title=document.createElement("strong");title.textContent=s[1];
  const tag=document.createElement("span");tag.textContent=s[2];head.append(title,tag);
@@ -184,27 +189,56 @@ function skillDetail(){
 }
 function renderSkills(){
  skills.replaceChildren();
- DATA[active].skills.forEach((s,i)=>{
+ pathData().skills.forEach((s,i)=>{
   const btn=document.createElement("button");btn.type="button";btn.className="skill-icon"+(i===chosen?" is-current":"");
   btn.setAttribute("aria-label","Inspect "+s[1]);btn.setAttribute("aria-pressed",String(i===chosen));btn.title=s[1];
   const glyph=document.createElement("span");glyph.className="skill-symbol";glyph.textContent=s[0];
-  const n=document.createElement("span");n.textContent="0"+(i+1);
+  const n=document.createElement("span");n.className="skill-name";n.textContent=s[1];
   btn.append(glyph,n);btn.addEventListener("click",()=>{chosen=i;renderSkills()});skills.append(btn);
  });
  skillDetail();
 }
+function renderPath(){
+ const path=pathData(),buttons=$("class-paths");
+ if(buttons){
+  buttons.querySelectorAll("[data-path]").forEach(b=>{
+   const i=Number(b.dataset.path),selected=i===activePath;
+   b.classList.toggle("is-current",selected);b.setAttribute("aria-pressed",String(selected));
+   const info=i===0?{name:cap(active)}:SPECIALIZATIONS[active]?.[i];
+   b.querySelector(".path-name").textContent=i===0?"Base class":info?.name||"???";
+   b.title=i===0?cap(active)+" · Base class":info?.name||"Specialization "+i+" — unrevealed";
+   b.setAttribute("aria-label",b.title);
+   if(i===0&&typeof setClassArtwork==="function")setClassArtwork(b.querySelector(".path-symbol"),active);
+  });
+ }
+ const title=$("path-detail-title"),desc=$("path-description"),label=$("path-type"),core=$("path-core-title"),sig=$("path-signatures");
+ if(title)title.textContent=path.name+(activePath===0?" · Base class":"");
+ if(desc)desc.textContent=path.description;
+ if(label)label.textContent=activePath===0?"BASE PATH":"ADVANCED PATH";
+ if(core)core.textContent=activePath===0?"Core abilities":"Specialization abilities";
+ if(sig){
+  sig.replaceChildren();
+  if(path.signatureMoves?.length){path.signatureMoves.forEach(move=>{const p=document.createElement("p");p.textContent=move;sig.append(p)})}
+  else{const p=document.createElement("p");p.className="signature-pending";p.textContent="To be revealed";sig.append(p)}
+ }
+ skills.hidden=!path.skills.length;
+ renderSkills();
+}
+$("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener("click",()=>{
+ activePath=Number(b.dataset.path);chosen=0;renderPath();
+}));
 function draw(){
  const d=DATA[active];
  $("class-index").textContent=String(Object.keys(DATA).indexOf(active)+1).padStart(2,"0")+" / 06";
  $("class-combat").textContent=d.play;
  $("class-difficulty").textContent="DIFFICULTY · "+d.difficulty+" / 5";
  $("class-details").style.setProperty("--class-highlight",d.color);
- renderStats();renderSkills();renderPreview();
+ renderStats();renderPath();renderPreview();
 }
 document.querySelectorAll("[data-class]").forEach(button=>{
  button.addEventListener("click",()=>{
   if(!DATA[button.dataset.class])return;
-  stopVoice();active=button.dataset.class;chosen=0;gender="female";draw();updateVoiceButton();
+  stopVoice();active=button.dataset.class;activePath=0;chosen=0;gender="female";draw();updateVoiceButton();
  });
 });
 document.querySelectorAll(".gender-option").forEach(button=>button.addEventListener("click",()=>{
