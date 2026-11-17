@@ -337,6 +337,36 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
 @media(min-width:761px){.class-showcase .showcase-info{transform:translateY(-28px)}}
 @media(min-width:1201px){.class-showcase .showcase-info{transform:translateY(-36px)}}
 </style>
+<style>
+/* Class codex: a soft enchanted selection glow and sparse foreground motes. */
+.class-showcase .path-option.is-current,.class-showcase .skill-icon.is-current{
+ border-color:var(--class-highlight);
+ box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--class-highlight) 40%,transparent),inset 0 0 15px color-mix(in srgb,var(--class-highlight) 12%,transparent),0 0 12px color-mix(in srgb,var(--class-highlight) 28%,transparent);
+}
+.class-showcase .path-option.is-current .path-symbol,
+.class-showcase .skill-icon.is-current .skill-symbol{
+ filter:drop-shadow(0 0 4px color-mix(in srgb,var(--class-highlight) 68%,transparent));
+}
+.class-showcase .path-option{transition:background .2s,border-color .2s,box-shadow .2s}
+.class-showcase .skill-icon{transition:background .2s,border-color .2s,transform .2s,box-shadow .2s}
+.class-showcase .class-foreground-motes{position:absolute;inset:0;z-index:8;overflow:hidden;pointer-events:none;user-select:none;mask-image:linear-gradient(180deg,transparent,#000 9%,#000 93%,transparent)}
+.class-foreground-mote{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:var(--size);border-radius:50%;background:currentColor;color:var(--class-highlight);box-shadow:0 0 5px currentColor,0 0 10px color-mix(in srgb,var(--class-highlight) 38%,transparent);opacity:0;animation:mythbound-foreground-rise var(--duration) linear var(--delay) infinite;pointer-events:none;will-change:transform,opacity}
+@keyframes mythbound-foreground-rise{
+ 0%{transform:translate(0,26px);opacity:0}
+ 22%{opacity:.48}
+ 48%{opacity:.65}
+ 78%{opacity:.24}
+ 100%{transform:translate(var(--drift),-65px);opacity:0}
+}
+@keyframes mythbound-ember{
+ 0%{transform:translate(0,16px);opacity:0}
+ 35%{opacity:.48}
+ 70%{opacity:.22}
+ 100%{transform:translate(var(--drift),-35px);opacity:0}
+}
+@media(max-width:760px){.class-foreground-mote:nth-child(n+8){display:none}}
+@media(prefers-reduced-motion:reduce){.class-showcase .class-foreground-motes{display:none}.class-showcase .path-option,.class-showcase .skill-icon{transition:none}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -430,6 +460,7 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
 
         <section id="class-details" class="class-details class-showcase" aria-labelledby="class-name">
           <div class="class-atmosphere" aria-hidden="true"><div class="class-environment"></div><div class="class-landscape"></div><div class="class-embers"></div></div>
+          <div class="class-foreground-motes" aria-hidden="true"></div>
           <div class="showcase-overline"><span>THE CLASS CODEX <span aria-hidden="true">/</span> BASIC PATH</span><span id="class-index">06 / 06</span></div>
           <div class="showcase-columns">
             <div class="showcase-info">
