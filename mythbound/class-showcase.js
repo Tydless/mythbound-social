@@ -311,6 +311,19 @@ function drawEnvironment(){
  if(!atmosphere)return;
  const host=$("class-details"),landscape=atmosphere.querySelector(".class-landscape"),embers=atmosphere.querySelector(".class-embers");
  host.dataset.environment=active;
+ const foreground=host.querySelector(".class-foreground-motes");
+ if(foreground&&!foreground.children.length){
+  for(let i=0;i<12;i++){
+   const p=document.createElement("span");p.className="class-foreground-mote";
+   p.style.setProperty("--x",(5+(i*37.13)%90)+"%");
+   p.style.setProperty("--y",(9+(i*23.71)%86)+"%");
+   p.style.setProperty("--size",(1.5+(i%3)*.65)+"px");
+   p.style.setProperty("--duration",(8+i%5*1.3)+"s");
+   p.style.setProperty("--delay",(-i*1.83)+"s");
+   p.style.setProperty("--drift",((i%5-2)*9)+"px");
+   foreground.append(p);
+  }
+ }
  const request=++environmentRequest;
  atmosphere.classList.remove("has-landscape");
  landscape.style.backgroundImage="";
