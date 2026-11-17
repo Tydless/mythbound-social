@@ -229,6 +229,27 @@
 @media(max-width:760px){.class-atmosphere .class-landscape{background-position:center bottom}.class-showcase .class-atmosphere{mask-image:linear-gradient(to bottom,transparent,#000 45%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 45%,#000 90%,transparent)}.class-ember:nth-child(n+24){display:none}}
 @media(prefers-reduced-motion:reduce){.class-ember{animation:none;opacity:.24;will-change:auto}.class-landscape{transition:none}}
 </style>
+<style>
+/* Translucent class-tinted codex panels; preserve the ornamental frame. */
+.class-showcase .showcase-info{
+ background:linear-gradient(145deg,color-mix(in srgb,#172135b0 88%,var(--class-highlight) 12%),#121c30a8 85%);
+ backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+ box-shadow:inset 0 0 0 3px #16213565,inset 0 0 0 4px color-mix(in srgb,var(--class-highlight) 23%,transparent),0 8px 26px #080f2026;
+}
+.class-showcase .path-overview{
+ background:linear-gradient(145deg,color-mix(in srgb,#172135b0 91%,var(--class-highlight) 9%),#121c30b8);
+ backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+}
+.class-showcase .class-meta-icons{align-items:center;gap:20px}
+.class-showcase .class-role-icons{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.class-showcase .class-role-icon{display:grid;place-items:center;width:38px;height:38px;border:1px solid color-mix(in srgb,var(--class-highlight) 55%,transparent);border-radius:50%;background:#14203965;color:var(--class-highlight)}
+.class-showcase .class-role-icon svg{display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round}
+.class-showcase .class-difficulty-meter{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.class-showcase .class-meta .difficulty-label{padding:0;background:none;border:0;backdrop-filter:none;color:var(--class-highlight);font-size:10px;font-weight:800;letter-spacing:.12em;margin-right:3px}
+.class-showcase .class-meta .difficulty-dot{display:block;width:11px;height:11px;padding:0;border:1px solid color-mix(in srgb,var(--class-highlight) 72%,transparent);border-radius:50%;background:transparent;backdrop-filter:none}
+.class-showcase .class-meta .difficulty-dot.is-filled{background:var(--class-highlight);box-shadow:0 0 7px color-mix(in srgb,var(--class-highlight) 26%,transparent)}
+@media(max-width:760px){.class-showcase .class-meta-icons{gap:12px}.class-showcase .class-role-icon{width:34px;height:34px}.class-showcase .class-difficulty-meter{gap:5px}.class-showcase .class-meta .difficulty-dot{width:10px;height:10px}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -317,7 +338,7 @@
           <button type="button" class="class-tile" data-class="herder"><span class="class-glyph">❃</span><span class="class-role">SUPPORT · COMPANIONS</span><strong>Herder</strong><small>Mounted animal commander</small></button>
           <button type="button" class="class-tile" data-class="elemis"><span class="class-glyph">✳</span><span class="class-role">MAGIC · ELEMENTS</span><strong>Elemis</strong><small>Elemental fairy caster</small></button>
           <button type="button" class="class-tile" data-class="strider"><span class="class-glyph">⚔</span><span class="class-role">MELEE · DUELIST</span><strong>Strider</strong><small>Precision and speed</small></button>
-          <button type="button" class="class-tile" data-class="saint"><span class="class-glyph">✥</span><span class="class-role">SUPPORT · HOLY MAGIC</span><strong>Saint</strong><small>Sanctuary and healing</small></button>
+          <button type="button" class="class-tile" data-class="saint"><span class="class-glyph">✥</span><span class="class-role">SUPPORT · PRIEST</span><strong>Saint</strong><small>Sanctuary and healing</small></button>
         </div>
 
         <section id="class-details" class="class-details class-showcase" aria-labelledby="class-name">
@@ -328,12 +349,12 @@
               <div class="showcase-heading">
                 <div class="showcase-seal" id="class-emblem" aria-hidden="true">✥</div>
                 <div>
-                  <span class="eyebrow" id="class-type">SUPPORT · HOLY MAGIC</span>
+                  <span class="eyebrow" id="class-type">SUPPORT · PRIEST</span>
                   <h2 id="class-name">Saint</h2>
                 </div>
               </div>
               <p id="class-description" class="class-intro">A holy protector who heals wounded allies and channels sacred power to defend the party.</p>
-              <div class="class-meta"><span id="class-combat">HEALER / PROTECTOR</span><span id="class-difficulty">DIFFICULTY · 2 / 5</span></div>
+              <div class="class-meta class-meta-icons"><div id="class-combat" class="class-role-icons" role="group" aria-label="Combat roles"></div><div id="class-difficulty" class="class-difficulty-meter" role="img" aria-label="Difficulty: 2 out of 5"></div></div>
 
               <div class="showcase-section-title"><h3>Class strengths</h3><span>BASE RATINGS</span></div>
               <div id="class-stats" class="class-stat-list" aria-label="Strength ratings"></div>
