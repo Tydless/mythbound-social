@@ -37,7 +37,7 @@ const $=id=>document.getElementById(id);
 const stats=$("class-stats"),skills=$("class-skills"),detail=$("skill-detail"),preview=$("class-preview");
 if(!stats||!skills||!detail||!preview)return;
 const statLabels=["Damage","Defense","Support","Mobility","Control"];
-let active="saint",gender="female",chosen=0,activePath=0;
+let active="saint",gender="male",chosen=0,activePath=0;
 // Add approved specialization content here, grouped by class and path number.
 // Each entry may provide name, description, icon, skills (same format as DATA), and signatureMoves.
 const SPECIALIZATIONS={};
@@ -365,7 +365,7 @@ function draw(){
 document.querySelectorAll("[data-class]").forEach(button=>{
  button.addEventListener("click",()=>{
   if(!DATA[button.dataset.class])return;
-  stopVoice();active=button.dataset.class;activePath=0;chosen=0;gender="female";draw();updateVoiceButton();
+  stopVoice();active=button.dataset.class;activePath=0;chosen=0;gender="male";draw();updateVoiceButton();
  });
 });
 document.querySelectorAll(".gender-option").forEach(button=>button.addEventListener("click",()=>{
