@@ -133,3 +133,15 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
   sync();
   if(enabled)tryPlay();else audio.pause();
 })();
+
+
+// The illustrated hero is optional until the image file is uploaded.
+// This avoids a blank banner if the asset has not reached GitHub Pages yet.
+(function loadMythboundHomeLandscape(){
+  const hero=document.querySelector("#page-home .hero");
+  if(!hero)return;
+  const landscape=new Image();
+  landscape.onload=()=>hero.classList.add("has-watercolor-landscape");
+  landscape.onerror=()=>hero.classList.remove("has-watercolor-landscape");
+  landscape.src="../mythbound-home-watercolor.jpg";
+})();
