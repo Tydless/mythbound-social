@@ -124,6 +124,51 @@ function avatarArt(){
  const dress=active==="saint"?"<path d='M143 257Q104 313 119 365Q191 384 265 359Q263 302 235 260Z' fill='#d9d5d7' stroke='#f5deb7' stroke-width='4'/>":"";
  return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 380 420' role='img' aria-label='"+gender+" "+active+" concept avatar'><circle cx='190' cy='218' r='167' fill='none' stroke='"+c.color+"' opacity='.35' stroke-dasharray='3 9'/>"+aura+wings+sheep+tail+lower+dress+blade+"<path d='M146 170Q189 143 232 168L247 276Q180 294 132 269Z' fill='"+c.color+"' stroke='#e3e0dc' stroke-width='4'/><path d='M147 176l-32 79M229 176l41 74' fill='none' stroke='"+c.color+"' stroke-width='20' stroke-linecap='round'/>"+fists+"<circle cx='189' cy='110' r='"+size+"' fill='"+skin+"' stroke='#f6dec8' stroke-width='4'/><path d='"+hairShape+"' fill='"+hair+"' stroke='#688295' stroke-width='4'/><path d='M172 119h9m19 0h9' stroke='#635b5b' stroke-width='3' stroke-linecap='round'/><path d='M184 139q7 4 13-1' fill='none' stroke='#936c70' stroke-width='2'/></svg>";
 }
+function burnPortrait(stage,oldImage,picture,isFallen){
+ const finish=()=>{stage.classList.remove("portrait-revealing","portrait-crossfade");picture.classList.remove("portrait-incoming");oldImage.remove();stage.querySelector(".portrait-burn-canvas")?.remove()};
+ const fallback=()=>{stage.querySelector(".portrait-burn-canvas")?.remove();stage.classList.add("portrait-crossfade");setTimeout(finish,1050)};
+ try{
+  const bounds=stage.getBoundingClientRect();
+  if(!bounds.width||!bounds.height){finish();return}
+  const canvas=document.createElement("canvas");canvas.className="portrait-burn-canvas";canvas.setAttribute("aria-hidden","true");
+  const w=canvas.width=Math.min(540,Math.ceil(bounds.width*1.15)),h=canvas.height=Math.round(w*bounds.height/bounds.width);
+  const ctx=canvas.getContext("2d"),source=document.createElement("canvas");source.width=w;source.height=h;
+  const sc=source.getContext("2d",{willReadFrequently:true});if(!ctx||!sc){fallback();return}
+  const scale=Math.min(w/oldImage.naturalWidth,h/oldImage.naturalHeight);
+  const dw=oldImage.naturalWidth*scale,dh=oldImage.naturalHeight*scale;
+  sc.drawImage(oldImage,(w-dw)/2+(oldImage.classList.contains("fallen-saint-portrait")?-w*.0035:0),(h-dh)/2,dw,dh);
+  const original=sc.getImageData(0,0,w,h),frame=ctx.createImageData(w,h),src=original.data,dst=frame.data;
+  const field=new Float32Array(w*h);
+  const layers=[{s:44,a:.15},{s:16,a:.065},{s:6,a:.025}].map(({s,a})=>{const cols=Math.ceil(w/s)+2,rows=Math.ceil(h/s)+2;return {s,a,cols,grid:Float32Array.from({length:cols*rows},()=>Math.random())}});
+  const smooth=t=>t*t*(3-2*t);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+   let n=0;
+   for(const L of layers){const gx=x/L.s,gy=y/L.s,ix=Math.floor(gx),iy=Math.floor(gy),u=smooth(gx-ix),v=smooth(gy-iy),i=iy*L.cols+ix;const a=L.grid[i]*(1-u)+L.grid[i+1]*u,b=L.grid[i+L.cols]*(1-u)+L.grid[i+L.cols+1]*u;n+=(a*(1-v)+b*v-.5)*L.a}
+   field[y*w+x]=.78*(1-y/h)+.10*x/w+n+.11;
+  }
+  const particles=[];const pale=isFallen?[255,174,115]:[255,248,197],hot=isFallen?[222,48,36]:[240,183,80];
+  stage.append(canvas);ctx.putImageData(original,0,0);stage.classList.add("portrait-revealing");oldImage.style.visibility="hidden";
+  let begin=0,last=0;const duration=1450;
+  function tick(now){
+   if(!stage.isConnected)return;
+   if(!begin){begin=now;last=now}
+   const elapsed=now-begin,dt=Math.min(40,now-last)/1000;last=now;
+   const p=Math.min(1,elapsed/duration),threshold=-.05+1.15*(p*p*(3-2*p));
+   for(let i=0,j=0;i<field.length;i++,j+=4){
+    const d=field[i]-threshold,a=Math.max(0,Math.min(1,d/.026)),edge=Math.max(0,1-Math.abs(d-.024)/.045)*a;
+    dst[j]=src[j]*(1-edge)+pale[0]*edge;dst[j+1]=src[j+1]*(1-edge)+(hot[1]+(pale[1]-hot[1])*edge)*edge;dst[j+2]=src[j+2]*(1-edge)+(hot[2]+(pale[2]-hot[2])*edge)*edge;dst[j+3]=src[j+3]*a;
+   }
+   ctx.putImageData(frame,0,0);
+   if(p>.04&&p<.96)for(let k=0;k<100;k++){const i=Math.floor(Math.random()*field.length);if(src[i*4+3]>160&&Math.abs(field[i]-threshold)<.018&&particles.length<85){particles.push({x:i%w,y:Math.floor(i/w),vx:(Math.random()-.5)*45,vy:-22-Math.random()*65,age:0,life:.28+Math.random()*.55,r:.6+Math.random()*1.6})}}
+   ctx.globalCompositeOperation="lighter";
+   for(let i=particles.length-1;i>=0;i--){const s=particles[i];s.age+=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;if(s.age>=s.life){particles.splice(i,1);continue}const a=Math.sin(Math.PI*s.age/s.life);ctx.globalAlpha=a*.75;ctx.fillStyle="rgb("+pale.join(",")+")";ctx.shadowColor="rgb("+hot.join(",")+")";ctx.shadowBlur=5;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill()}
+   ctx.globalAlpha=1;ctx.shadowBlur=0;ctx.globalCompositeOperation="source-over";
+   if(elapsed<duration+550)requestAnimationFrame(tick);else finish();
+  }
+  requestAnimationFrame(tick);
+ }catch(e){oldImage.style.visibility="";stage.classList.remove("portrait-revealing");fallback()}
+}
+
 function renderPreview(){
  // Real artwork for both Saint appearances, with the old concept silhouette
  // as a fallback until the two image files have been uploaded to GitHub.
@@ -158,10 +203,7 @@ function renderPreview(){
    if(!picture.isConnected)return;
    preview.classList.add("has-saint-art");
    if(animate){
-    const wave=document.createElement("span");wave.className="portrait-reveal-wave";wave.setAttribute("aria-hidden","true");stage.append(wave);
-    for(let i=0;i<9;i++){const spark=document.createElement("span");spark.className="portrait-reveal-spark";spark.setAttribute("aria-hidden","true");spark.style.setProperty("--spark-x",(12+(i*37)%77)+"%");spark.style.setProperty("--spark-y",(10+i*9)+"%");spark.style.setProperty("--spark-delay",(i*.055)+"s");spark.style.setProperty("--spark-drift",((i%3-1)*16)+"px");stage.append(spark)}
-    stage.classList.add("portrait-revealing");
-    setTimeout(()=>{if(!stage.isConnected)return;stage.classList.remove("portrait-revealing");picture.classList.remove("portrait-incoming");oldImage.remove();stage.querySelectorAll(".portrait-reveal-wave,.portrait-reveal-spark").forEach(e=>e.remove())},1200);
+    burnPortrait(stage,oldImage,picture,isFallen);
    }
    if(note)note.textContent=artworkName+" · illustrated class artwork";
   });
