@@ -47,7 +47,18 @@ function selectClass(name){
   document.getElementById("class-description").textContent=c.description;
   document.querySelectorAll(".class-tile").forEach(b=>{b.classList.toggle("is-selected",b.dataset.class===name);b.setAttribute("aria-pressed",String(b.dataset.class===name))});
 }
-document.querySelectorAll("[data-class]").forEach(b=>b.addEventListener("click",()=>{navigate("classes");selectClass(b.dataset.class);document.getElementById("class-details").scrollIntoView({behavior:"smooth",block:"nearest"})}));
+// Align the codex heading just below the sticky header, on every screen size.
+function scrollToClassCodex(){
+  requestAnimationFrame(()=>{
+    const codex=document.querySelector("#class-details .showcase-overline");
+    const header=document.querySelector(".site-header");
+    if(!codex)return;
+    const headerBottom=header?Math.max(0,header.getBoundingClientRect().bottom):0;
+    const top=Math.max(0,window.scrollY+codex.getBoundingClientRect().top-headerBottom-4);
+    window.scrollTo({top,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+  });
+}
+document.querySelectorAll("[data-class]").forEach(b=>b.addEventListener("click",()=>{navigate("classes");selectClass(b.dataset.class);scrollToClassCodex()}));
 function closePanel(){overlay.hidden=true;document.body.classList.remove("sheet-open");if(previousFocus&&document.contains(previousFocus))previousFocus.focus()}
 function openPanel(templateId){
   if(window.MythboundAccount?.isSignedIn()===false)return;
