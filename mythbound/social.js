@@ -24,6 +24,7 @@
   function nickname(){return $("rail-player-name")?.textContent.trim()||"Traveler"}
   function avatar(person,large=false){
     const wrap=make("span","mb-social-avatar"+(large?" is-large":""));wrap.setAttribute("aria-hidden","true");
+    if(typeof person.online==="boolean"){wrap.dataset.presence=person.online?"online":"offline";wrap.title=person.online?"Online":person.status||"Offline";wrap.removeAttribute("aria-hidden");wrap.setAttribute("role","img");wrap.setAttribute("aria-label",wrap.title)}
     const fallback=make("span","mb-social-fallback",person.glyph||"");
     if(!person.glyph)fallback.classList.add("mb-default-person");
     wrap.append(fallback);
@@ -66,7 +67,7 @@
   }
   function friendRow(id){
     const p=people[id],button=make("button","mb-inbox-row mb-social-friend");button.type="button";
-    const words=make("span","mb-inbox-words");words.append(make("strong","",p.name),make("small","",p.info),make("small",p.online?"online-label":"mb-offline",p.online?"● Online":p.status));
+    const words=make("span","mb-inbox-words");words.append(make("strong","",p.name),make("small","",p.info));if(!p.online)words.append(make("small","mb-offline",p.status));
     button.append(avatar(p),words,make("span","mb-row-chevron","›"));
     button.addEventListener("click",()=>openFriend(id));return button;
   }
@@ -117,7 +118,7 @@
     if(window.MythboundAccount?.isSignedIn()===false)return;
     if(id==="fighter"){openProfile();return}
     const p=people[id];if(!p)return;
-    const head=heading(p.name,p.info+" · "+p.status);head.prepend(avatar(p,true));
+    const head=heading(p.name,p.info+(p.online?"":" · "+p.status));head.prepend(avatar(p,true));
     const body=make("div","mb-buddy-profile");
     body.append(make("p","profile-quote",id==="responsible"?"I was forced to do this.":"If it has a health bar, I can fight it."));
     if(id==="chaotic"){
@@ -168,7 +169,7 @@
   $("open-inbox")?.addEventListener("click",openInbox);
   for(const id of ["chaotic","responsible"]){
     const node=$(id+"-friend")?.querySelector(".mb-buddy-avatar");
-    if(node)node.replaceChildren(avatar(people[id]));
+    if(node){node.replaceChildren(avatar(people[id]));node.removeAttribute("aria-hidden")}
   }
   syncUnread();
   window.addEventListener("storage",e=>{if(e.key===readKey){seen=e.newValue==="true";syncUnread()}});
