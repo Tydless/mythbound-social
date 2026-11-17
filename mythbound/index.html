@@ -202,8 +202,15 @@
 .radar-grid-outer{stroke-opacity:.6;stroke-width:1.2}
 .radar-spoke{stroke:var(--class-highlight);stroke-opacity:.28;stroke-width:.8}
 .radar-shape{filter:drop-shadow(0 0 7px color-mix(in srgb,var(--class-highlight) 32%,transparent))}
-.radar-label{font-family:'DM Sans',system-ui,sans-serif;font-size:14px;font-weight:700}
-.radar-value{font-family:'DM Sans',system-ui,sans-serif;font-size:12px;font-weight:600;letter-spacing:.04em}
+.radar-label{font-family:'Cinzel',Georgia,serif;font-size:12px;font-weight:600;letter-spacing:.015em}
+.radar-marker{cursor:help;outline:none;touch-action:manipulation}
+.radar-marker-dot{transition:stroke-width .15s;pointer-events:none}
+.radar-marker.is-revealed .radar-marker-dot,.radar-marker:focus-visible .radar-marker-dot{stroke-width:2.5}
+.radar-hit{pointer-events:all}
+.radar-tooltip{visibility:hidden;opacity:0;pointer-events:none;transition:opacity .12s}
+.radar-tooltip.is-visible{visibility:visible;opacity:1}
+.radar-tooltip-text{font:600 12px 'DM Sans',system-ui,sans-serif}
+@media(prefers-reduced-motion:reduce){.radar-tooltip,.radar-marker-dot{transition:none}}
 @media(max-width:760px){.class-showcase .showcase-info{padding:22px 13px 16px}.class-showcase .showcase-info>.showcase-section-title{margin-top:22px}.stat-radar{max-width:490px}}
 </style>
 <style>
