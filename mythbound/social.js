@@ -36,6 +36,7 @@
     return wrap;
   }
   function markSeen(){
+    if(window.MythboundAccount?.isSignedIn()===false)return;
     seen=true;try{localStorage.setItem(readKey,"true")}catch{}syncUnread();
   }
   function syncUnread(){
@@ -57,6 +58,7 @@
     const b=make("button","mb-social-back","‹ "+label);b.type="button";b.addEventListener("click",action);return b;
   }
   function display(nodes,kicker){
+    if(window.MythboundAccount?.isSignedIn()===false)return;
     if(overlay.hidden)previousFocus=document.activeElement;
     content.replaceChildren(...nodes);
     $("sheet-kicker").textContent=kicker;
@@ -85,6 +87,7 @@
     return row;
   }
   function openInbox(){
+    if(window.MythboundAccount?.isSignedIn()===false)return;
     const head=heading("Inbox","Whispers & party conversations");
     const tabs=make("div","mb-inbox-tabs");
     const chat=make("button","is-active","Messages");chat.type="button";chat.setAttribute("aria-pressed","true");
@@ -100,6 +103,7 @@
     display([head,tabs,list],"MYTHBOUND · SOCIAL");
   }
   function openFriends(){
+    if(window.MythboundAccount?.isSignedIn()===false)return;
     const head=heading("Friends","2 online · 3 friends");
     const tabs=make("div","mb-inbox-tabs");
     const chat=make("button","","Messages");chat.type="button";chat.setAttribute("aria-pressed","false");chat.addEventListener("click",openInbox);
@@ -110,6 +114,7 @@
     display([head,tabs,list],"MYTHBOUND · SOCIAL");
   }
   function openFriend(id){
+    if(window.MythboundAccount?.isSignedIn()===false)return;
     if(id==="fighter"){openProfile();return}
     const p=people[id];if(!p)return;
     const head=heading(p.name,p.info+" · "+p.status);head.prepend(avatar(p,true));
@@ -122,6 +127,7 @@
     display([back("Back to friends",openFriends),head,body],"MYTHBOUND · PLAYER PROFILE");
   }
   function openGroup(){
+    if(window.MythboundAccount?.isSignedIn()===false)return;
     const player=nickname();
     const head=heading("The Usual Suspects","4 members · "+player+", Fighter, Chaotic Buddy, Responsible Buddy");
     head.prepend(groupAvatar());
