@@ -276,6 +276,59 @@
 .class-showcase .class-role-icon:first-child:hover::after,.class-showcase .class-role-icon:first-child:focus-visible::after,.class-showcase .class-role-icon:first-child.is-tooltip-open::after{transform:translate(0,0)}
 @media(prefers-reduced-motion:reduce){.class-showcase .class-role-icon::after{transition:none}}
 </style>
+<style>
+/* Mythbound gilded interface polish — desktop and mobile. */
+:root{--presence-online:#58d68a;--presence-offline:#8993a2}
+.mb-login-inner::before,.mb-login-inner::after{
+ content:"";width:20px;height:20px;padding:0;line-height:0;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2Q14 10 22 12Q14 14 12 22Q10 14 2 12Q10 10 12 2Z' fill='%23192336' stroke='%23f3cd94' stroke-width='1.5'/%3E%3Cpath d='M12 7l2 5-2 5-2-5z' fill='%23f9e3b5'/%3E%3C/svg%3E") center/contain no-repeat;z-index:2;filter:drop-shadow(0 0 4px #e6c18b55)
+}
+.mb-login-inner::before{top:0;transform:translate(-50%,-50%)}
+.mb-login-inner::after{bottom:0;transform:translate(-50%,50%)}
+.site-header .nav-item{font:600 clamp(13px,1.15vw,17px)/1.3 'Cinzel',Georgia,serif;letter-spacing:0;color:#e5dfd4;white-space:nowrap}
+.site-header .nav-item:hover,.site-header .nav-item.is-active{color:#f7d79c}
+@media(min-width:761px){
+.site-header .nav-item.is-active::after{height:1px;left:12%;right:12%;bottom:4px;background:linear-gradient(90deg,transparent,#eccc93,transparent);box-shadow:0 0 7px #eccc9355}
+.site-header .nav-item.is-active::before{content:"";position:absolute;left:50%;bottom:1px;width:7px;height:7px;transform:translateX(-50%) rotate(45deg);background:#f6d9a1;box-shadow:0 0 7px #eccc93a0}
+}
+.download-button,.solid-action,.mb-login-submit{
+ color:#202334;border:1px solid #f3d9a6;border-radius:5px;
+ background:linear-gradient(180deg,#f9e5b8 0%,#e4c28b 35%,#c19a5f 100%);
+ box-shadow:inset 0 0 0 2px #6e4b2738,inset 0 1px 2px #fff2ce,inset 0 -2px 3px #805b3c67,0 4px 0 #79572f,0 7px 15px #0005;
+ font-family:'Cinzel',Georgia,serif;font-weight:700;letter-spacing:0;
+ transition:filter .15s,transform .15s,box-shadow .15s
+}
+.hero .solid-action{box-shadow:inset 0 0 0 2px #6e4b2738,inset 0 1px 2px #fff2ce,inset 0 -2px 3px #805b3c67,0 4px 0 #79572f,0 7px 15px #0005}
+.download-button:hover,.solid-action:hover,.mb-login-submit:hover:not(:disabled){filter:brightness(1.08)}
+.download-button:active,.solid-action:active,.mb-login-submit:active:not(:disabled){transform:translateY(2px);box-shadow:inset 0 1px 4px #805b3c67,0 1px 0 #79572f}
+.hero .outline-action{font-family:'Cinzel',Georgia,serif;font-weight:600;border-color:#d7b77e;box-shadow:inset 0 0 0 2px #d7b77e28}
+.site-header .mb-session-action{border:0;border-left:1px solid #d5bb8e36;border-radius:0;background:transparent;color:#9eaac0;min-height:25px;padding:4px 9px;font:500 11px 'DM Sans',system-ui,sans-serif;box-shadow:none}
+.site-header .mb-session-action:hover{background:transparent;color:#f1d5a1;border-color:#d5bb8e70}
+.site-header .account-label{font:600 13px 'Cinzel',Georgia,serif}
+.friend-meta strong,.whisper-preview strong,.mb-inbox-top strong,.mb-inbox-words>strong{font-family:'Cinzel',Georgia,serif;font-weight:600}
+[data-presence]{position:relative;overflow:visible}
+[data-presence]::after{content:"";position:absolute;width:10px;height:10px;box-sizing:border-box;right:0;bottom:1px;border-radius:50%;border:1.5px solid #1b2639;background:var(--presence-offline);box-shadow:0 0 0 1px #ccd4df22;z-index:5;pointer-events:none}
+[data-presence="online"]::after{background:var(--presence-online)}
+.profile-avatar[data-presence]::after,.mb-social-avatar.is-large[data-presence]::after,.rail-player-avatar[data-presence]::after{width:13px;height:13px;right:1px;bottom:2px}
+.mb-group-avatar [data-presence]::after,.mb-chat-row [data-presence]::after{width:8px;height:8px}
+.floating-music#music-toggle{
+ position:fixed;right:max(20px,env(safe-area-inset-right));bottom:max(20px,calc(env(safe-area-inset-bottom) + 10px));z-index:30;
+ display:grid;place-items:center;width:48px;height:48px;min-height:48px;min-width:48px;padding:0;gap:0;border-radius:50%;
+ color:#f7d9a5;background:radial-gradient(circle at 35% 25%,#34445c,#152033 72%);
+ border:1px solid #d7b67d;box-shadow:inset 0 0 0 3px #e1c48b1b,0 4px 18px #050b18a0
+}
+.floating-music .music-note{display:block;width:23px;height:23px;overflow:visible}
+.floating-music .music-slash{display:none}
+.floating-music[aria-pressed="false"] .music-slash{display:block}
+.floating-music[aria-pressed="false"] .music-note{opacity:.65}
+.floating-music#music-toggle:hover,.floating-music#music-toggle.needs-gesture{border-color:#ffe5b5;box-shadow:inset 0 0 0 3px #e1c48b25,0 0 16px #e6c18b44}
+body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:none!important}
+@media(max-width:760px){
+.site-header .main-nav .nav-item{font-family:'Cinzel',Georgia,serif;font-size:14px}
+.floating-music#music-toggle{right:max(14px,env(safe-area-inset-right));bottom:max(14px,calc(env(safe-area-inset-bottom) + 9px));width:44px;height:44px;min-width:44px;min-height:44px}
+.site-footer{padding-bottom:75px}
+}
+@media (min-width:761px){.site-footer{padding-bottom:55px}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -310,9 +363,9 @@
       <button type="button" id="mobile-logout" class="nav-item mobile-menu-item mobile-social-item">Log out</button>
     </nav>
     <div class="header-actions">
-      <button type="button" class="music-toggle" id="music-toggle" aria-label="Pause Mythbound soundtrack" aria-pressed="true" title="Toggle background music"><span class="music-note" aria-hidden="true">♫</span><span class="music-state">Music On</span></button>
+      
       <button type="button" id="header-whisper" class="notification-button" aria-label="Open unread whisper"><span aria-hidden="true">✉</span><span class="notification-count">1</span></button>
-      <button type="button" id="account-button" class="account-chip"><span class="account-sigil">T</span><span class="account-label">Traveler <small>Online</small></span></button>
+      <button type="button" id="account-button" class="account-chip"><span class="account-sigil">T</span><span class="account-label">Traveler</span></button>
       <button type="button" id="download-button" class="download-button">Download <span aria-hidden="true">↗</span></button>
       <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Open navigation menu" aria-controls="primary-navigation" aria-expanded="false"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span id="mobile-menu-unread" class="mobile-menu-unread" hidden></span></button>
     </div>
@@ -419,16 +472,16 @@
     </main>
 
     <aside class="social-rail" aria-label="Game social sidebar">
-      <div class="rail-header"><span class="eyebrow">YOUR ADVENTURE</span><div class="rail-player-heading"><span class="rail-player-avatar" id="rail-player-avatar"></span><div><strong id="rail-player-name">Traveler</strong><small><span class="online-dot"></span> Online · Lv. 50</small></div></div></div>
-      <section class="rail-panel" aria-labelledby="friends-title"><div class="rail-title"><h2 id="friends-title">Friends</h2><button type="button" id="all-friends" class="mb-mini-action" aria-label="Open all friends">2 online / 3</button></div>
-        <button type="button" class="friend-row" id="fighter-friend"><span class="friend-avatar saint-avatar" aria-hidden="true">✥</span><span class="friend-meta"><strong>Fighter</strong><small>Saint · Lv. 84</small><small class="online-label">● Online</small></span><span class="friend-chevron">›</span></button>
-        <button type="button" class="friend-row" id="chaotic-friend"><span class="mb-buddy-avatar" aria-hidden="true">◈</span><span class="friend-meta"><strong>Chaotic Buddy</strong><small>Animar · Lv. 118</small><small class="online-label">● Online</small></span><span class="friend-chevron">›</span></button>
+      <div class="rail-header"><span class="eyebrow">YOUR ADVENTURE</span><div class="rail-player-heading"><span class="rail-player-avatar" id="rail-player-avatar" data-presence="online" title="Online" role="img" aria-label="Online"></span><div><strong id="rail-player-name">Traveler</strong><small>Lv. 50</small></div></div></div>
+      <section class="rail-panel" aria-labelledby="friends-title"><div class="rail-title"><h2 id="friends-title">Friends</h2><button type="button" id="all-friends" class="mb-mini-action" aria-label="Open all friends">2 / 3</button></div>
+        <button type="button" class="friend-row" id="fighter-friend"><span class="friend-avatar saint-avatar" data-presence="online" title="Online" role="img" aria-label="Online">✥</span><span class="friend-meta"><strong>Fighter</strong><small>Saint · Lv. 84</small><span class="screen-reader-only">Online</span></span><span class="friend-chevron">›</span></button>
+        <button type="button" class="friend-row" id="chaotic-friend"><span class="mb-buddy-avatar" aria-hidden="true">◈</span><span class="friend-meta"><strong>Chaotic Buddy</strong><small>Animar · Lv. 118</small><span class="screen-reader-only">Online</span></span><span class="friend-chevron">›</span></button>
         <button type="button" class="friend-row" id="responsible-friend"><span class="mb-buddy-avatar mb-default-avatar" aria-hidden="true">?</span><span class="friend-meta"><strong>Responsible Buddy</strong><small>Lv. 12</small><small class="mb-offline">Last online 39 days ago</small></span><span class="friend-chevron">›</span></button>
         <p class="rail-note">You and Fighter have 2 mutual friends.</p>
       </section>
       <section class="rail-panel whispers-panel" aria-labelledby="rail-whispers-title"><div class="rail-title"><h2 id="rail-whispers-title">Inbox</h2><span class="mini-count">1 new</span></div>
         <button type="button" id="open-inbox" class="mb-inbox-shortcut"><span aria-hidden="true">✉</span><span>View all conversations</span><span aria-hidden="true">›</span></button>
-        <button type="button" class="whisper-preview" id="rail-whisper"><span class="friend-avatar saint-avatar" aria-hidden="true">✥</span><span><strong>Fighter</strong><small>Yo, I've got time. You in for a raid?</small></span><span class="unread-dot"></span></button>
+        <button type="button" class="whisper-preview" id="rail-whisper"><span class="friend-avatar saint-avatar" data-presence="online" title="Online" role="img" aria-label="Online">✥</span><span><strong>Fighter</strong><small>Yo, I've got time. You in for a raid?</small></span><span class="unread-dot"></span></button>
       </section>
       <p class="rail-caption">Fictional in-game companion interface</p>
     </aside>
@@ -436,6 +489,7 @@
 
   <button type="button" id="floating-whisper" class="floating-whisper" aria-label="Read new whisper"><span aria-hidden="true">✉</span> <span>1 new whisper</span></button>
 
+  <button type="button" class="music-toggle floating-music" id="music-toggle" aria-label="Pause Mythbound soundtrack" aria-pressed="true" title="Toggle background music"><svg class="music-note" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V5l12-3v13M9 8l12-3"/><ellipse cx="5.8" cy="17.5" rx="3.2" ry="2.4" fill="currentColor" stroke="none"/><ellipse cx="17.8" cy="15.5" rx="3.2" ry="2.4" fill="currentColor" stroke="none"/><path class="music-slash" d="M3 3l18 18" stroke-width="2.1"/></svg><span class="music-state screen-reader-only">Music On</span></button>
   <div id="overlay" class="overlay" hidden>
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
       <div class="sheet-top"><span class="eyebrow" id="sheet-kicker">MYTHBOUND</span><button type="button" id="sheet-close" class="sheet-close" aria-label="Close panel">✕</button></div>
@@ -445,7 +499,7 @@
 
   <template id="profile-template">
     <div class="profile-banner"><div class="profile-rune">✥</div><span class="profile-banner-label">SAINT · CHARACTER PROFILE</span></div>
-    <div class="profile-heading"><span class="profile-avatar">✥</span><div><h2 id="sheet-title">Fighter</h2><p class="profile-byline">Saint · Lv. 84 · <span class="online-label">● Online now</span></p></div></div>
+    <div class="profile-heading"><span class="profile-avatar" data-presence="online" title="Online" role="img" aria-label="Online">✥</span><div><h2 id="sheet-title">Fighter</h2><p class="profile-byline">Saint · Lv. 84</p></div></div>
     <div class="profile-content">
       <div class="profile-quote">“I have enough heals. You, apparently, don't have enough brain cells.”</div>
       <div class="profile-stat-grid"><div><span>Main class</span><strong>Saint</strong></div><div><span>Playstyle</span><strong>Raid support</strong></div><div><span>Favorite thing</span><strong>Outfit collecting</strong></div></div>
@@ -456,7 +510,7 @@
   </template>
 
   <template id="whisper-template">
-    <div class="whisper-heading"><span class="friend-avatar saint-avatar large">✥</span><div><h2 id="sheet-title">Fighter</h2><p class="online-label">● Online · Saint · Lv. 84</p></div></div>
+    <div class="whisper-heading"><span class="friend-avatar saint-avatar large" data-presence="online" title="Online" role="img" aria-label="Online">✥</span><div><h2 id="sheet-title">Fighter</h2><p>Saint · Lv. 84</p></div></div>
     <div class="conversation"><p class="timestamp">JUST NOW</p><div class="received-message">Yo, I've got time. You in for a raid?</div></div>
     <form id="reply-form" class="reply-form"><label for="reply-message">Your reply</label><textarea id="reply-message" rows="2" placeholder="Write a reply…" maxlength="500"></textarea><p class="reply-hint">Continuing opens Dreamjourney in a <strong>new tab</strong>. This preview does not send messages itself.</p><button type="submit" class="solid-action wide">Send / Continue in Dreamjourney ↗</button><p id="reply-status" class="reply-status" aria-live="polite"></p></form>
   </template>
