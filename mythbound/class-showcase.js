@@ -259,13 +259,45 @@ function renderPath(){
 $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener("click",()=>{
  activePath=Number(b.dataset.path);chosen=0;renderPath();
 }));
+const atmosphere=document.querySelector(".class-atmosphere");
+let environmentRequest=0;
+function drawEnvironment(){
+ if(!atmosphere)return;
+ const host=$("class-details"),landscape=atmosphere.querySelector(".class-landscape"),embers=atmosphere.querySelector(".class-embers");
+ host.dataset.environment=active;
+ const request=++environmentRequest;
+ atmosphere.classList.remove("has-landscape");
+ landscape.style.backgroundImage="";
+ const candidates=["../Environment"+cap(active)+".jpg","../Environment"+cap(active)+".png"];
+ if(active==="saint")candidates.push("../mythbound-home-watercolor.jpg");
+ function tryImage(i){
+  if(i>=candidates.length||request!==environmentRequest)return;
+  const image=new Image();
+  image.onload=()=>{if(request!==environmentRequest)return;landscape.style.backgroundImage='url("'+candidates[i]+'")';atmosphere.classList.add("has-landscape")};
+  image.onerror=()=>tryImage(i+1);
+  image.src=candidates[i];
+ }
+ tryImage(0);
+ if(!embers.children.length){
+  for(let i=0;i<36;i++){
+   const p=document.createElement("span");p.className="class-ember"+(i%5===0?" is-star":"");
+   p.style.setProperty("--x",((i*37.17+9)%98+1)+"%");
+   p.style.setProperty("--y",(13+(i*19.73)%81)+"%");
+   p.style.setProperty("--size",(i%5===0?4.5:1.5+i%3)+"px");
+   p.style.setProperty("--duration",(5+i%7*.7)+"s");
+   p.style.setProperty("--delay",(-i*.71)+"s");
+   p.style.setProperty("--drift",((i%7-3)*5)+"px");
+   embers.append(p);
+  }
+ }
+}
 function draw(){
  const d=DATA[active];
  $("class-index").textContent=String(Object.keys(DATA).indexOf(active)+1).padStart(2,"0")+" / 06";
  $("class-combat").textContent=d.play;
  $("class-difficulty").textContent="DIFFICULTY · "+d.difficulty+" / 5";
  $("class-details").style.setProperty("--class-highlight",d.color);
- renderStats();renderPath();renderPreview();
+ drawEnvironment();renderStats();renderPath();renderPreview();
 }
 document.querySelectorAll("[data-class]").forEach(button=>{
  button.addEventListener("click",()=>{
