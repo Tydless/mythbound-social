@@ -76,7 +76,22 @@ document.getElementById("rail-whisper").addEventListener("click",openWhisper);
 headerWhisper.addEventListener("click",()=>window.MythboundSocial?.openInbox());
 whisperButton.addEventListener("click",()=>window.MythboundSocial?.openInbox());
 // Own account is handled by account.js; Fighter retains his separate profile.
-document.getElementById("download-button").addEventListener("click",()=>{previousFocus=document.activeElement;sheetContent.replaceChildren();const title=document.createElement("div");title.className="profile-content";title.innerHTML='<div style="font-size:42px;color:var(--gold);margin-bottom:8px" aria-hidden="true">✧</div><span class="eyebrow">MYTHBOUND LAUNCHER</span><h2 id="sheet-title">You already have downloaded it!</h2><p>Mythbound is already installed. Your adventure awaits, Traveler.</p><button type="button" class="solid-action wide" id="download-return">Got it</button>';sheetContent.append(title);document.getElementById("download-return").addEventListener("click",closePanel);overlay.hidden=false;document.body.classList.add("sheet-open");document.getElementById("sheet-close").focus()});
+// The fictional launcher responds to the current roleplay session, not real installation or account data.
+document.getElementById("download-button").addEventListener("click",()=>{
+  const signedIn=window.MythboundAccount?.isSignedIn()===true;
+  previousFocus=document.activeElement;
+  sheetContent.replaceChildren();
+  const title=document.createElement("div");
+  title.className="profile-content";
+  title.innerHTML='<div style="font-size:42px;color:var(--gold);margin-bottom:8px" aria-hidden="true">✧</div><span class="eyebrow">MYTHBOUND LAUNCHER</span><h2 id="sheet-title"></h2><p></p><button type="button" class="solid-action wide" id="download-return">Got it</button>';
+  title.querySelector("h2").textContent=signedIn?"You already have downloaded it!":"Create an account first!";
+  title.querySelector("p").textContent=signedIn?"Mythbound is already installed. Your adventure awaits, Traveler.":"You need a Mythbound account before you can download the game. Your legend is waiting, Traveler!";
+  sheetContent.append(title);
+  document.getElementById("download-return").addEventListener("click",closePanel);
+  overlay.hidden=false;
+  document.body.classList.add("sheet-open");
+  document.getElementById("sheet-close").focus();
+});
 document.getElementById("sheet-close").addEventListener("click",closePanel);
 overlay.addEventListener("click",e=>{if(e.target===overlay)closePanel()});
 document.addEventListener("keydown",e=>{
