@@ -7,10 +7,30 @@
   <meta name="description" content="Explore Mythbound: a fictional MMORPG companion website and interactive story experience.">
   <title>Mythbound — Every legend leaves a trace</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="account.css">
   <script defer src="app.js"></script>
   <script defer src="class-showcase.js"></script>
+  <script defer src="account.js"></script>
 </head>
-<body>
+<body class="mythbound-login-open">
+  <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
+    <div class="mb-login-inner">
+      <div class="mb-login-brand"><span aria-hidden="true">✧</span> MYTHBOUND <small>ONLINE</small></div>
+      <div class="mb-login-intro"><span class="eyebrow">YOUR ADVENTURE CONTINUES</span><h1 id="login-title">Welcome back!</h1><p id="login-subtitle">We added a new feature: Choose your avatar-based profile picture!</p></div>
+      <form id="returning-player-form" autocomplete="off">
+        <div class="mb-login-fields">
+          <div class="mb-login-field"><label for="player-nickname">Nickname</label><input id="player-nickname" type="text" maxlength="24" required placeholder="Your in-game nickname" autocomplete="off" spellcheck="false"></div>
+          <div class="mb-login-field"><label id="fictional-password-label">Password</label><div class="mb-fake-password" aria-labelledby="fictional-password-label"><span id="fictional-password" role="status"></span><span class="mb-password-hint">Auto-filled</span></div></div>
+        </div>
+        <div class="mb-avatar-heading"><span class="mb-avatar-title" id="avatar-choices-label">Profile picture selection</span><small id="selected-avatar-label">Choose one</small></div>
+        <div id="avatar-choices" class="mb-avatar-grid" role="group" aria-labelledby="avatar-choices-label"></div>
+        <button type="submit" id="player-login-button" class="mb-login-submit" disabled>Log In</button>
+        <div class="mb-profile-actions"><button type="button" id="profile-cancel" hidden>Cancel</button><button type="button" id="profile-logout" hidden>Log out</button></div>
+        <p class="mb-login-notice">Fictional game profile · nickname and avatar are saved only in your browser. No real password required.</p>
+      </form>
+    </div>
+  </section>
+  <noscript><style>body.mythbound-login-open>.site-header,body.mythbound-login-open>.site-layout{display:revert!important}#mythbound-login{display:none!important}</style><p>Enable JavaScript to use the fictional profile login.</p></noscript>
   <a class="skip-link" href="#main-content">Skip to content</a>
   <div class="grain" aria-hidden="true"></div>
   <header class="site-header">
@@ -126,7 +146,7 @@
     </main>
 
     <aside class="social-rail" aria-label="Game social sidebar">
-      <div class="rail-header"><span class="eyebrow">YOUR ADVENTURE</span><strong>Traveler</strong><small><span class="online-dot"></span> Online · Lv. 1</small></div>
+      <div class="rail-header"><span class="eyebrow">YOUR ADVENTURE</span><div class="rail-player-heading"><span class="rail-player-avatar" id="rail-player-avatar"></span><div><strong id="rail-player-name">Traveler</strong><small><span class="online-dot"></span> Online</small></div></div></div>
       <section class="rail-panel" aria-labelledby="friends-title"><div class="rail-title"><h2 id="friends-title">Friends</h2><span>1 / 1</span></div>
         <button type="button" class="friend-row" id="fighter-friend"><span class="friend-avatar saint-avatar" aria-hidden="true">✥</span><span class="friend-meta"><strong>Fighter</strong><small>Saint · Lv. 84</small><small class="online-label">● Online</small></span><span class="friend-chevron">›</span></button>
         <p class="rail-note">Your only friend is online. Convenient timing, huh?</p>
