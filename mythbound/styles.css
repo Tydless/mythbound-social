@@ -198,3 +198,18 @@
    background:linear-gradient(90deg,rgba(13,23,43,.87),rgba(16,29,51,.65) 76%,rgba(16,29,51,.34));
  }
 }
+
+
+/* Official class emblems: the supplied PNGs already contain their own gold frames. */
+.class-art-host{position:relative;flex:none;display:grid;place-items:center;box-sizing:border-box}
+.class-art-host>.class-art-image{display:none;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.class-art-host.has-class-art>.class-art-image{display:block}
+.class-art-host.has-class-art>.class-art-fallback{display:none}
+.class-tile .class-glyph.class-art-host{width:88px;height:92px;margin-bottom:12px}
+.preview-class .preview-symbol.class-art-host{width:82px;height:86px;margin-bottom:auto}
+.showcase-seal.class-art-host.has-class-art{width:86px;height:90px;border:0;background:none;box-shadow:none;border-radius:0}
+@media(max-width:650px){
+  .class-tile .class-glyph.class-art-host{width:68px;height:72px;margin-bottom:9px}
+  .preview-class .preview-symbol.class-art-host{width:65px;height:69px}
+  .showcase-seal.class-art-host.has-class-art{width:66px;height:70px}
+}
