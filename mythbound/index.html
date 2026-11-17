@@ -184,6 +184,26 @@
 @media(max-width:1200px){.class-showcase .showcase-columns{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 @media(max-width:760px){.class-showcase .showcase-columns,.path-ability-layout{grid-template-columns:1fr}.class-showcase .showcase-visual{grid-row:1}.class-showcase .class-preview .saint-portrait{max-height:570px}.path-signature-panel{border-left:0;border-top:1px solid var(--codex-border,#536078);padding:14px 0 0}.path-ability-layout .skill-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
+<style>
+/* Class strengths: ornamental, responsive radar chart; no background artwork. */
+.class-showcase .showcase-info{position:relative;isolation:isolate;border:1px solid var(--class-highlight);border-radius:16px;background:radial-gradient(ellipse at 50% 75%,color-mix(in srgb,#1a253b 90%,var(--class-highlight) 10%),#172135 75%);box-shadow:inset 0 0 0 4px #172135,inset 0 0 0 5px color-mix(in srgb,var(--class-highlight) 35%,transparent),0 12px 32px #080f2033}
+.class-showcase .showcase-info::before,.class-showcase .showcase-info::after{content:"";position:absolute;left:50%;width:12px;height:12px;background:var(--class-highlight);border:2px solid #172135;transform:translate(-50%,-50%) rotate(45deg);box-shadow:0 0 9px color-mix(in srgb,var(--class-highlight) 45%,transparent);pointer-events:none}
+.class-showcase .showcase-info::before{top:0}.class-showcase .showcase-info::after{top:100%}
+.class-showcase .showcase-info>.showcase-section-title{position:relative;justify-content:center;border-top:1px solid color-mix(in srgb,var(--class-highlight) 38%,transparent);margin:28px 0 0;padding-top:18px}
+.class-showcase .showcase-info>.showcase-section-title h3{color:var(--class-highlight);font-size:clamp(16px,1.6vw,23px);text-align:center}
+.class-showcase .showcase-info>.showcase-section-title>span{display:none}
+.class-showcase .class-stat-list{display:block;width:100%;margin:6px auto 0}
+.stat-radar{display:block;width:100%;height:auto;overflow:visible;max-width:650px;margin:auto}
+.radar-orbit{fill:none;stroke:var(--class-highlight);stroke-opacity:.55;stroke-width:1.1}
+.radar-inner-orbit{fill:none;stroke:var(--class-highlight);stroke-opacity:.15;stroke-width:1;stroke-dasharray:2 5}
+.radar-grid{fill:none;stroke:var(--class-highlight);stroke-opacity:.20;stroke-width:.8}
+.radar-grid-outer{stroke-opacity:.6;stroke-width:1.2}
+.radar-spoke{stroke:var(--class-highlight);stroke-opacity:.28;stroke-width:.8}
+.radar-shape{filter:drop-shadow(0 0 7px color-mix(in srgb,var(--class-highlight) 32%,transparent))}
+.radar-label{font-family:'DM Sans',system-ui,sans-serif;font-size:14px;font-weight:700}
+.radar-value{font-family:'DM Sans',system-ui,sans-serif;font-size:12px;font-weight:600;letter-spacing:.04em}
+@media(max-width:760px){.class-showcase .showcase-info{padding:22px 13px 16px}.class-showcase .showcase-info>.showcase-section-title{margin-top:22px}.stat-radar{max-width:490px}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
