@@ -159,18 +159,50 @@ function renderPreview(){
  });
 }
 function renderStats(){
- stats.replaceChildren();
- DATA[active].stats.forEach((value,i)=>{
-  const row=document.createElement("div");row.className="class-stat";
-  const name=document.createElement("span");name.textContent=statLabels[i];
-  const track=document.createElement("div");track.className="stat-track";
-  track.setAttribute("role","meter");
-  track.setAttribute("aria-label",statLabels[i]);
-  track.setAttribute("aria-valuemin","1");track.setAttribute("aria-valuemax","5");track.setAttribute("aria-valuenow",String(value));
-  const fill=document.createElement("div");fill.className="stat-fill";fill.style.width=value*20+"%";
-  const n=document.createElement("strong");n.textContent=value+" / 5";
-  track.append(fill);row.append(name,track,n);stats.append(row);
- });
+ const values=DATA[active].stats, ns="http://www.w3.org/2000/svg";
+ const colors=["#ee958b","#87b8f3","#9ed9a8","#f1c985","#c3a6f1"];
+ const svg=document.createElementNS(ns,"svg");
+ svg.setAttribute("viewBox","0 0 480 350");
+ svg.setAttribute("class","stat-radar");
+ svg.setAttribute("role","img");
+ svg.setAttribute("aria-labelledby","stat-radar-title stat-radar-description");
+ function node(tag,attrs={},parent=svg,text){
+  const el=document.createElementNS(ns,tag);
+  Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,String(v)));
+  if(text!==undefined)el.textContent=text;
+  parent.append(el);return el;
+ }
+ node("title",{id:"stat-radar-title"},svg,cap(active)+" class strengths");
+ node("desc",{id:"stat-radar-description"},svg,statLabels.map((s,i)=>s+": "+values[i]+" out of 5").join("; "));
+ const cx=240,cy=170,r=105;
+ const point=(i,d)=>{const a=-Math.PI/2+i*2*Math.PI/5;return [cx+Math.cos(a)*d,cy+Math.sin(a)*d]};
+ const polygon=(distances)=>distances.map((d,i)=>point(i,d).map(n=>n.toFixed(2)).join(",")).join(" ");
+ const defs=node("defs");
+ const gradient=node("radialGradient",{id:"radar-fill",cx:"50%",cy:"50%",r:"65%"},defs);
+ node("stop",{offset:"0%","stop-color":DATA[active].color,"stop-opacity":".10"},gradient);
+ node("stop",{offset:"100%","stop-color":DATA[active].color,"stop-opacity":".42"},gradient);
+ node("circle",{cx,cy,r:129,class:"radar-orbit"});
+ node("circle",{cx,cy,r:122,class:"radar-inner-orbit"});
+ for(let level=1;level<=5;level++)node("polygon",{points:polygon(Array(5).fill(r*level/5)),class:level===5?"radar-grid radar-grid-outer":"radar-grid"});
+ for(let i=0;i<5;i++){
+  const [x,y]=point(i,r);node("line",{x1:cx,y1:cy,x2:x,y2:y,class:"radar-spoke"});
+ }
+ node("polygon",{points:polygon(values.map(v=>r*v/5)),fill:"url(#radar-fill)",stroke:DATA[active].color,"stroke-width":2.1,"stroke-linejoin":"round",class:"radar-shape"});
+ const glyphs=["M7 17L17 7M12 6l6 0 0 6M6 13l5 5M5 19l-2 2","M12 3l7 3v6c0 5-7 9-7 9s-7-4-7-9V6z","M12 5v14M5 12h14","M4 18c4-8 10-12 17-13-1 8-5 14-14 15M4 20l11-10","M20 12a8 8 0 1 1-6-8 5 5 0 1 1-7 7 2 2 0 1 0 3 2"];
+ const labelPositions=[{x:263,y:31,a:"start"},{x:389,y:125,a:"start"},{x:338,y:302,a:"start"},{x:142,y:302,a:"end"},{x:91,y:125,a:"end"}];
+ for(let i=0;i<5;i++){
+  const [x,y]=point(i,r*values[i]/5);
+  node("circle",{cx:x,cy:y,r:7,fill:colors[i],opacity:".20"});
+  node("circle",{cx:x,cy:y,r:4.1,fill:colors[i],stroke:"#fff6df","stroke-width":1.2});
+  const [ix,iy]=point(i,129),color=colors[i];
+  const group=node("g",{transform:"translate("+ix.toFixed(2)+" "+iy.toFixed(2)+")"});
+  node("circle",{r:17,fill:"#172238",stroke:color,"stroke-width":1.5},group);
+  node("path",{d:glyphs[i],transform:"translate(-10 -10) scale(.83)",stroke:color,fill:"none","stroke-width":2.1,"stroke-linecap":"round","stroke-linejoin":"round"},group);
+  const l=labelPositions[i];
+  node("text",{x:l.x,y:l.y,"text-anchor":l.a,fill:color,class:"radar-label"},svg,statLabels[i]);
+  node("text",{x:l.x,y:l.y+20,"text-anchor":l.a,fill:"#e6eaf0",class:"radar-value"},svg,values[i]+" / 5");
+ }
+ stats.replaceChildren(svg);
 }
 function skillDetail(){
  const s=pathData().skills[chosen];
