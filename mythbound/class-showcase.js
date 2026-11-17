@@ -303,12 +303,17 @@ const ROLE_ICONS={
  magic:'<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>',
  duelist:'<path d="m4 20 4-4m-4-3 7 7m-3-4L20 3l-2 8-8 7"/>'
 };
-const CLASS_ROLES={breaker:[["melee","Melee"],["tank","Tank / brawler"]],animar:[["hybrid","Hybrid"],["beast","Shapeshifter / expert"]],herder:[["mounted","Mounted"],["companion","Companion support"]],elemis:[["ranged","Ranged"],["magic","Elemental magic"]],strider:[["melee","Melee"],["duelist","Precision duelist"]],saint:[["ranged","Ranged"],["healer","Healer / protector"]]};
+const CLASS_ROLES={breaker:[["melee","Melee"],["tank","Tank / brawler"]],animar:[["hybrid","Hybrid"],["beast","Shapeshifter / expert"]],herder:[["mounted","Mounted"],["companion","Companion support"]],elemis:[["ranged","Range"],["magic","Elemental magic"]],strider:[["melee","Melee"],["duelist","Precision duelist"]],saint:[["ranged","Range"],["healer","Healer"]]};
+function closeRoleTooltips(){
+ document.querySelectorAll(".class-role-icon.is-tooltip-open").forEach(icon=>{icon.classList.remove("is-tooltip-open");icon.setAttribute("aria-expanded","false")});
+}
+document.addEventListener("pointerdown",e=>{if(!e.target.closest(".class-role-icon"))closeRoleTooltips()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeRoleTooltips()});
 function renderClassMeta(d){
  const combat=$("class-combat"),difficulty=$("class-difficulty");
  combat.replaceChildren();difficulty.replaceChildren();
  for(const [key,label] of CLASS_ROLES[active]){
-  const icon=document.createElement("div");icon.className="class-role-icon";icon.title=label;icon.setAttribute("role","img");icon.setAttribute("aria-label",label);icon.tabIndex=0;
+  const icon=document.createElement("button");icon.type="button";icon.className="class-role-icon";icon.dataset.tooltip=label;icon.setAttribute("aria-label",label);icon.setAttribute("aria-expanded","false");icon.style.padding="0";icon.addEventListener("click",()=>{const open=!icon.classList.contains("is-tooltip-open");closeRoleTooltips();if(open){icon.classList.add("is-tooltip-open");icon.setAttribute("aria-expanded","true")}});
   icon.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+ROLE_ICONS[key]+'</svg>';combat.append(icon);
  }
  difficulty.setAttribute("aria-label","Difficulty: "+d.difficulty+" out of 5");difficulty.title=d.difficulty+" / 5";
