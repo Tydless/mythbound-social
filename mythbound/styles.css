@@ -82,3 +82,61 @@
 .class-preview .saint-portrait{display:block;position:relative;width:auto;max-width:100%;height:auto;max-height:610px;object-fit:contain;filter:drop-shadow(0 18px 22px #08122265)}
 @media(max-width:1200px){.class-preview.has-saint-art{min-height:420px}.class-preview .saint-portrait{max-height:520px}}
 @media(max-width:650px){.class-preview.has-saint-art{min-height:320px;padding:6px}.class-preview .saint-portrait{max-height:450px}}
+
+
+/* SOFTER TRANSLUCENT MYTHBOUND UI — class codex, November 2026 */
+/* A subtle glass effect. Readability and class illustrations stay intact. */
+.class-showcase {
+  background: linear-gradient(145deg, rgba(24,38,60,.69), rgba(23,34,53,.58) 68%, rgba(29,42,64,.66));
+  border-color: rgba(151,171,198,.32);
+  backdrop-filter: blur(8px) saturate(110%);
+  -webkit-backdrop-filter: blur(8px) saturate(110%);
+  box-shadow: 0 16px 46px rgba(4,11,28,.13);
+}
+.showcase-visual {
+  background: radial-gradient(circle at 48% 42%, rgba(110,141,177,.17), transparent 64%),
+              linear-gradient(158deg, rgba(37,54,80,.49), rgba(27,39,64,.46) 68%, rgba(27,41,66,.50));
+  backdrop-filter: blur(7px) saturate(110%);
+  -webkit-backdrop-filter: blur(7px) saturate(110%);
+}
+.showcase-overline {
+  background: rgba(12,22,40,.16);
+  border-bottom-color: rgba(149,167,189,.25);
+}
+.class-meta span {
+  background: rgba(39,54,74,.37);
+  border-color: rgba(131,147,162,.39);
+  backdrop-filter: blur(6px);
+}
+.gender-switch {
+  background: rgba(19,30,48,.49);
+  border-color: rgba(147,165,180,.44);
+  backdrop-filter: blur(7px);
+}
+.skill-icon {
+  background: linear-gradient(145deg, rgba(50,73,96,.37), rgba(30,41,62,.32));
+  border-color: rgba(130,150,174,.43);
+  backdrop-filter: blur(8px);
+}
+.skill-icon:hover { background: rgba(61,84,111,.49); }
+.skill-icon.is-current {
+  background: rgba(64,83,114,.53);
+  border-color: var(--class-highlight);
+  box-shadow: 0 0 0 2px rgba(216,195,163,.10);
+}
+.skill-detail {
+  background: rgba(12,24,43,.56);
+  border-color: rgba(125,145,163,.43);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.stat-track { background: rgba(53,66,89,.49); }
+.subclass-section {
+  background: rgba(21,31,50,.44);
+  backdrop-filter: blur(8px);
+}
+.subclass-slot {
+  background: rgba(36,48,70,.29);
+  border-color: rgba(131,146,161,.40);
+  backdrop-filter: blur(6px);
+}
