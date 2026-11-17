@@ -232,7 +232,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
     const samples=noise.getChannelData(0);
     for(let i=0;i<samples.length;i++)samples[i]=Math.random()*2-1;
    }
-   const out=ctx.createGain();out.gain.value=.26;out.connect(ctx.destination);
+   const out=ctx.createGain();out.gain.value=.42;out.connect(ctx.destination);
    function rustle(start,duration,from,to,volume,q){
     const source=ctx.createBufferSource();source.buffer=noise;
     const filter=ctx.createBiquadFilter();filter.type="bandpass";filter.Q.value=q;
