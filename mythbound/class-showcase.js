@@ -572,12 +572,14 @@ function renderPath(){
 }
 $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener("click",()=>{
  const next=Number(b.dataset.path);
- const changed=next!==activePath;
+ const previousPath=activePath;
+ const changed=next!==previousPath;
  if(changed)stopVoice();
  activePath=next;chosen=0;renderPath();
  if(changed){
   renderPreview(true);updateVoiceButton();
-  if(active==="saint"&&activePath===2)playVoice("Switch");
+  // Both directions of the Saint transformation have a greeting.
+  if(active==="saint"&&(activePath===2||(previousPath===2&&activePath===0)))playVoice("Switch");
  }
 }));
 const atmosphere=document.querySelector(".class-atmosphere");
