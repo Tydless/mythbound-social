@@ -199,6 +199,15 @@ function renderStats(){
   node("circle",{r:17,fill:"#172238","fill-opacity":".48",stroke:color,"stroke-width":1.5},group);
   node("path",{d:glyphs[i],transform:"translate(-10 -10) scale(.83)",stroke:color,fill:"none","stroke-width":2.1,"stroke-linecap":"round","stroke-linejoin":"round"},group);
   const icon=node("image",{href:"../Icon"+statLabels[i]+".png",x:-21,y:-21,width:42,height:42,preserveAspectRatio:"xMidYMid meet"},group);
+  // Strength is reflected in the emblem's luminosity without changing the stat palette.
+  const rating=Math.max(1,Math.min(5,Number(values[i])||1));
+  const intensity=(rating-1)/4;
+  const brightness=(0.78+intensity*0.48).toFixed(2);
+  const saturation=(0.65+intensity*0.65).toFixed(2);
+  const glowRadius=(0.6+intensity*4).toFixed(2);
+  const glowColor=color+Math.round(35+intensity*145).toString(16).padStart(2,"0");
+  icon.style.filter="brightness("+brightness+") saturate("+saturation+") drop-shadow(0 0 "+glowRadius+"px "+glowColor+")";
+  icon.style.transition="filter .25s ease";
   icon.addEventListener("load",()=>{for(const child of group.children)if(child!==icon)child.setAttribute("visibility","hidden")});
   icon.addEventListener("error",()=>icon.remove());
   const l=labelPositions[i];
