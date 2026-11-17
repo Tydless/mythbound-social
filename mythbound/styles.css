@@ -213,3 +213,14 @@
   .preview-class .preview-symbol.class-art-host{width:65px;height:69px}
   .showcase-seal.class-art-host.has-class-art{width:66px;height:70px}
 }
+
+
+/* Saint class promotional artwork. Keep the left-side labels readable. */
+.class-tile[data-class="saint"],.preview-class[data-class="saint"]{
+ background-image:linear-gradient(90deg,rgba(19,26,45,.35),rgba(19,26,45,.09) 70%),url("../BannerSaint.png"),linear-gradient(145deg,#8e777d,#41496b);
+ background-size:cover;background-position:center,right center,center;background-repeat:no-repeat;
+ text-shadow:0 2px 5px #101725;
+}
+@media(max-width:650px){
+ .class-tile[data-class="saint"]{background-position:center,65% center,center;background-image:linear-gradient(90deg,rgba(19,26,45,.72),rgba(19,26,45,.12)),url("../BannerSaint.png"),linear-gradient(145deg,#8e777d,#41496b)}
+}
