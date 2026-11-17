@@ -146,8 +146,8 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
     sync();
   });
   // Playback request stays in the user-activation event; no off/on workaround needed.
-  document.addEventListener("pointerdown",()=>{if(enabled)tryPlay()},true);
-  document.addEventListener("keydown",()=>{if(enabled)tryPlay()},true);
+  document.addEventListener("pointerdown",event=>{if(enabled&&!toggle.contains(event.target))tryPlay()},true);
+  document.addEventListener("keydown",event=>{if(enabled&&!toggle.contains(event.target))tryPlay()},true);
   audio.addEventListener("play",()=>{blocked=false;sync()});
   audio.addEventListener("pause",sync);
   audio.addEventListener("canplay",()=>{if(enabled)tryPlay()});
