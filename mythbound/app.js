@@ -7,7 +7,7 @@ const CLASS_DATA = {
   herder:{name:"Herder",role:"SUPPORT · COMPANIONS",emblem:"❃",description:"Mounted companions and their loyal animal friends. Herders call creatures into battle to protect the party, interrupt danger and keep allies safe."},
   elemis:{name:"Elemis",role:"MAGIC · ELEMENTS",emblem:"✳",description:"Small but formidable fairies who command the elements. Elemis weave natural forces into powerful spells, clever control and magical utility."},
   strider:{name:"Strider",role:"MELEE · DUELIST",emblem:"⚔",description:"Fast, deadly and precise. Striders win encounters through footwork, timing and swordsmanship rather than brute force."},
-  saint:{name:"Saint",role:"SUPPORT · HOLY MAGIC",emblem:"✥",description:"A holy protector who heals wounded allies, shields the vulnerable and channels sacred power to defend the party."}
+  saint:{name:"Saint",role:"SUPPORT · PRIEST",emblem:"✥",description:"A holy protector who heals wounded allies, shields the vulnerable and channels sacred power to defend the party."}
 };
 const pages=[...document.querySelectorAll(".page")];
 const navButtons=[...document.querySelectorAll("[data-page]")];
