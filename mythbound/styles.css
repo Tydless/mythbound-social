@@ -140,3 +140,61 @@
   border-color: rgba(131,146,161,.40);
   backdrop-filter: blur(6px);
 }
+
+
+/* MYTHBOUND HOMEPAGE — watercolor hero & soft mythic gilt
+   Landscape class is activated only after the art asset loads successfully. */
+.hero{
+  margin:18px clamp(13px,1.6vw,28px) 0;
+  border:1px solid rgba(227,192,133,.60);
+  border-radius:20px;
+  box-shadow:0 18px 45px rgba(6,13,27,.22),inset 0 0 0 2px rgba(237,213,165,.09);
+  isolation:isolate;
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:12px;
+  border:1px solid rgba(244,205,146,.41);
+  border-radius:12px;
+  background:
+    linear-gradient(90deg,#f5cf92,transparent) left top/105px 2px no-repeat,
+    linear-gradient(180deg,#f5cf92,transparent) left top/2px 82px no-repeat,
+    linear-gradient(270deg,#f5cf92,transparent) right top/105px 2px no-repeat,
+    linear-gradient(180deg,#f5cf92,transparent) right top/2px 82px no-repeat,
+    linear-gradient(90deg,#f5cf92,transparent) left bottom/105px 2px no-repeat,
+    linear-gradient(0deg,#f5cf92,transparent) left bottom/2px 82px no-repeat,
+    linear-gradient(270deg,#f5cf92,transparent) right bottom/105px 2px no-repeat,
+    linear-gradient(0deg,#f5cf92,transparent) right bottom/2px 82px no-repeat;
+  pointer-events:none;
+  z-index:4;
+  opacity:.78;
+}
+.hero.has-watercolor-landscape{
+  background-image:url("../mythbound-home-watercolor.jpg");
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
+}
+.hero.has-watercolor-landscape::after{
+  background:linear-gradient(90deg,rgba(14,22,42,.78) 0%,rgba(19,30,52,.53) 34%,rgba(21,33,57,.07) 72%,rgba(21,33,57,.03) 100%);
+}
+.hero.has-watercolor-landscape .hero-art{display:none}
+.hero.has-watercolor-landscape .hero-copy p{color:#f2f1ea;text-shadow:0 1px 4px rgba(10,20,39,.35)}
+.hero.has-watercolor-landscape .hero-copy h1{text-shadow:0 3px 14px rgba(13,23,41,.36)}
+.site-header{border-bottom-color:rgba(222,185,130,.31)}
+.social-rail{border-left-color:rgba(222,185,130,.27)}
+.rail-title{border-bottom-color:rgba(212,187,146,.30)}
+.friend-row,.whisper-preview{border:1px solid rgba(212,187,146,.23)}
+.friend-row:hover,.whisper-preview:hover{border-color:rgba(244,209,148,.48)}
+.outline-action{border-color:rgba(239,205,154,.58)}
+.hero .solid-action{box-shadow:0 7px 28px rgba(3,19,29,.28)}
+.section-heading .eyebrow{color:#a5e5d7}
+@media(max-width:650px){
+ .hero{margin:10px 10px 0;border-radius:12px}
+ .hero::before{inset:6px;border-radius:8px}
+ .hero.has-watercolor-landscape{background-position:61% center}
+ .hero.has-watercolor-landscape::after{
+   background:linear-gradient(90deg,rgba(13,23,43,.87),rgba(16,29,51,.65) 76%,rgba(16,29,51,.34));
+ }
+}
