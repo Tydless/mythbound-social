@@ -122,3 +122,11 @@ button.mb-inbox-row:hover{background:#7289ae1b}
 .mb-buddy-profile h3{margin:14px 0 8px;font:600 18px 'Cinzel',serif}
 .mb-buddy-profile p{font-size:13px;color:#c5d3df}
 @media(max-width:650px){.mb-social-heading{padding:17px}.mb-group-log{padding:10px 13px 20px;max-height:55vh}.mb-inbox-list{padding:4px 9px 20px}}
+
+/* Public guest mode: the game site stays available, personal social UI does not. */
+body.mythbound-guest .site-layout{display:block}
+body.mythbound-guest .social-rail,body.mythbound-guest #header-whisper,body.mythbound-guest #floating-whisper{display:none!important}
+.mb-session-action,.account-chip.mb-guest-login{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;min-height:34px;padding:6px 10px;border:1px solid #c9ac806a;border-radius:4px;background:#25354c;color:#f1dec0;font:700 12px 'DM Sans',system-ui,sans-serif}
+.mb-session-action:hover,.account-chip.mb-guest-login:hover{border-color:var(--gold);background:#384962}
+.account-chip.mb-guest-login .account-label{display:block!important;font-size:12px}
+@media(max-width:650px){.mb-session-action,.account-chip.mb-guest-login{padding:5px 7px;min-height:31px;font-size:11px}.account-chip.mb-guest-login .account-label{font-size:11px}}
