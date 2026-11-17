@@ -124,6 +124,151 @@ function avatarArt(){
  const dress=active==="saint"?"<path d='M143 257Q104 313 119 365Q191 384 265 359Q263 302 235 260Z' fill='#d9d5d7' stroke='#f5deb7' stroke-width='4'/>":"";
  return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 380 420' role='img' aria-label='"+gender+" "+active+" concept avatar'><circle cx='190' cy='218' r='167' fill='none' stroke='"+c.color+"' opacity='.35' stroke-dasharray='3 9'/>"+aura+wings+sheep+tail+lower+dress+blade+"<path d='M146 170Q189 143 232 168L247 276Q180 294 132 269Z' fill='"+c.color+"' stroke='#e3e0dc' stroke-width='4'/><path d='M147 176l-32 79M229 176l41 74' fill='none' stroke='"+c.color+"' stroke-width='20' stroke-linecap='round'/>"+fists+"<circle cx='189' cy='110' r='"+size+"' fill='"+skin+"' stroke='#f6dec8' stroke-width='4'/><path d='"+hairShape+"' fill='"+hair+"' stroke='#688295' stroke-width='4'/><path d='M172 119h9m19 0h9' stroke='#635b5b' stroke-width='3' stroke-linecap='round'/><path d='M184 139q7 4 13-1' fill='none' stroke='#936c70' stroke-width='2'/></svg>";
 }
+// Original transformation foley. Unlock on the selection gesture; play only when the new image is ready.
+let transformAudioContext=null, transformAudioSource=null;
+const transformBuffers=Object.create(null);
+function transformationMuted(){try{return localStorage.getItem("mythbound-music-enabled")==="false"}catch{return false}}
+function prepareTransformationAudio(){
+ if(transformationMuted())return;
+ try{
+  const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
+  transformAudioContext=transformAudioContext||new Audio();
+  if(transformAudioContext.state==="suspended")transformAudioContext.resume().catch(()=>{});
+ }catch{}
+}
+function stopTransformationAudio(){
+ if(transformAudioSource){try{transformAudioSource.stop()}catch{}transformAudioSource=null}
+}
+function playTransformationAudio(fallen){
+ if(transformationMuted()||document.hidden)return;
+ const ac=transformAudioContext;if(!ac||ac.state==="closed")return;
+ stopTransformationAudio();
+ try{
+  const key=fallen?"fire":"sparkle";
+  if(!transformBuffers[key]){
+   const rate=ac.sampleRate,duration=fallen?1.65:1.55;
+   const buffer=ac.createBuffer(1,Math.ceil(rate*duration),rate),data=buffer.getChannelData(0);
+   if(fallen){
+    let low=0,mid=0;
+    for(let i=0;i<data.length;i++){
+     const t=i/rate,n=Math.random()*2-1;
+     low+=.065*(n-low);mid+=.28*(n-mid);
+     const env=Math.min(1,t/.20)*Math.pow(Math.max(0,1-t/duration),.75);
+     data[i]=(low*.31+(n-mid)*.055)*env;
+    }
+    for(let k=0;k<43;k++){
+     const start=Math.floor((.09+Math.random()*1.26)*rate);
+     const length=Math.floor((.007+Math.random()*.031)*rate);
+     const strength=.08+Math.random()*.27;
+     let previous=0;
+     for(let i=0;i<length&&start+i<data.length;i++){
+      const n=Math.random()*2-1,env=Math.exp(-i/(length*.21))*Math.min(1,i/Math.max(1,rate*.001));
+      data[start+i]+=(.67*n+.33*previous)*strength*env;previous=n;
+     }
+    }
+   }else{
+    const notes=[{t:.04,f:1046.50},{t:.13,f:1318.51},{t:.23,f:1567.98},{t:.36,f:2093.00},{t:.49,f:2637.02},{t:.68,f:3135.96}];
+    for(let k=0;k<notes.length;k++){
+     const {t,f}=notes[k],start=Math.floor(t*rate);
+     for(let i=start;i<data.length;i++){
+      const s=(i-start)/rate,env=Math.min(1,s/.012)*Math.exp(-s/(.19+k*.012));
+      const wave=Math.sin(2*Math.PI*f*s)+.26*Math.sin(2*Math.PI*f*2.01*s)+.11*Math.sin(2*Math.PI*f*2.76*s);
+      data[i]+=wave*env*(.105-k*.008)*Math.min(1,(data.length-i)/(rate*.075));
+     }
+    }
+    let smooth=0;
+    for(let i=0;i<data.length;i++){
+     const t=i/rate,n=Math.random()*2-1;smooth+=.25*(n-smooth);
+     data[i]+=(n-smooth)*.016*Math.sin(Math.PI*t/duration)**2;
+    }
+   }
+   transformBuffers[key]=buffer;
+  }
+  const sound=ac.createBufferSource(),gain=ac.createGain();sound.buffer=transformBuffers[key];
+  gain.gain.value=fallen?.65:.72;sound.connect(gain);gain.connect(ac.destination);
+  transformAudioSource=sound;
+  sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound)transformAudioSource=null};
+  sound.start();
+ }catch{}
+}
+document.addEventListener("visibilitychange",()=>{if(document.hidden)stopTransformationAudio()});
+window.addEventListener("pagehide",stopTransformationAudio);
+$("music-toggle")?.addEventListener("click",()=>{if(transformationMuted())stopTransformationAudio()});
+new MutationObserver(()=>{if($("page-classes").hidden||document.body.classList.contains("mythbound-login-open"))stopTransformationAudio()}).observe($("page-classes"),{attributes:true,attributeFilter:["hidden"]});
+
+// Divine manifestation: a broad feathered gradient rising over the old image,
+// with little star-shaped glints that appear along its moving boundary.
+function revealSaint(stage,oldImage,picture){
+ const finish=()=>{
+  oldImage.remove();stage.querySelector(".portrait-burn-canvas")?.remove();
+  stage.classList.remove("portrait-revealing","portrait-crossfade");picture.classList.remove("portrait-incoming");
+ };
+ try{
+  const b=stage.getBoundingClientRect();
+  if(!b.width||!b.height){finish();return}
+  const canvas=document.createElement("canvas");
+  canvas.className="portrait-burn-canvas";canvas.setAttribute("aria-hidden","true");
+  canvas.style.zIndex="3";
+  const w=canvas.width=Math.min(720,Math.ceil(b.width*1.3)),h=canvas.height=Math.round(w*b.height/b.width);
+  const ctx=canvas.getContext("2d");
+  if(!ctx){stage.classList.add("portrait-crossfade");setTimeout(finish,1050);return}
+  const masked=window.CSS&&(CSS.supports("mask-image","linear-gradient(black,transparent)")||CSS.supports("-webkit-mask-image","linear-gradient(black,transparent)"));
+  oldImage.style.zIndex="2";stage.append(canvas);stage.classList.add("portrait-revealing");
+  const duration=1420;
+  const stars=Array.from({length:43},(_,i)=>({
+   born:.12+Math.random()*.72,x:(.09+Math.random()*.82)*w,
+   drift:(Math.random()-.5)*w*.095,dy:(.025+Math.random()*.075)*h,
+   life:.32+Math.random()*.42,size:1.1+Math.random()*3.4,
+   cross:i%3===0,seed:Math.random()*Math.PI*2
+  }));
+  let start=null;
+  function tick(now){
+   if(!stage.isConnected)return;
+   if(start===null)start=now;
+   const elapsed=now-start,p=Math.min(1,elapsed/duration),smooth=p*p*(3-2*p);
+   // Mask fades from the bottom upward, dissolving through a soft 38% band.
+   const edge=119-138*smooth,lo=edge-19,hi=edge+19;
+   if(masked){
+    const mask="linear-gradient(to bottom, #000 "+lo+"%, transparent "+hi+"%)";
+    oldImage.style.maskImage=mask;oldImage.style.webkitMaskImage=mask;
+   }else oldImage.style.opacity=String(1-smooth);
+   if(p===1)oldImage.style.visibility="hidden";
+   ctx.clearRect(0,0,w,h);
+   const cy=edge*h/100,light=Math.sin(Math.PI*p);
+   if(p<1){
+    const gradient=ctx.createRadialGradient(w*.5,cy,0,w*.5,cy,w*.46);
+    gradient.addColorStop(0,"rgba(255,229,164,"+(.16*light)+")");
+    gradient.addColorStop(.45,"rgba(255,222,148,"+(.065*light)+")");gradient.addColorStop(1,"rgba(255,222,148,0)");
+    ctx.save();ctx.translate(0,cy);ctx.scale(1,.36);ctx.translate(0,-cy);
+    ctx.fillStyle=gradient;ctx.fillRect(0,cy-w*.5,w,w);ctx.restore();
+   }
+   for(const s of stars){
+    const age=elapsed/1000-s.born*duration/1000;
+    if(age<0||age>s.life)continue;
+    const q=age/s.life,at=s.born*s.born*(3-2*s.born);
+    const x=s.x+s.drift*q,y=(1.19-1.38*at)*h-s.dy*q;
+    const fade=Math.sin(Math.PI*q)*(.77+.23*Math.cos(s.seed+q*8));
+    const r=s.size*(.5+.8*Math.sin(Math.PI*q));
+    ctx.globalAlpha=fade*.65;
+    const halo=ctx.createRadialGradient(x,y,0,x,y,r*4.5);halo.addColorStop(0,"#fff2b9");halo.addColorStop(1,"rgba(255,220,140,0)");
+    ctx.fillStyle=halo;ctx.fillRect(x-r*4.5,y-r*4.5,r*9,r*9);
+    ctx.globalAlpha=fade*.95;ctx.fillStyle="#fffbea";ctx.beginPath();
+    if(s.cross){
+     ctx.moveTo(x,y-r*2.2);ctx.quadraticCurveTo(x+r*.24,y-r*.24,x+r*1.35,y);
+     ctx.quadraticCurveTo(x+r*.24,y+r*.24,x,y+r*2.2);ctx.quadraticCurveTo(x-r*.24,y+r*.24,x-r*1.35,y);ctx.quadraticCurveTo(x-r*.24,y-r*.24,x,y-r*2.2);
+    }else ctx.arc(x,y,r*.52,0,Math.PI*2);
+    ctx.fill();
+   }
+   ctx.globalAlpha=1;
+   if(elapsed<duration+420)requestAnimationFrame(tick);else finish();
+  }
+  requestAnimationFrame(tick);
+ }catch{
+  oldImage.style.zIndex="";oldImage.style.maskImage="";oldImage.style.webkitMaskImage="";oldImage.style.opacity="";oldImage.style.visibility="";
+  stage.querySelector(".portrait-burn-canvas")?.remove();stage.classList.remove("portrait-revealing");stage.classList.add("portrait-crossfade");setTimeout(finish,1050);
+ }
+}
+
 function burnPortrait(stage,oldImage,picture,isFallen){
  const finish=()=>{stage.classList.remove("portrait-revealing","portrait-crossfade");picture.classList.remove("portrait-incoming");oldImage.remove();stage.querySelector(".portrait-burn-canvas")?.remove()};
  const fallback=()=>{stage.querySelector(".portrait-burn-canvas")?.remove();stage.classList.add("portrait-crossfade");setTimeout(finish,1050)};
@@ -172,6 +317,7 @@ function burnPortrait(stage,oldImage,picture,isFallen){
 function renderPreview(){
  // Real artwork for both Saint appearances, with the old concept silhouette
  // as a fallback until the two image files have been uploaded to GitHub.
+ stopTransformationAudio();
  const previous=preview.querySelector(".saint-portrait-stage .portrait-incoming")||preview.querySelector(".saint-portrait-stage .saint-portrait");
  const oldImage=previous?.complete&&previous.naturalWidth?previous.cloneNode(false):null;
  preview.replaceChildren();
@@ -192,6 +338,8 @@ function renderPreview(){
   const source=artwork||(gender==="female"?"../FemaleSaint.png":"../MaleSaint.png");
   const animate=oldImage&&oldImage.src!==new URL(source,document.baseURI).href&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if(animate){
+   prepareTransformationAudio();
+   oldImage.setAttribute("aria-hidden","true");oldImage.alt="";
    oldImage.classList.remove("portrait-incoming");oldImage.classList.add("portrait-previous");stage.append(oldImage);
    picture.classList.add("portrait-incoming");
    stage.style.setProperty("--reveal-core",isFallen?"#ffbaa0":"#fff5cf");
@@ -203,7 +351,9 @@ function renderPreview(){
    if(!picture.isConnected)return;
    preview.classList.add("has-saint-art");
    if(animate){
-    burnPortrait(stage,oldImage,picture,isFallen);
+    playTransformationAudio(isFallen);
+    if(isFallen)burnPortrait(stage,oldImage,picture,true);
+    else revealSaint(stage,oldImage,picture);
    }
    if(note)note.textContent=artworkName+" · illustrated class artwork";
   });
