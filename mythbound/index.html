@@ -367,6 +367,23 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
 @media(max-width:760px){.class-foreground-mote:nth-child(n+8){display:none}}
 @media(prefers-reduced-motion:reduce){.class-showcase .class-foreground-motes{display:none}.class-showcase .path-option,.class-showcase .skill-icon{transition:none}}
 </style>
+<style>
+/* Common artwork coordinate system: Saint originals are 1145 x 1406.
+   Fallen Saint artwork uses 1129 x 1390 with a one-source-pixel offset. */
+.class-showcase .class-preview .saint-portrait-stage{
+ position:relative;width:min(100%,600px);aspect-ratio:1145/1406;flex:none;
+}
+.class-showcase .class-preview .saint-portrait-stage .saint-portrait{
+ position:absolute;display:block;inset:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;
+}
+.class-showcase .class-preview .saint-portrait-stage .fallen-saint-portrait{
+ left:-0.0873362445%;top:-0.0711237553%;right:auto;bottom:auto;
+ width:98.6026200873%;height:98.8620199147%;
+}
+@media(max-width:760px){
+ .class-showcase .class-preview .saint-portrait-stage{width:min(100%,464.189189px)}
+}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
