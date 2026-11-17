@@ -7,9 +7,10 @@
     {id:"herder",label:"Herder",file:"ProfileHerder.png",icon:"❃"},
     {id:"elemis",label:"Elemis",file:"ProfileElemis.png",icon:"✳"},
     {id:"strider",label:"Strider",file:"ProfileStrider.png",icon:"⚔"},
-    {id:"saint-male",label:"Saint · Male",file:"ProfileSaint.png",icon:"✥"},
-    {id:"saint-female",label:"Saint · Female",file:"ProfileSaintFemale.png",icon:"✥"}
+    {id:"saint-male",label:"Saint",file:"ProfileSaint.png",icon:"✥"}
   ];
+  // Exclusive portrait, never a player-selectable avatar.
+  const fighterAvatar={id:"saint-female",label:"Saint · Female",file:"ProfileSaintFemale.png",icon:"✥"};
   const byId = id => document.getElementById(id);
   const screen=byId("mythbound-login"), form=byId("returning-player-form"), name=byId("player-nickname"),
     password=byId("fictional-password"), grid=byId("avatar-choices"), submit=byId("player-login-button"),
@@ -21,10 +22,10 @@
   function getAvatar(id){return choices.find(c=>c.id===id)}
   try{
     const data=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null");
-    if(data&&typeof data.nickname==="string"&&data.nickname.trim()&&getAvatar(data.avatar))
-      profile={nickname:data.nickname.trim().slice(0,24),avatar:data.avatar};
+    if(data&&typeof data.nickname==="string"&&data.nickname.trim())
+      profile={nickname:data.nickname.trim().slice(0,24),avatar:getAvatar(data.avatar)?data.avatar:""};
   }catch{}
-  try{signedIn=!!profile&&sessionStorage.getItem(SESSION_KEY)==="1"}catch{}
+  try{signedIn=!!getAvatar(profile?.avatar)&&sessionStorage.getItem(SESSION_KEY)==="1"}catch{}
   // Every portrait includes its original decorative frame. No extra crop or frame.
   function portrait(avatar){
     const wrap=document.createElement("span");wrap.className="mb-avatar-art";
@@ -116,7 +117,7 @@
   function decorateFighter(){
     document.querySelectorAll("#fighter-friend .saint-avatar,#rail-whisper .saint-avatar,#sheet-content .saint-avatar,#sheet-content .profile-avatar").forEach(node=>{
       if(node.classList.contains("mb-fighter-portrait"))return;
-      node.classList.add("mb-fighter-portrait");node.replaceChildren(portrait(getAvatar("saint-female")));
+      node.classList.add("mb-fighter-portrait");node.replaceChildren(portrait(fighterAvatar));
     });
   }
   decorateFighter();
