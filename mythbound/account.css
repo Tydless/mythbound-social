@@ -1,0 +1,58 @@
+/* Mythbound returning-player login — existing account, cosmetic profile update. */
+body.mythbound-login-open{min-height:100vh;min-height:100dvh;background:#121a2d}
+.mythbound-login-open>.site-header,.mythbound-login-open>.site-layout,.mythbound-login-open>.floating-whisper,.mythbound-login-open>.overlay,.mythbound-login-open>.skip-link{display:none!important}
+.mb-login{min-height:100vh;min-height:100dvh;padding:24px 18px 28px;display:grid;place-items:center;position:relative;isolation:isolate;background:linear-gradient(115deg,#10182dd9,#17253b9a 55%,#10182d86),url("../mythbound-home-watercolor.jpg") center/cover no-repeat,#17253b}
+.mb-login:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 20%,#cca66b21,transparent 60%);pointer-events:none}
+.mb-login-inner{width:min(100%,650px);position:relative;border:1px solid #d9b983a6;border-radius:19px;background:linear-gradient(140deg,#18263ce8,#121e32e8);box-shadow:0 22px 80px #050a18a0,inset 0 0 0 5px #ecc98d0b;backdrop-filter:blur(14px);padding:24px clamp(20px,5vw,46px) 22px}
+.mb-login-inner:before,.mb-login-inner:after{content:"✧";position:absolute;left:50%;transform:translateX(-50%);color:#f1cd91;background:#253249;font-size:22px;line-height:1;padding:0 9px;pointer-events:none}
+.mb-login-inner:before{top:-12px}.mb-login-inner:after{bottom:-10px}
+.mb-login-brand{display:flex;align-items:center;justify-content:center;gap:9px;font:700 23px/1.1 'Cinzel',Georgia,serif;letter-spacing:.04em;color:#f8f0e4;margin:0 0 13px}
+.mb-login-brand>span{color:var(--gold);font-size:28px}.mb-login-brand small{font:800 8px 'DM Sans',sans-serif;letter-spacing:.18em;color:var(--aqua)}
+.mb-login-intro{text-align:center}
+.mb-login-intro h1{font-size:clamp(28px,5vw,39px);letter-spacing:-.02em;margin:7px 0 7px;line-height:1.2;color:#f7e8cf}
+.mb-login-intro p{font-size:13px;color:#cdd9e6;max-width:450px;margin:0 auto 19px;line-height:1.5}
+.mb-login-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:19px}
+.mb-login-field{min-width:0;display:grid;gap:4px}
+.mb-login-field label,.mb-avatar-title{font-size:12px;font-weight:800;color:#f6e9d1;letter-spacing:.02em}
+.mb-login-field input,.mb-fake-password{font:500 14px 'DM Sans',sans-serif;width:100%;min-width:0;min-height:42px;padding:10px 12px;background:#0b1629b3;color:#f9f4ee;border:1px solid #baa98466;border-radius:5px;outline:none}
+.mb-login-field input:focus{border-color:#e8c78f;box-shadow:0 0 0 3px #ecc98b1b}
+.mb-login-field input::placeholder{color:#9aacc2}
+.mb-fake-password{display:flex;align-items:center;justify-content:space-between;gap:8px;position:relative}
+.mb-fake-password>span:first-child{font-size:15px;letter-spacing:3px;line-height:1}
+.mb-fake-password .mb-password-hint{font-size:10px;color:#9cacc2;white-space:nowrap}
+.mb-fake-password:has(.is-filled) .mb-password-hint{color:#aee0c8}
+.mb-avatar-heading{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border-top:1px solid #d5bd8a32;padding-top:14px;margin-bottom:10px}
+.mb-avatar-heading small{color:#a9dcd7;font-size:11px;font-weight:600}
+.mb-avatar-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px 10px;justify-items:center;margin:0 0 18px}
+.mb-avatar-option{display:flex;flex-direction:column;gap:5px;align-items:center;width:100%;padding:5px 3px 6px;border:1px solid transparent;border-radius:9px;background:transparent;color:#d4ddea;transition:background .15s,border .15s,transform .15s;min-width:0}
+.mb-avatar-option:hover{border-color:#d0b47c68;background:#a8bddd13;transform:translateY(-2px)}
+.mb-avatar-option.is-selected{background:#dcb36d21;border-color:#f2cf91;color:#ffdeb1;box-shadow:0 0 14px #ebc68816}
+.mb-avatar-label{font-size:11px;font-weight:700;line-height:1.3;text-align:center}
+.mb-avatar-art{width:100%;height:auto;aspect-ratio:995/1016;position:relative;display:grid;place-items:center;flex:none}
+.mb-avatar-art img{width:100%;height:100%;object-fit:contain;position:absolute;inset:0;opacity:0;filter:drop-shadow(0 3px 5px #02071475)}
+.mb-avatar-art.is-loaded img{opacity:1}
+.mb-avatar-fallback{display:grid;place-items:center;width:89%;aspect-ratio:1;border:1px solid #dfc291;border-radius:50%;background:radial-gradient(circle,#8190a8,#253652 75%);font-size:clamp(14px,3vw,30px);color:#ffe5b7}
+.mb-avatar-art.is-loaded .mb-avatar-fallback{visibility:hidden}
+.mb-avatar-option>.mb-avatar-art{width:min(100%,84px)}
+.mb-login-submit{width:100%;margin:0;min-height:44px;border:1px solid #edd5a1;border-radius:5px;background:linear-gradient(115deg,#f3dfb3,#c9a467);color:#152339;font-weight:800;letter-spacing:.04em;box-shadow:0 4px 20px #cba25f25}
+.mb-login-submit:hover:not(:disabled){filter:brightness(1.08)}
+.mb-login-notice{text-align:center;font-size:10px;color:#aebbd0;margin:9px 0 0}
+.mb-profile-actions{display:flex;justify-content:space-between;gap:12px;margin-top:10px}
+.mb-profile-actions button{background:transparent;border:0;color:#cbd9e5;font-size:12px;padding:5px;text-decoration:underline;text-underline-offset:3px}
+.mb-profile-actions button:last-child{color:#f3cbb3}
+.account-sigil.mb-account-portrait,.friend-avatar.mb-fighter-portrait,.profile-avatar.mb-fighter-portrait{padding:0;border:0;background:none;overflow:visible;flex-shrink:0}
+.account-sigil.mb-account-portrait{width:39px;height:40px}
+.mb-account-name{display:block;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rail-player-heading{display:flex;align-items:center;gap:11px;min-width:0;margin:4px 0 0}
+.rail-player-heading>div{min-width:0}
+.rail-player-heading strong{display:block;overflow-wrap:anywhere;line-height:1.3}
+.rail-player-avatar{width:51px;flex:none}
+@media(max-width:1200px){.account-chip .account-label{display:block}.mb-account-name{max-width:76px}}
+@media(max-width:650px){
+ .mb-login{padding:19px 14px}.mb-login-inner{padding:20px 17px 19px}.mb-login-brand{font-size:20px}.mb-login-intro p{margin-bottom:15px}
+ .mb-login-fields{grid-template-columns:1fr;gap:10px;margin-bottom:14px}
+ .mb-avatar-grid{gap:5px;grid-template-columns:repeat(4,minmax(0,1fr))}
+ .mb-avatar-option{padding:3px 1px 4px}.mb-avatar-label{font-size:9px}.mb-avatar-option>.mb-avatar-art{max-width:76px}
+ .account-chip{display:flex;padding:2px;gap:3px}.account-sigil.mb-account-portrait{width:32px;height:33px}.account-chip .account-label{font-size:10px}.mb-account-name{max-width:60px}.header-actions{flex-wrap:wrap;justify-content:flex-end}
+}
+@media(max-width:360px){.mb-avatar-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.header-actions{gap:2px}.account-chip .account-label{display:none}}
