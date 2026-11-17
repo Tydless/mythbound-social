@@ -12,11 +12,23 @@
   <script defer src="class-showcase.js"></script>
   <script defer src="account.js"></script>
   <script defer src="social.js"></script>
+<style>
+.logo-host .official-mythbound-logo{display:none;object-fit:contain;width:100%;height:auto}
+.logo-host.logo-ready .official-mythbound-logo{display:block}
+.logo-host.logo-ready .logo-fallback{display:none}
+.logo-host .logo-fallback{display:flex;align-items:center;gap:5px}
+.site-header .brand.logo-ready{flex:none;width:clamp(135px,16vw,235px);align-items:center}
+.site-header .brand .official-mythbound-logo{width:100%;height:74px;object-fit:contain}
+.mb-login-brand.logo-ready{margin:0 auto 16px;max-width:290px;width:100%}
+.mb-login-brand .official-mythbound-logo{max-height:150px;object-fit:contain}
+@media(max-width:650px){.site-header .brand.logo-ready{width:135px}.site-header .brand .official-mythbound-logo{height:64px}.mb-login-brand.logo-ready{max-width:230px}.mb-login-brand .official-mythbound-logo{max-height:118px}}
+@media(max-width:360px){.site-header .brand.logo-ready{width:115px}.site-header .brand .official-mythbound-logo{height:55px}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
     <div class="mb-login-inner">
-      <div class="mb-login-brand"><span aria-hidden="true">✧</span> MYTHBOUND <small>ONLINE</small></div>
+      <div class="mb-login-brand logo-host"><img class="official-mythbound-logo" src="../Mythbound_Six_Paths_Transparent.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback"><span aria-hidden="true">✧</span> MYTHBOUND <small>ONLINE</small></span></div>
       <div class="mb-login-intro"><span class="eyebrow">YOUR ADVENTURE CONTINUES</span><h1 id="login-title">Welcome back!</h1><p id="login-subtitle">We added a new feature: Choose your avatar-based profile picture!</p></div>
       <form id="returning-player-form" autocomplete="off">
         <div class="mb-login-fields">
@@ -35,7 +47,7 @@
   <a class="skip-link" href="#main-content">Skip to content</a>
   <div class="grain" aria-hidden="true"></div>
   <header class="site-header">
-    <a class="brand" href="#home" aria-label="Mythbound home"><span class="brand-mark" aria-hidden="true">✧</span><span>MYTHBOUND</span><small>ONLINE</small></a>
+    <a class="brand logo-host" href="#home" aria-label="Mythbound home"><img class="official-mythbound-logo" src="../Mythbound_Six_Paths_Transparent.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback"><span class="brand-mark" aria-hidden="true">✧</span><span>MYTHBOUND</span><small>ONLINE</small></span></a>
     <nav class="main-nav" aria-label="Main navigation">
       <button type="button" data-page="home" class="nav-item is-active" aria-current="page">Home</button>
       <button type="button" data-page="discover" class="nav-item">Discover</button>
