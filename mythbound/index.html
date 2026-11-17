@@ -401,6 +401,64 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
  .class-showcase .saint-portrait-stage .portrait-burn-canvas{display:none}
 }
 </style>
+<style>
+/* World atlas: original Mythbound visual language; cartography and lore remain open. */
+#page-discover{--atlas-gold:#dfbf86;--atlas-line:#c7a66b42;--atlas-muted:#b9c5d3;background:radial-gradient(ellipse at 45% 15%,#26374a55,transparent 55%),#101827}
+.mw-hero{position:relative;isolation:isolate;display:grid;place-items:center;text-align:center;min-height:clamp(295px,37vw,450px);padding:65px 20px 86px;overflow:hidden;border-bottom:1px solid #c9a66c44;background:#25394a url('../mythbound-home-watercolor.jpg') center 43%/cover no-repeat}
+.mw-hero:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#101827 0%,#101827a6 33%,#141d2d70 72%,#17233355),radial-gradient(ellipse at center,#15213568,transparent 70%)}
+.mw-hero:after{content:"";position:absolute;inset:20px;border:1px solid #ecd2a438;pointer-events:none;clip-path:polygon(0 0,25% 0,25% 1%,1% 1%,1% 99%,25% 99%,25% 100%,0 100%,0 0,100% 0,100% 100%,75% 100%,75% 99%,99% 99%,99% 1%,75% 1%,75% 0,100% 0)}
+.mw-hero .eyebrow,.mw-kicker{color:var(--atlas-gold);letter-spacing:.24em;font-weight:700;font-size:10px;text-transform:uppercase}
+.mw-hero h1{font-size:clamp(42px,7vw,82px);color:#fff2d8;margin:14px 0 8px;text-shadow:0 3px 30px #0a111f}
+.mw-hero p{font-size:clamp(14px,1.6vw,17px);color:#ebdfce;max-width:540px;margin:0 auto;text-shadow:0 2px 6px #101827}
+.mw-ornament{display:flex;align-items:center;justify-content:center;gap:14px;margin:20px auto;color:var(--atlas-gold);font-size:15px}
+.mw-ornament:before,.mw-ornament:after{content:"";height:1px;width:72px;background:linear-gradient(90deg,transparent,#dfbf86)}
+.mw-ornament:after{transform:scaleX(-1)}
+.mw-shell{max-width:1440px;margin:auto;padding:0 clamp(18px,4.5vw,72px) 80px}
+.mw-jump{position:relative;margin:-24px auto 48px;padding:5px;display:flex;justify-content:center;flex-wrap:wrap;width:fit-content;max-width:100%;background:#172235f7;border:1px solid var(--atlas-line);box-shadow:0 8px 25px #05091470}
+.mw-jump button{border:0;border-right:1px solid #c7a66b20;background:none;color:#d9d4c9;white-space:nowrap;font:600 12px 'Cinzel',Georgia,serif;padding:12px clamp(10px,1.5vw,22px);transition:color .2s,background .2s}
+.mw-jump button:last-child{border:0}.mw-jump button:hover{color:#fff0c8;background:#dabb8612}
+.mw-section{margin-bottom:54px;scroll-margin-top:115px}
+.mw-section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--atlas-line)}
+.mw-section-head h2{font:600 clamp(24px,3vw,35px)/1.3 'Cinzel',Georgia,serif;color:#f2dfbb;margin:6px 0 0}
+.mw-section-head p{font-size:13px;color:var(--atlas-muted);margin:0;max-width:300px;text-align:right}
+.mw-atlas{position:relative;overflow:hidden;border:1px solid #bda37277;background:#192c39;box-shadow:0 18px 44px #060b164f}
+.mw-atlas-top,.mw-atlas-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 18px;background:#172233;color:var(--atlas-muted);font-size:11px;letter-spacing:.035em}
+.mw-atlas-top strong{color:#ead5af;font:600 11px 'Cinzel',Georgia,serif;letter-spacing:.14em}
+.mw-map{min-height:clamp(290px,36vw,510px);position:relative;display:grid;place-items:center;text-align:center;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at center,#42555a52,transparent 64%),linear-gradient(130deg,#1b303c,#243e44 50%,#20313e)}
+.mw-map:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.45;background-image:linear-gradient(#cbbc9120 1px,transparent 1px),linear-gradient(90deg,#cbbc9120 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse,#000 20%,transparent 92%)}
+.mw-map:after{content:"";position:absolute;inset:13px;border:1px solid #d9b98340;pointer-events:none}
+.mw-map-copy{position:relative;width:min(86%,390px);padding:20px;z-index:1}
+.mw-compass{display:block;width:clamp(80px,12vw,135px);height:auto;margin:0 auto 16px;color:#e6c68b;filter:drop-shadow(0 0 20px #e6c68b1c)}
+.mw-map-copy h3{color:#f0dcb4;font-weight:500;font-size:clamp(20px,3vw,30px);margin:0 0 8px}
+.mw-map-copy p{color:#bdcbce;font-size:13px;margin:0 auto 15px;max-width:290px}
+.mw-pending{display:inline-flex;align-items:center;gap:8px;border:1px solid #cfb1804a;background:#101c2455;color:#d7c6a6;padding:5px 11px;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.mw-pending:before{content:"";width:5px;height:5px;background:#d9bc88;transform:rotate(45deg)}
+.mw-map-decoration{position:absolute;inset:0;width:100%;height:100%;color:#ddc39b;opacity:.12;pointer-events:none}
+.mw-map-corner{position:absolute;color:#d7bc8c;font:500 10px 'Cinzel',Georgia,serif;letter-spacing:.1em}
+.mw-map-corner.nw{left:25px;top:23px}.mw-map-corner.se{right:25px;bottom:23px}
+.mw-legend{display:flex;flex-wrap:wrap;gap:8px 18px}
+.mw-legend span{white-space:nowrap}.mw-legend b{color:#dabc89;font-size:14px;margin-right:5px;font-weight:400}
+.mw-region-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.mw-region{min-width:0;border:1px solid var(--atlas-line);background:linear-gradient(150deg,#202d40,#172235)}
+.mw-region-art{height:clamp(116px,15vw,188px);display:grid;place-items:center;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 90%,#5e75624a,transparent 70%),linear-gradient(140deg,#304a4a,#1b2a39)}
+.mw-region:nth-child(2) .mw-region-art{background:radial-gradient(ellipse at 60% 90%,#6579984a,transparent 70%),linear-gradient(140deg,#384b63,#1b283e)}
+.mw-region:nth-child(3) .mw-region-art{background:radial-gradient(ellipse at 60% 90%,#a6886845,transparent 70%),linear-gradient(140deg,#534c49,#283044)}
+.mw-region-art:before,.mw-region-art:after{content:"";position:absolute;inset:13px;border:1px solid #ddcaa62b;transform:rotate(0)}
+.mw-region-art:after{inset:auto;width:110px;height:110px;border-radius:50%;border-color:#ddcaa633}
+.mw-region-art svg{width:58px;height:58px;color:#dbc6a4;opacity:.77;z-index:1}
+.mw-region-copy{padding:18px}
+.mw-region-copy h3,.mw-feature-copy h3{margin:5px 0 8px;color:#eeddc4;font-weight:500;font-size:20px}
+.mw-region-copy p,.mw-feature-copy p{margin:0;color:#b8c3d2;font-size:13px}
+.mw-features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.mw-feature{display:flex;align-items:flex-start;gap:18px;padding:clamp(14px,2.2vw,25px);background:linear-gradient(135deg,#1e2b3d,#182235);border:1px solid var(--atlas-line)}
+.mw-feature-icon{display:grid;place-items:center;width:50px;height:50px;flex:none;border:1px solid #dabc8966;color:#dfbf86;background:#dabc890b}
+.mw-feature-icon svg{width:28px;height:28px}
+.mw-feature-copy{min-width:0}.mw-feature-copy h3{margin:0 0 7px;font-size:18px}.mw-feature-copy .mw-kicker{display:block;margin-top:13px;font-size:9px;letter-spacing:.12em;color:#bda98a}
+.mw-chronicle{text-align:center;padding:38px 22px;border:1px solid var(--atlas-line);background:radial-gradient(ellipse at top,#3c415447,transparent 70%),#172235}
+.mw-chronicle h2{font-size:clamp(23px,3vw,31px);color:#f2dfbb;margin:8px 0 12px}.mw-chronicle p{color:var(--atlas-muted);max-width:530px;margin:0 auto}
+@media(max-width:760px){.mw-shell{padding-bottom:48px}.mw-hero{min-height:290px;padding:48px 16px 66px}.mw-jump{margin:-22px auto 32px}.mw-jump button{font-size:10px;padding:10px 8px}.mw-section{margin-bottom:37px;scroll-margin-top:90px}.mw-section-head{display:block}.mw-section-head p{margin-top:6px;text-align:left;max-width:none}.mw-region-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mw-region-copy{padding:12px}.mw-region-copy h3{font-size:17px}.mw-features{gap:10px}.mw-atlas-bottom{align-items:flex-start;flex-direction:column}.mw-atlas-top,.mw-atlas-bottom{padding:10px 12px}}
+@media(max-width:460px){.mw-region-grid,.mw-features{grid-template-columns:1fr}.mw-region{display:grid;grid-template-columns:110px minmax(0,1fr)}.mw-region-art{height:auto;min-height:114px}.mw-region-art:after{width:75px;height:75px}.mw-region-art svg{width:48px;height:48px}.mw-map-corner{font-size:8px}.mw-hero:after{inset:10px}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -427,7 +485,7 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
     <a class="brand logo-host wordmark-host" href="#home" aria-label="Mythbound home"><img class="official-mythbound-logo" src="../Mythbound_Wordmark.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback"><span class="brand-mark" aria-hidden="true">✧</span><span>MYTHBOUND</span><small>ONLINE</small></span></a>
     <nav id="primary-navigation" class="main-nav" aria-label="Main navigation">
       <button type="button" data-page="home" class="nav-item is-active" aria-current="page">Home</button>
-      <button type="button" data-page="discover" class="nav-item">Discover</button>
+      <button type="button" data-page="discover" class="nav-item">The World</button>
       <button type="button" data-page="news" class="nav-item">News</button>
       <button type="button" data-page="classes" class="nav-item">Classes</button>
       <button type="button" id="mobile-inbox" class="nav-item mobile-menu-item mobile-social-item">Inbox <span id="mobile-inbox-count" class="mobile-inbox-count" hidden>1</span></button>
@@ -471,9 +529,55 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
       </section>
 
       <section id="page-discover" class="page" aria-labelledby="discover-title" hidden>
-        <div class="inner-hero mint"><span class="eyebrow">DISCOVER / THE WORLD</span><h1 id="discover-title">The world remembers.</h1><p>Its stories have not all been told.</p><div class="world-symbol" aria-hidden="true">✧</div></div>
-        <div class="article-width"><span class="eyebrow">THE CHRONICLES</span><h2>A place between legend and possibility</h2><p>Across forgotten paths and living landscapes, adventurers seek the echoes of an older world. The Chronicle Gates are said to hold stories that no one remembers telling.</p><p>Mythbound's worldbuilding is still taking shape. This preview is a fictional game-site experience; future regions, settlements, and mysteries can take their place here as they are developed.</p></div>
-        <div class="feature-grid"><article><span>01 / EXPLORE</span><h3>Find the unknown</h3><p>Wander into regions where every ruin has a rumor and every trail has a history.</p></article><article><span>02 / GROW</span><h3>Walk your own path</h3><p>Become the fighter, protector, scout or steadfast companion your party needs.</p></article><article><span>03 / BELONG</span><h3>Build your party</h3><p>Meet other players, find a crew and collect the memories worth keeping.</p></article></div>
+        <header class="mw-hero">
+          <div><span class="eyebrow">MYTHBOUND ONLINE / WORLD ATLAS</span><h1 id="discover-title">The World</h1><div class="mw-ornament" aria-hidden="true">✧</div><p>Beyond the familiar paths, an entire world awaits.<br>Every journey begins with the unknown.</p></div>
+        </header>
+        <div class="mw-shell">
+          <nav class="mw-jump" aria-label="World sections">
+            <button type="button" data-world-target="mw-atlas">World map</button><button type="button" data-world-target="mw-regions">Regions</button><button type="button" data-world-target="mw-locations">Locations</button><button type="button" data-world-target="mw-chronicles">Lore</button>
+          </nav>
+          <section class="mw-section" id="mw-atlas" aria-labelledby="mw-atlas-title">
+            <div class="mw-section-head"><div><span class="mw-kicker">I · Cartography</span><h2 id="mw-atlas-title">The World Atlas</h2></div><p>Discover the lands beyond your doorstep.</p></div>
+            <div class="mw-atlas">
+              <div class="mw-atlas-top"><strong>✧ &nbsp; Mythbound Atlas</strong><span>Map not yet revealed</span></div>
+              <div class="mw-map">
+                <svg class="mw-map-decoration" viewBox="0 0 960 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="480" cy="240" r="205" stroke-dasharray="2 8"/><circle cx="480" cy="240" r="166"/><circle cx="480" cy="240" r="256" stroke-dasharray="1 9"/><path d="M0 240h960M480 0v480M224 0l512 480M736 0 224 480"/><path d="M0 85Q130 20 200 75T350 65M660 420Q810 360 960 400M0 104Q130 39 200 94T350 84M660 439Q810 379 960 419M0 123Q130 58 200 113T350 103" stroke-dasharray="4 5"/></g></svg>
+                <span class="mw-map-corner nw">FIELD ATLAS · 01</span><span class="mw-map-corner se">TERRA INCOGNITA</span>
+                <div class="mw-map-copy">
+                  <svg class="mw-compass" viewBox="0 0 120 120" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="60" cy="60" r="41" opacity=".6"/><circle cx="60" cy="60" r="34" stroke-dasharray="1 5"/><path d="M60 13v94M13 60h94M29 29l62 62M91 29 29 91" opacity=".35"/><path d="m60 19 8 33 33 8-33 8-8 33-8-33-33-8 33-8Z" fill="#a88b5633"/><path d="M60 19v41l41 0M60 101V60H19"/><circle cx="60" cy="60" r="6" fill="#e6c68b" stroke="#20313e"/><g fill="currentColor" stroke="none" font-size="9" font-family="Georgia" text-anchor="middle"><text x="60" y="10">N</text><text x="60" y="117">S</text><text x="8" y="63">W</text><text x="112" y="63">E</text></g></svg>
+                  <h3>Uncharted Lands</h3><p>The world map will appear here once the lands are revealed.</p><span class="mw-pending">Cartography pending</span>
+                </div>
+              </div>
+              <div class="mw-atlas-bottom"><div class="mw-legend" aria-label="Planned map legend"><span><b>◇</b>Regions</span><span><b>⌂</b>Settlements</span><span><b>✦</b>Dungeons</span><span><b>✧</b>Landmarks</span></div><span>Interactive atlas · forthcoming</span></div>
+            </div>
+          </section>
+          <section class="mw-section" id="mw-regions" aria-labelledby="mw-regions-title">
+            <div class="mw-section-head"><div><span class="mw-kicker">II · Beyond the horizon</span><h2 id="mw-regions-title">Regions of Mythbound</h2></div><p>New landscapes, new stories, new adventures.</p></div>
+            <div class="mw-region-grid"><article class="mw-region"><div class="mw-region-art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 19 7-12 4 7 3-5 6 10H3Z"/><path d="m8 10 2 3 2-3"/></svg></div><div class="mw-region-copy"><span class="mw-kicker">Region I · Unrevealed</span><h3>Undiscovered region</h3><p>Landscape, inhabitants and local lore to be revealed.</p></div></article><article class="mw-region"><div class="mw-region-art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 19 7-12 4 7 3-5 6 10H3Z"/><path d="m8 10 2 3 2-3"/></svg></div><div class="mw-region-copy"><span class="mw-kicker">Region II · Unrevealed</span><h3>Undiscovered region</h3><p>Landscape, inhabitants and local lore to be revealed.</p></div></article><article class="mw-region"><div class="mw-region-art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 19 7-12 4 7 3-5 6 10H3Z"/><path d="m8 10 2 3 2-3"/></svg></div><div class="mw-region-copy"><span class="mw-kicker">Region III · Unrevealed</span><h3>Undiscovered region</h3><p>Landscape, inhabitants and local lore to be revealed.</p></div></article></div>
+          </section>
+          <section class="mw-section" id="mw-locations" aria-labelledby="mw-locations-title">
+            <div class="mw-section-head"><div><span class="mw-kicker">III · The adventurer's guide</span><h2 id="mw-locations-title">Places to Discover</h2></div><p>From peaceful settlements to the perils of a raid.</p></div>
+            <div class="mw-features">
+              <article class="mw-feature"><span class="mw-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9h5v4h3V5h2v8h3V9h5v12M2 21h20M10 21v-5h4v5M3 9V5h2v2h3V5M16 5v4m5-4v4m-5-2h5"/></svg></span><div class="mw-feature-copy"><h3>Cities & Settlements</h3><p>Discover places to meet other travelers, trade, rest and prepare for the next adventure.</p><span class="mw-kicker">Location entries forthcoming</span></div></article>
+              <article class="mw-feature"><span class="mw-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-6 9 6v12H3Zm5 0v-8a4 4 0 0 1 8 0v8M3 9h18M12 3v4"/></svg></span><div class="mw-feature-copy"><h3>Dungeons & Raids</h3><p>A future guide to encounters, recommended levels, party sizes and rewards.</p><span class="mw-kicker">Encounter entries forthcoming</span></div></article>
+              <article class="mw-feature"><span class="mw-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2c0 6-4 10-10 10 6 0 10 4 10 10 0-6 4-10 10-10-6 0-10-4-10-10Z"/><path d="M19 3v4m-2-2h4"/></svg></span><div class="mw-feature-copy"><h3>Points of Interest</h3><p>Landmarks, hidden paths and discoveries worth making a detour for.</p><span class="mw-kicker">Landmark entries forthcoming</span></div></article>
+              <article class="mw-feature"><span class="mw-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19 18 6l3-3-1 5L7 21M4 14l6 6M3 21l2-2m10-9 5 5"/></svg></span><div class="mw-feature-copy"><h3>World Events</h3><p>A future calendar of special encounters, celebrations and adventures across the world.</p><span class="mw-kicker">Event schedule forthcoming</span></div></article>
+            </div>
+          </section>
+          <section class="mw-section mw-chronicle" id="mw-chronicles" aria-labelledby="mw-chronicles-title">
+            <div class="mw-ornament" aria-hidden="true">✧</div><span class="mw-kicker">IV · The chronicles</span><h2 id="mw-chronicles-title">The world remembers.</h2><p>Its stories have not all been told. Discover the history, legends and mysteries of Mythbound as the chronicles unfold.</p>
+            <div class="mw-ornament" aria-hidden="true">✧</div>
+          </section>
+        </div>
+        <script>
+        (function(){
+          const world=document.getElementById("page-discover");
+          world.querySelectorAll("[data-world-target]").forEach(button=>button.addEventListener("click",()=>{
+            const target=document.getElementById(button.dataset.worldTarget);
+            if(target)target.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+          }));
+        })();
+        </script>
       </section>
 
       <section id="page-news" class="page" aria-labelledby="news-title" hidden>
