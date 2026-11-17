@@ -51,7 +51,7 @@ document.getElementById("fighter-friend").addEventListener("click",openProfile);
 document.getElementById("rail-whisper").addEventListener("click",openWhisper);
 headerWhisper.addEventListener("click",openWhisper);
 whisperButton.addEventListener("click",openWhisper);
-document.getElementById("account-button").addEventListener("click",()=>{openPanel("profile-template")});
+// Own account is handled by account.js; Fighter retains his separate profile.
 document.getElementById("download-button").addEventListener("click",()=>{previousFocus=document.activeElement;sheetContent.replaceChildren();const title=document.createElement("div");title.className="profile-content";title.innerHTML='<h2 id="sheet-title">Download Mythbound</h2><p>This is a fictional MMORPG website built for a character story. There is no real game download, installation or purchase.</p><p>Feel free to keep exploring the site and its in-game social features.</p>';sheetContent.append(title);overlay.hidden=false;document.body.classList.add("sheet-open");document.getElementById("sheet-close").focus()});
 document.getElementById("sheet-close").addEventListener("click",closePanel);
 overlay.addEventListener("click",e=>{if(e.target===overlay)closePanel()});
@@ -148,6 +148,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
   // Playback request stays in the user-activation event; no off/on workaround needed.
   document.addEventListener("pointerdown",event=>{if(enabled&&!toggle.contains(event.target))tryPlay()},true);
   document.addEventListener("keydown",event=>{if(enabled&&!toggle.contains(event.target))tryPlay()},true);
+  document.addEventListener("click",event=>{if(enabled&&!toggle.contains(event.target))tryPlay()},true);
   audio.addEventListener("play",()=>{blocked=false;sync()});
   audio.addEventListener("pause",sync);
   audio.addEventListener("canplay",()=>{if(enabled)tryPlay()});
