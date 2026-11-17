@@ -291,11 +291,35 @@ function drawEnvironment(){
   }
  }
 }
+const ROLE_ICONS={
+ melee:'<path d="m5 19 3-3m-4-2 6 6M8 16 20 4l-2 7L10 19M4 4l5 1 4 4"/>',
+ ranged:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>',
+ tank:'<path d="M12 3 20 6v6c0 5-8 9-8 9s-8-4-8-9V6z"/>',
+ healer:'<path d="M9 4h6v5h5v6h-5v5H9v-5H4V9h5z"/>',
+ hybrid:'<path d="M3 7h17l-4-4m4 14H3l4 4M20 7l-4 4M3 17l4-4"/>',
+ beast:'<path d="M5 4 8 9l4-2 4 2 3-5 1 10-8 7-8-7zM8 13h1m6 0h1m-6 4h4"/>',
+ mounted:'<path d="M5 20v-6l4-5 1-6 4 3 4 1 3 6-4 3-4-3-3 7zM15 10h1"/>',
+ companion:'<path d="M7 15c1-3 3-5 5-5s4 2 5 5c2 4-2 6-5 4-3 2-7 0-5-4z"/><circle cx="5" cy="9" r="2"/><circle cx="10" cy="5" r="2"/><circle cx="15" cy="5" r="2"/><circle cx="19" cy="9" r="2"/>',
+ magic:'<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>',
+ duelist:'<path d="m4 20 4-4m-4-3 7 7m-3-4L20 3l-2 8-8 7"/>'
+};
+const CLASS_ROLES={breaker:[["melee","Melee"],["tank","Tank / brawler"]],animar:[["hybrid","Hybrid"],["beast","Shapeshifter / expert"]],herder:[["mounted","Mounted"],["companion","Companion support"]],elemis:[["ranged","Ranged"],["magic","Elemental magic"]],strider:[["melee","Melee"],["duelist","Precision duelist"]],saint:[["ranged","Ranged"],["healer","Healer / protector"]]};
+function renderClassMeta(d){
+ const combat=$("class-combat"),difficulty=$("class-difficulty");
+ combat.replaceChildren();difficulty.replaceChildren();
+ for(const [key,label] of CLASS_ROLES[active]){
+  const icon=document.createElement("div");icon.className="class-role-icon";icon.title=label;icon.setAttribute("role","img");icon.setAttribute("aria-label",label);icon.tabIndex=0;
+  icon.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+ROLE_ICONS[key]+'</svg>';combat.append(icon);
+ }
+ difficulty.setAttribute("aria-label","Difficulty: "+d.difficulty+" out of 5");difficulty.title=d.difficulty+" / 5";
+ const label=document.createElement("span");label.className="difficulty-label";label.textContent="DIFFICULTY";label.setAttribute("aria-hidden","true");difficulty.append(label);
+ for(let i=1;i<=5;i++){const dot=document.createElement("span");dot.className="difficulty-dot"+(i<=d.difficulty?" is-filled":"");dot.setAttribute("aria-hidden","true");difficulty.append(dot)}
+}
+
 function draw(){
  const d=DATA[active];
  $("class-index").textContent=String(Object.keys(DATA).indexOf(active)+1).padStart(2,"0")+" / 06";
- $("class-combat").textContent=d.play;
- $("class-difficulty").textContent="DIFFICULTY · "+d.difficulty+" / 5";
+ renderClassMeta(d);
  $("class-details").style.setProperty("--class-highlight",d.color);
  drawEnvironment();renderStats();renderPath();renderPreview();
 }
