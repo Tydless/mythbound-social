@@ -40,7 +40,13 @@ const statLabels=["Damage","Defense","Support","Mobility","Control"];
 let active="saint",gender="male",chosen=0,activePath=0;
 // Add approved specialization content here, grouped by class and path number.
 // Each entry may provide name, description, icon, skills (same format as DATA), and signatureMoves.
-const SPECIALIZATIONS={};
+const SPECIALIZATIONS={
+ saint:{
+  1:{name:"Archsaint",type:"TRUE PATH",description:"Embrace the Saint's sacred calling. Master greater blessings, restorative miracles and divine protection, sheltering the entire party through the power of holy light.",skills:[],signatureMoves:[]},
+  2:{name:"Fallen Saint",type:"CORRUPTED PATH",description:"Twist sacred power into forbidden magic. Siphon life, bestow cursed blessings and sacrifice your own vitality to unleash devastating attacks.",skills:[],signatureMoves:[]},
+  3:{name:"Coming soon",type:"UNREVEALED PATH",description:"A new path awaits those who dare to question their sacred calling. More will be revealed in a future chronicle.",skills:[],signatureMoves:[]}
+ }
+};
 const pathData=()=>activePath===0?{name:cap(active),description:"Master the foundations of your class.",skills:DATA[active].skills,signatureMoves:[]}:SPECIALIZATIONS[active]?.[activePath]||{name:"Specialization "+activePath,description:"This advanced path has yet to be revealed.",skills:[],signatureMoves:[]};
 
 /* A fixed gender greeting plus three independent, cyclic voice previews.
@@ -292,7 +298,7 @@ function renderPath(){
  const title=$("path-detail-title"),desc=$("path-description"),label=$("path-type"),core=$("path-core-title"),sig=$("path-signatures");
  if(title)title.textContent=path.name+(activePath===0?" · Base class":"");
  if(desc)desc.textContent=path.description;
- if(label)label.textContent=activePath===0?"BASE PATH":"ADVANCED PATH";
+ if(label)label.textContent=activePath===0?"BASE PATH":path.type||"ADVANCED PATH";
  if(core)core.textContent=activePath===0?"Core abilities":"Specialization abilities";
  if(sig){
   sig.replaceChildren();
