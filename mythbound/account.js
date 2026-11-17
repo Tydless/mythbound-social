@@ -18,14 +18,16 @@
     logout=byId("profile-logout"), selectedLabel=byId("selected-avatar-label"), account=byId("account-button");
   if(!screen||!form||!name||!password||!grid||!submit||!account)return;
   const PROFILE_KEY="mythbound-local-profile-v1", SESSION_KEY="mythbound-roleplay-session-v1";
-  let profile=null, signedIn=false, editing=false, selected="";
+  let profile=null, signedIn=false, guest=false, editing=false, selected="";
   function getAvatar(id){return choices.find(c=>c.id===id)}
   try{
     const data=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null");
     if(data&&typeof data.nickname==="string"&&data.nickname.trim())
       profile={nickname:data.nickname.trim().slice(0,24),avatar:getAvatar(data.avatar)?data.avatar:""};
   }catch{}
-  try{signedIn=!!getAvatar(profile?.avatar)&&sessionStorage.getItem(SESSION_KEY)==="1"}catch{}
+  try{const session=sessionStorage.getItem(SESSION_KEY);signedIn=!!getAvatar(profile?.avatar)&&session==="1";guest=session==="0"}catch{}
+  window.MythboundAccount={isSignedIn:()=>signedIn};
+  const headerLogout=document.createElement("button");headerLogout.type="button";headerLogout.className="mb-session-action";headerLogout.textContent="Log out";headerLogout.hidden=true;account.after(headerLogout);
   // Every portrait includes its original decorative frame. No extra crop or frame.
   function portrait(avatar){
     const wrap=document.createElement("span");wrap.className="mb-avatar-art";
@@ -40,7 +42,7 @@
     if(!profile)return;
     const avatar=getAvatar(profile.avatar);
     const sigil=account.querySelector(".account-sigil"),label=account.querySelector(".account-label");
-    if(sigil){sigil.classList.add("mb-account-portrait");sigil.replaceChildren(portrait(avatar))}
+    if(sigil){sigil.hidden=false;sigil.classList.add("mb-account-portrait");sigil.replaceChildren(portrait(avatar))}
     if(label){
       const online=document.createElement("small");online.textContent="Online";
       const nickname=document.createElement("span");nickname.className="mb-account-name";nickname.textContent=profile.nickname;
@@ -50,6 +52,30 @@
     const rail=byId("rail-player-name"), railAvatar=byId("rail-player-avatar");
     if(rail)rail.textContent=profile.nickname;
     if(railAvatar)railAvatar.replaceChildren(portrait(avatar));
+  }
+  function renderSession(){
+    document.body.classList.toggle("mythbound-guest",!signedIn);
+    for(const node of [document.querySelector(".social-rail"),byId("header-whisper"),byId("floating-whisper")]){
+      if(node)node.hidden=!signedIn;
+    }
+    headerLogout.hidden=!signedIn;
+    account.classList.toggle("mb-guest-login",!signedIn);
+    if(signedIn){applyIdentity();window.MythboundSocial?.syncUnread();return}
+    const sigil=account.querySelector(".account-sigil"),label=account.querySelector(".account-label");
+    if(sigil){sigil.hidden=true;sigil.replaceChildren()}
+    if(label)label.textContent="Log in";
+    account.setAttribute("aria-label","Log in to Mythbound");
+    const rail=byId("rail-player-name"),railAvatar=byId("rail-player-avatar");
+    if(rail)rail.textContent="Traveler";
+    if(railAvatar)railAvatar.replaceChildren();
+  }
+  function signOut(){
+    signedIn=false;guest=true;editing=false;
+    try{sessionStorage.setItem(SESSION_KEY,"0")}catch{}
+    const panel=byId("overlay");if(panel)panel.hidden=true;
+    byId("sheet-content")?.replaceChildren();
+    document.body.classList.remove("sheet-open");
+    renderSession();hide();account.focus({preventScroll:true});
   }
   function choose(id){
     if(!getAvatar(id))return;
@@ -78,7 +104,7 @@
     title.textContent=isEdit?"Your profile":"Welcome back!";
     sub.textContent=isEdit?"Give your profile a fresh look.":"We added a new feature: Choose your avatar-based profile picture!";
     submit.textContent=isEdit?"Save changes":"Log In";
-    cancel.hidden=!isEdit;logout.hidden=!isEdit;
+    cancel.hidden=!(isEdit||guest);logout.hidden=!isEdit;
     name.value=profile?.nickname||"";
     selected=profile?.avatar||"";
     grid.querySelectorAll("button").forEach(b=>{
@@ -99,19 +125,19 @@
     e.preventDefault();
     const nickname=name.value.trim(),avatar=getAvatar(selected);
     if(!nickname||!avatar)return;
-    profile={nickname:nickname.slice(0,24),avatar:avatar.id};signedIn=true;
+    const returningFromGuest=guest;
+    profile={nickname:nickname.slice(0,24),avatar:avatar.id};signedIn=true;guest=false;
     try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));sessionStorage.setItem(SESSION_KEY,"1")}catch{}
-    applyIdentity();hide();
-    if(!editing&&typeof navigate==="function")navigate("home",true);
+    renderSession();hide();
+    if(!editing&&!returningFromGuest&&typeof navigate==="function")navigate("home",true);
     account.focus({preventScroll:true});
   });
-  account.addEventListener("click",()=>show(true));
+  account.addEventListener("click",()=>show(signedIn));
   cancel.addEventListener("click",()=>{hide();account.focus({preventScroll:true})});
-  logout.addEventListener("click",()=>{
-    signedIn=false;try{sessionStorage.removeItem(SESSION_KEY)}catch{}
-    show(false);
-  });
-  if(signedIn){applyIdentity();hide()}else show(false);
+  logout.addEventListener("click",signOut);
+  headerLogout.addEventListener("click",signOut);
+  renderSession();
+  if(signedIn||guest)hide();else show(false);
 
   // Fighter plays the female Saint. Keep this independent from the visitor's choice.
   function decorateFighter(){
