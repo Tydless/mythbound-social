@@ -43,7 +43,7 @@ let active="saint",gender="male",chosen=0,activePath=0;
 const SPECIALIZATIONS={
  saint:{
   1:{name:"Archsaint",type:"TRUE PATH",description:"Embrace the Saint's sacred calling. Master greater blessings, restorative miracles and divine protection, sheltering the entire party through the power of holy light.",skills:[],signatureMoves:[]},
-  2:{name:"Fallen Saint",type:"CORRUPTED PATH",description:"Twist sacred power into forbidden magic. Siphon life, bestow cursed blessings and sacrifice your own vitality to unleash devastating attacks.",skills:[],signatureMoves:[]},
+  2:{name:"Fallen Saint",type:"CORRUPTED PATH",artwork:{male:"../FallenSaintMalePortrait.png",female:"../FallenSaintFemalePortrait.png"},description:"Twist sacred power into forbidden magic. Siphon life, bestow cursed blessings and sacrifice your own vitality to unleash devastating attacks.",skills:[],signatureMoves:[]},
   3:{name:"Coming soon",type:"UNREVEALED PATH",description:"A new path awaits those who dare to question their sacred calling. More will be revealed in a future chronicle.",skills:[],signatureMoves:[]}
  }
 };
@@ -130,21 +130,22 @@ function renderPreview(){
  preview.replaceChildren();
  preview.classList.remove("has-saint-art");
  preview.style.setProperty("--preview-accent",DATA[active].color);
- preview.setAttribute("aria-label",gender+" "+active+" class artwork preview");
+ const specialization=activePath===0?null:SPECIALIZATIONS[active]?.[activePath];
+ const artwork=specialization?.artwork?.[gender];
+ const artworkName=artwork?specialization.name:cap(active);
+ preview.setAttribute("aria-label",gender+" "+artworkName+" class artwork preview");
  const note=document.querySelector(".preview-disclaimer");
  if(note)note.textContent="Concept illustration · final models coming later";
  if(active==="saint"){
   const picture=document.createElement("img");
   picture.className="saint-portrait";
-  picture.alt=gender==="female"
-   ?"Female Saint class illustration: white-haired healer with holy staff in an ornate gold floral frame"
-   :"Male Saint class illustration: long-haired healer with holy staff in an ornate gold floral frame";
+  picture.alt=cap(gender)+" "+artworkName+" class illustration in an ornate floral frame";
   picture.loading="eager";
   picture.decoding="async";
   picture.addEventListener("load",()=>{
    if(!picture.isConnected)return;
    preview.classList.add("has-saint-art");
-   if(note)note.textContent="Saint · illustrated class artwork";
+   if(note)note.textContent=artworkName+" · illustrated class artwork";
   });
   picture.addEventListener("error",()=>{
    if(!picture.isConnected)return;
@@ -153,7 +154,7 @@ function renderPreview(){
    if(note)note.textContent="Preview silhouette · artwork pending upload";
   });
   preview.append(picture);
-  picture.src=gender==="female"?"../FemaleSaint.png":"../MaleSaint.png";
+  picture.src=artwork||(gender==="female"?"../FemaleSaint.png":"../MaleSaint.png");
  }else{
   preview.innerHTML=avatarArt();
  }
@@ -309,7 +310,10 @@ function renderPath(){
  renderSkills();
 }
 $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener("click",()=>{
- activePath=Number(b.dataset.path);chosen=0;renderPath();
+ const next=Number(b.dataset.path);
+ const changed=next!==activePath;
+ activePath=next;chosen=0;renderPath();
+ if(changed)renderPreview();
 }));
 const atmosphere=document.querySelector(".class-atmosphere");
 let environmentRequest=0;
