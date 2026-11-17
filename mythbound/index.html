@@ -41,7 +41,7 @@
 
 <style>
 /* Mobile-specific navigation and title-screen layout. Desktop stays unchanged. */
-.mobile-menu-toggle,.mobile-menu-item,.mobile-hero-download{display:none}
+.mobile-menu-toggle,.mobile-menu-item,.mobile-hero-download,.mobile-landscape-layer{display:none}
 @media(max-width:760px){
  .site-header{display:flex;flex-wrap:nowrap;justify-content:space-between;gap:8px;min-height:64px;padding:8px 12px;border-bottom:1px solid #d8b78255}
  .site-header .brand.wordmark-host,.site-header .brand.wordmark-host.logo-ready{flex:0 1 auto;width:clamp(125px,43vw,220px);min-width:0}
@@ -70,8 +70,12 @@
  body.mythbound-guest .mobile-social-item,body.mythbound-guest .mobile-menu-unread{display:none!important}
  .hero{min-height:0;display:block;margin:10px 10px 0;border-radius:12px;background-color:#142039}
  .hero::before{inset:6px;border-radius:8px}
- .hero.has-watercolor-landscape{background-size:100% auto;background-position:center top;background-repeat:no-repeat}
- .hero.has-watercolor-landscape::after{background:linear-gradient(180deg,transparent 0,rgba(20,32,57,.06) 19vw,rgba(20,32,57,.70) 40vw,#142039 58vw,#142039 100%)}
+ .hero.has-watercolor-landscape{background-image:none;background-color:#142039}
+ .hero.has-watercolor-landscape::after{background:none}
+ /* Fade at the actual bottom of the landscape, not at a viewport-based estimate. */
+ .hero.has-watercolor-landscape .mobile-landscape-layer{display:block;position:absolute;inset:0 0 auto;pointer-events:none;z-index:0}
+ .mobile-landscape-layer img{display:block;width:100%;height:auto}
+ .mobile-landscape-layer::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,32,57,0) 0%,rgba(20,32,57,.04) 25%,rgba(20,32,57,.19) 45%,rgba(20,32,57,.48) 65%,rgba(20,32,57,.83) 84%,#142039 100%)}
  .hero-copy{width:100%;max-width:none;padding:clamp(110px,35vw,245px) 20px 24px;text-align:center}
  .hero-copy .hero-title-logo{width:min(100%,430px);margin:0 auto 18px;text-align:center}
  .hero-copy .hero-title-logo .official-mythbound-logo{max-height:none;width:100%;height:auto;object-position:center;display:none}
@@ -132,6 +136,7 @@
     <main id="main-content">
       <section id="page-home" class="page is-visible" aria-labelledby="home-title">
         <div class="hero">
+          <div class="mobile-landscape-layer" aria-hidden="true"><img src="../mythbound-home-watercolor.jpg" alt="" decoding="async"></div>
           <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="star star-one">✧</div><div class="star star-two">✦</div><div class="world-gate"><div class="gate-center">✶</div></div><div class="horizon"></div><div class="land land-one"></div><div class="land land-two"></div></div>
           <div class="hero-copy"><h1 id="home-title" class="hero-title-logo logo-host"><img class="official-mythbound-logo" src="../Mythbound_Six_Paths_Transparent.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback">Mythbound Online</span></h1><button type="button" id="mobile-download" class="download-button mobile-hero-download">Download <span aria-hidden="true">↗</span></button><p>Beyond the veil of remembered stories, six paths await. Find your calling. Forge your legend. Leave a trace in the world of Mythbound.</p><div class="hero-buttons"><button type="button" data-go="classes" class="solid-action">Explore the classes <span aria-hidden="true">↗</span></button><button type="button" data-go="discover" class="outline-action">Discover the world <span aria-hidden="true">→</span></button></div></div>
           <span class="hero-edition">CHRONICLE I · THE FIRST AWAKENING</span>
