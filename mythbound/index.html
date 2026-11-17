@@ -90,6 +90,70 @@
 }
 @media(max-width:360px){.site-header{gap:4px;padding-inline:8px}.site-header .header-actions{gap:4px}.site-header .brand.wordmark-host.logo-ready{width:clamp(110px,42vw,155px)}}
 </style>
+<style>
+/* Official homepage dispatches, community links and newsletter. */
+.hub-section{padding:55px clamp(22px,5vw,90px);border-top:1px solid #cfb38733}
+.hub-heading{text-align:center;margin-bottom:28px}
+.hub-heading h2{font-size:clamp(25px,3vw,38px);margin:8px 0 10px}
+.hub-heading p{color:var(--muted);margin:0}
+.home-news{background:radial-gradient(ellipse at 20% 20%,#80634229,transparent 72%),#141e30}
+.home-news-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.featured-news-card{display:block;width:100%;padding:0;border:1px solid #dcc49b80;background:#1c2a42;overflow:hidden;text-align:left;color:#f3e8d6}
+.featured-news-art{position:relative;aspect-ratio:16/9;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse,#7097a0,#2c3d5b 65%,#17233a);font-size:90px;color:#f2d5a0}
+.featured-news-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.featured-news-caption{position:relative;padding:15px 42px 15px 16px;display:grid;gap:4px}
+.featured-news-caption strong{font:600 clamp(16px,2vw,22px) 'Cinzel',Georgia,serif}
+.featured-news-arrow{position:absolute;right:15px;bottom:18px;color:#e9c78b}
+.featured-news-dots{display:flex;gap:10px;justify-content:center;padding:14px}
+.featured-news-dots button{background:transparent;border:1px solid #d4b986;border-radius:50%;width:11px;height:11px;padding:0}
+.featured-news-dots button.is-active{background:#ecd0a0}
+.home-news-list-title{font:600 19px 'Cinzel',Georgia,serif;color:#efd2a5;padding-bottom:12px;border-bottom:1px solid #e2c39866}
+.home-news-row{display:flex;width:100%;gap:12px;justify-content:space-between;align-items:center;text-align:left;background:none;border:0;border-bottom:1px solid #8493a333;color:#f0e9df;padding:13px 0}
+.home-news-row span{min-width:0;display:grid;gap:3px}
+.home-news-row strong{font-size:13px;line-height:1.5}
+.home-news-row small{font-size:9px;letter-spacing:.11em;color:#b3d9d3}
+.home-news-row time{flex:none;font-size:10px;color:#a7b6c9}
+.home-news-row:hover strong{color:#f3cf97}
+.news-more{width:100%;margin-top:17px}
+.news-entry{scroll-margin-top:95px}
+.news-editorial-art{background-size:cover;background-position:center;min-height:170px}
+.article-read{margin-top:13px;font-size:12px;padding:7px 12px}
+.news-article-body{margin-top:16px;border-top:1px solid #d2bc9555;padding-top:14px}
+.news-article-body p{white-space:normal;line-height:1.8}
+.community-hub{background:radial-gradient(ellipse at 50% 0,#35486155,transparent 72%),#141d2f}
+.community-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.community-link{display:flex;align-items:center;gap:13px;padding:20px 15px;border:1px solid #cdb18455;background:#22304966;text-decoration:none;color:#edd3a7}
+.community-link:hover{border-color:#edd3a7;background:#36435b}
+.community-link>span:nth-child(2){display:grid;gap:3px;min-width:0;flex:1}
+.community-link strong{font-size:15px}
+.community-link small{font-size:11px;color:#bbc7d6}
+.community-icon{width:30px;height:30px;flex:none}
+.community-icon svg{width:100%;height:100%}
+.community-arrow{font-size:25px}
+.newsletter-hub{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:35px;align-items:start;background:linear-gradient(135deg,#1c293d,#151e30)}
+.newsletter-copy h2{font-size:clamp(24px,3vw,35px);margin:10px 0}
+.newsletter-copy p{color:#bfcbdc}
+.newsletter-form{display:grid;gap:12px}
+.newsletter-form>label:first-child{font-size:13px;font-weight:700;color:#ead5b6}
+.newsletter-form>input{font:inherit;color:#d6e1ec;background:#121c2d;border:1px solid #8594a566;border-radius:5px;padding:12px;min-width:0;width:100%}
+.newsletter-consent{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:#c3cddd}
+.newsletter-consent input{flex:none;accent-color:#e2c18d;margin-top:4px}
+.newsletter-form .solid-action{width:100%}
+.newsletter-form small{color:#9daec3;font-size:10px;line-height:1.5}
+#newsletter-status{margin:0;color:#a8dccc;font-size:13px}
+#newsletter-status:empty{display:none}
+@media(max-width:760px){
+ .hub-section{padding:36px 23px}
+ .hub-heading{margin-bottom:20px}.hub-heading p{font-size:13px}
+ .home-news-layout,.newsletter-hub{grid-template-columns:1fr;gap:20px}
+ .home-news-row strong{font-size:12px}.home-news-row time{font-size:10px}
+ .community-links{grid-template-columns:1fr;gap:0;border-top:1px solid #d4bb9066}
+ .community-link{border:0;border-bottom:1px solid #d4bb903d;background:transparent;padding:15px 8px}
+ .community-icon{width:25px;height:25px}
+ .newsletter-copy p{font-size:14px;margin-bottom:0}
+ .news-entry{scroll-margin-top:78px}
+}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -147,7 +211,16 @@
           <button type="button" data-class="animar" class="preview-class"><span class="preview-symbol">◈</span><strong>Animar</strong><small>Master many forms</small></button>
           <button type="button" data-class="herder" class="preview-class"><span class="preview-symbol">❃</span><strong>Herder</strong><small>Never travel alone</small></button>
         </div>
-        <div class="dispatch"><div><span class="eyebrow">LATEST DISPATCH</span><h2>Letters from the Threshold</h2><p>New looks, new legends, and rumors from beyond the gates.</p></div><button type="button" data-go="news" class="outline-action">Read the news →</button></div>
+        <section class="home-news hub-section" aria-labelledby="home-news-title">
+ <div class="hub-heading"><span class="eyebrow">LETTERS FROM THE THRESHOLD</span><h2 id="home-news-title">Latest news</h2><p>Discover what is happening beyond the gates.</p></div>
+ <div class="home-news-layout"><div class="featured-news"><button type="button" id="featured-news-open" class="featured-news-card"><div id="featured-news-art" class="featured-news-art"><span>✥</span></div><div class="featured-news-caption"><span class="eyebrow" id="featured-news-category">COSMETICS</span><strong id="featured-news-title">Saint wardrobe spotlight</strong><span class="featured-news-arrow" aria-hidden="true">↗</span></div></button><div class="featured-news-dots" id="featured-news-dots" role="group" aria-label="Select featured news"></div></div>
+ <div class="home-news-list"><div class="home-news-list-title">Latest dispatches</div><button class="home-news-row" type="button" data-news-open="wardrobe"><span><small>COSMETICS</small><strong>Saint wardrobe spotlight</strong></span><time>Nov 17, 2026</time></button><button class="home-news-row" type="button" data-news-open="patch"><span><small>PATCH NOTES</small><strong>Update 1.4.2 — The companion situation</strong></span><time>Nov 15, 2026</time></button><button class="home-news-row" type="button" data-news-open="avatars"><span><small>ANNOUNCEMENT</small><strong>New feature: class profile pictures</strong></span><time>Nov 13, 2026</time></button><button class="home-news-row" type="button" data-news-open="contest"><span><small>COMMUNITY</small><strong>Design the Legend — community spotlight</strong></span><time>Nov 10, 2026</time></button><button class="home-news-row" type="button" data-news-open="devlog"><span><small>DEVELOPER DIARY</small><strong>Letters from the Threshold — developer diary</strong></span><time>Nov 7, 2026</time></button><button type="button" data-go="news" class="outline-action news-more">View all news →</button></div></div>
+ </section><section class="hub-section community-hub" aria-labelledby="community-title"><div class="hub-heading"><span class="eyebrow">BEYOND THE GAME</span><h2 id="community-title">Join the community</h2><p>Keep up with fellow adventurers, wherever your journey takes you.</p></div><div class="community-links">
+ <a href="../" class="community-link"><span class="community-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></span><span><strong>Afterhour</strong><small>Share your adventure</small></span><span class="community-arrow" aria-hidden="true">›</span></a>
+ <a href="../viewpoint/" class="community-link"><span class="community-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="m10 9 5 3-5 3z" fill="currentColor" stroke="none"/></svg></span><span><strong>Viewpoint</strong><small>Videos and highlights</small></span><span class="community-arrow" aria-hidden="true">›</span></a>
+ <a href="../livewire/" class="community-link"><span class="community-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 3h17v12l-5 5h-5l-4 3v-3H4zM11 7v6m5-6v6"/></svg></span><span><strong>Livewire</strong><small>Streams and live adventures</small></span><span class="community-arrow" aria-hidden="true">›</span></a>
+ </div></section>
+ <section class="hub-section newsletter-hub" aria-labelledby="newsletter-title"><div class="newsletter-copy"><span class="eyebrow">THE MYTHBOUND CHRONICLE</span><h2 id="newsletter-title">Never miss a new legend</h2><p>Subscribe to the official newsletter for game updates, event invitations, wardrobe previews and the occasional gift from the developers.</p></div><form id="newsletter-form" class="newsletter-form"><label for="newsletter-address">Your in-game email address</label><input id="newsletter-address" type="text" value="traveler@mythbound.invalid" readonly aria-describedby="newsletter-note"><label class="newsletter-consent"><input id="newsletter-consent" type="checkbox" required><span>I would like to receive news and event information from Mythbound.</span></label><button class="solid-action" type="submit" id="newsletter-submit">Subscribe now</button><p id="newsletter-status" role="status" aria-live="polite"></p><small id="newsletter-note">Simulated subscription. No real email address or personal data is required; your preference stays in this browser.</small></form></section>
       </section>
 
       <section id="page-discover" class="page" aria-labelledby="discover-title" hidden>
@@ -158,11 +231,7 @@
 
       <section id="page-news" class="page" aria-labelledby="news-title" hidden>
         <div class="inner-hero coral"><span class="eyebrow">NEWS / CHRONICLE BOARD</span><h1 id="news-title">What's new in Mythbound?</h1><p>From the world beyond the gates.</p></div>
-        <div class="news-list">
-          <article class="news-entry"><div class="news-image news-skin">✥</div><div><span class="eyebrow">FEATURED · COSMETICS</span><h2>Saint wardrobe spotlight</h2><p>It's time to make a little room in your collection. An upcoming wardrobe showcase celebrates expressive class styles and the players who love them.</p><span class="news-meta">Fictional preview announcement</span></div></article>
-          <article class="news-entry"><div class="news-image news-event">✧</div><div><span class="eyebrow">COMMUNITY · EVENT</span><h2>Design the Legend</h2><p>Dream up an outfit worthy of the chronicles. The contest that has everyone arguing about cape colors returns in this fictional event preview.</p><span class="news-meta">Fictional preview announcement</span></div></article>
-          <article class="news-entry"><div class="news-image news-update">✶</div><div><span class="eyebrow">GAME UPDATE</span><h2>Chronicle Board: notes from the developers</h2><p>More adventures are waiting to be written. This section is ready for future patch notes, class changes and pretend maintenance announcements.</p><span class="news-meta">Fictional preview announcement</span></div></article>
-        </div>
+        <div class="news-list"><article class="news-entry" id="news-wardrobe"><div class="news-image news-editorial-art" style="background-image:linear-gradient(135deg,#17233b22,#17233b88),url('../BannerSaint.png')"></div><div><span class="eyebrow">COSMETICS</span><h2>Saint wardrobe spotlight</h2><p>A little more light in your wardrobe.</p><span class="news-meta">Nov 17, 2026</span><br><button class="outline-action article-read" type="button" data-news-toggle="wardrobe" aria-expanded="false" aria-controls="article-wardrobe">Read more →</button><div class="news-article-body" id="article-wardrobe" hidden><p>The Wardrobe Team is preparing a collection inspired by the sanctuaries of Mythbound. Expect floral accents, flowing fabrics and far more gold than a reasonable healer needs. As always, looking fabulous does not increase your healing output. We checked.</p></div></div></article><article class="news-entry" id="news-patch"><div class="news-image news-editorial-art" style="background-image:linear-gradient(135deg,#17233b22,#17233b88),url('../mythbound-home-watercolor.jpg')"></div><div><span class="eyebrow">PATCH NOTES</span><h2>Update 1.4.2 — The companion situation</h2><p>A small update with a surprisingly large number of sheep.</p><span class="news-meta">Nov 15, 2026</span><br><button class="outline-action article-read" type="button" data-news-toggle="patch" aria-expanded="false" aria-controls="article-patch">Read more →</button><div class="news-article-body" id="article-patch" hidden><p>Fixed an issue where Herder companions could occupy chairs during party meetings. Resolved a rare issue causing Saints to face the wrong direction while casting a blessing. Improved the visibility of Breaker impact effects. Known issue: some players remain convinced that standing in hostile ground effects is a valid strategy. This is not a bug.</p></div></div></article><article class="news-entry" id="news-avatars"><div class="news-image news-editorial-art">✦</div><div><span class="eyebrow">ANNOUNCEMENT</span><h2>New feature: class profile pictures</h2><p>Give your adventure a face.</p><span class="news-meta">Nov 13, 2026</span><br><button class="outline-action article-read" type="button" data-news-toggle="avatars" aria-expanded="false" aria-controls="article-avatars">Read more →</button><div class="news-article-body" id="article-avatars" hidden><p>Six new class-inspired profile pictures are now available. Change yours from your player profile at any time. Your friends list and whispers will reflect your new look automatically.</p></div></div></article><article class="news-entry" id="news-contest"><div class="news-image news-editorial-art">❃</div><div><span class="eyebrow">COMMUNITY</span><h2>Design the Legend — community spotlight</h2><p>Every legend deserves a little personal style.</p><span class="news-meta">Nov 10, 2026</span><br><button class="outline-action article-read" type="button" data-news-toggle="contest" aria-expanded="false" aria-controls="article-contest">Read more →</button><div class="news-article-body" id="article-contest" hidden><p>Show off your favorite character outfits, share your color combinations and celebrate the creativity of fellow adventurers. Please remember that the wardrobe contest is not a competitive combat mode. No matter how strongly your guild feels about matching capes.</p></div></div></article><article class="news-entry" id="news-devlog"><div class="news-image news-editorial-art" style="background-image:linear-gradient(135deg,#17233b22,#17233b88),url('../mythbound-home-watercolor.jpg')"></div><div><span class="eyebrow">DEVELOPER DIARY</span><h2>Letters from the Threshold — developer diary</h2><p>A glimpse into the next chapter.</p><span class="news-meta">Nov 7, 2026</span><br><button class="outline-action article-read" type="button" data-news-toggle="devlog" aria-expanded="false" aria-controls="article-devlog">Read more →</button><div class="news-article-body" id="article-devlog" hidden><p>Our team is exploring new paths, environments and character appearances for the world beyond the gates. We look forward to sharing more glimpses of our work in future dispatches. Thank you for adventuring with us.</p></div></div></article></div>
       </section>
 
       <section id="page-classes" class="page" aria-labelledby="classes-title" hidden>
@@ -300,6 +369,39 @@
  if(badge){new MutationObserver(syncBadge).observe(badge,{attributes:true,attributeFilter:["hidden"]});syncBadge()}
  new MutationObserver(()=>{if(document.body.classList.contains("mythbound-login-open"))setOpen(false)}).observe(document.body,{attributes:true,attributeFilter:["class"]});
 })();
+</script>
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+ const items=[{"id":"wardrobe","title":"Saint wardrobe spotlight","category":"COSMETICS","image":"../BannerSaint.png","symbol":"✥"},{"id":"patch","title":"Update 1.4.2 — The companion situation","category":"PATCH NOTES","image":"../mythbound-home-watercolor.jpg","symbol":"✧"},{"id":"avatars","title":"New feature: class profile pictures","category":"ANNOUNCEMENT","image":null,"symbol":"✦"},{"id":"contest","title":"Design the Legend — community spotlight","category":"COMMUNITY","image":null,"symbol":"❃"}];
+ let index=0;
+ const art=document.getElementById("featured-news-art"),dots=document.getElementById("featured-news-dots");
+ function showFeatured(i){
+  index=i;const a=items[i];art.replaceChildren();
+  if(a.image){const im=new Image();im.alt="";im.src=a.image;im.onerror=()=>{im.remove();art.textContent=a.symbol};art.append(im)}else{art.textContent=a.symbol}
+  document.getElementById("featured-news-title").textContent=a.title;
+  document.getElementById("featured-news-category").textContent=a.category;
+  dots.querySelectorAll("button").forEach((b,j)=>{b.setAttribute("aria-pressed",String(i===j));b.classList.toggle("is-active",i===j)});
+ }
+ items.forEach((a,i)=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-label",a.title);b.onclick=()=>showFeatured(i);dots.append(b)});
+ function toggleArticle(id,open){
+  const b=document.querySelector('[data-news-toggle="'+id+'"]'),body=document.getElementById("article-"+id);
+  if(!b||!body)return;body.hidden=!open;b.setAttribute("aria-expanded",String(open));b.textContent=open?"Show less ↑":"Read more →";
+ }
+ function openArticle(id){
+  document.querySelector('.main-nav [data-page="news"]').click();
+  toggleArticle(id,true);requestAnimationFrame(()=>document.getElementById("news-"+id)?.scrollIntoView({block:"start",behavior:"smooth"}));
+ }
+ document.querySelectorAll("[data-news-open]").forEach(b=>b.onclick=()=>openArticle(b.dataset.newsOpen));
+ document.querySelectorAll("[data-news-toggle]").forEach(b=>b.onclick=()=>toggleArticle(b.dataset.newsToggle,b.getAttribute("aria-expanded")!=="true"));
+ document.getElementById("featured-news-open").onclick=()=>openArticle(items[index].id);
+ showFeatured(0);
+ const form=document.getElementById("newsletter-form"),check=document.getElementById("newsletter-consent"),submit=document.getElementById("newsletter-submit"),status=document.getElementById("newsletter-status");
+ const key="mythbound-chronicle-subscription-v1";let subscribed=false;
+ try{subscribed=localStorage.getItem(key)==="true"}catch{}
+ function render(){check.checked=subscribed;check.disabled=subscribed;submit.textContent=subscribed?"Unsubscribe":"Subscribe now";status.textContent=subscribed?"✧ You are subscribed to the Mythbound Chronicle!":""}
+ form.addEventListener("submit",event=>{event.preventDefault();if(!subscribed&&!check.checked)return;subscribed=!subscribed;try{localStorage.setItem(key,String(subscribed))}catch{}render();if(!subscribed)status.textContent="You have unsubscribed."});
+ render();
+});
 </script>
 </body>
 </html>
