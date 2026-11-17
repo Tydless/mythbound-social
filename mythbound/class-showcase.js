@@ -138,7 +138,8 @@ function renderPreview(){
  if(note)note.textContent="Concept illustration · final models coming later";
  if(active==="saint"){
   const picture=document.createElement("img");
-  picture.className="saint-portrait";
+  picture.className="saint-portrait"+(activePath===2?" fallen-saint-portrait":"");
+  const stage=document.createElement("div");stage.className="saint-portrait-stage";
   picture.alt=cap(gender)+" "+artworkName+" class illustration in an ornate floral frame";
   picture.loading="eager";
   picture.decoding="async";
@@ -153,7 +154,7 @@ function renderPreview(){
    preview.innerHTML=avatarArt();
    if(note)note.textContent="Preview silhouette · artwork pending upload";
   });
-  preview.append(picture);
+  stage.append(picture);preview.append(stage);
   picture.src=artwork||(gender==="female"?"../FemaleSaint.png":"../MaleSaint.png");
  }else{
   preview.innerHTML=avatarArt();
