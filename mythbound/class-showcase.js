@@ -196,8 +196,11 @@ function renderStats(){
  for(let i=0;i<5;i++){
   const [ix,iy]=point(i,129),color=colors[i];
   const group=node("g",{transform:"translate("+ix.toFixed(2)+" "+iy.toFixed(2)+")","aria-hidden":"true"});
-  node("circle",{r:17,fill:"#172238",stroke:color,"stroke-width":1.5},group);
+  node("circle",{r:17,fill:"#172238","fill-opacity":".48",stroke:color,"stroke-width":1.5},group);
   node("path",{d:glyphs[i],transform:"translate(-10 -10) scale(.83)",stroke:color,fill:"none","stroke-width":2.1,"stroke-linecap":"round","stroke-linejoin":"round"},group);
+  const icon=node("image",{href:"../Icon"+statLabels[i]+".png",x:-21,y:-21,width:42,height:42,preserveAspectRatio:"xMidYMid meet"},group);
+  icon.addEventListener("load",()=>{for(const child of group.children)if(child!==icon)child.setAttribute("visibility","hidden")});
+  icon.addEventListener("error",()=>icon.remove());
   const l=labelPositions[i];
   node("text",{x:l.x,y:l.y,"text-anchor":l.a,fill:color,class:"radar-label"},svg,statLabels[i]);
  }
