@@ -54,9 +54,38 @@ function avatarArt(){
  return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 380 420' role='img' aria-label='"+gender+" "+active+" concept avatar'><circle cx='190' cy='218' r='167' fill='none' stroke='"+c.color+"' opacity='.35' stroke-dasharray='3 9'/>"+aura+wings+sheep+tail+lower+dress+blade+"<path d='M146 170Q189 143 232 168L247 276Q180 294 132 269Z' fill='"+c.color+"' stroke='#e3e0dc' stroke-width='4'/><path d='M147 176l-32 79M229 176l41 74' fill='none' stroke='"+c.color+"' stroke-width='20' stroke-linecap='round'/>"+fists+"<circle cx='189' cy='110' r='"+size+"' fill='"+skin+"' stroke='#f6dec8' stroke-width='4'/><path d='"+hairShape+"' fill='"+hair+"' stroke='#688295' stroke-width='4'/><path d='M172 119h9m19 0h9' stroke='#635b5b' stroke-width='3' stroke-linecap='round'/><path d='M184 139q7 4 13-1' fill='none' stroke='#936c70' stroke-width='2'/></svg>";
 }
 function renderPreview(){
- preview.innerHTML=avatarArt();
+ // Real artwork for both Saint appearances, with the old concept silhouette
+ // as a fallback until the two image files have been uploaded to GitHub.
+ preview.replaceChildren();
+ preview.classList.remove("has-saint-art");
  preview.style.setProperty("--preview-accent",DATA[active].color);
- preview.setAttribute("aria-label",gender+" "+active+" concept preview");
+ preview.setAttribute("aria-label",gender+" "+active+" class artwork preview");
+ const note=document.querySelector(".preview-disclaimer");
+ if(note)note.textContent="Concept illustration · final models coming later";
+ if(active==="saint"){
+  const picture=document.createElement("img");
+  picture.className="saint-portrait";
+  picture.alt=gender==="female"
+   ?"Female Saint class illustration: white-haired healer with holy staff in an ornate gold floral frame"
+   :"Male Saint class illustration: long-haired healer with holy staff in an ornate gold floral frame";
+  picture.loading="eager";
+  picture.decoding="async";
+  picture.addEventListener("load",()=>{
+   if(!picture.isConnected)return;
+   preview.classList.add("has-saint-art");
+   if(note)note.textContent="Saint · illustrated class artwork";
+  });
+  picture.addEventListener("error",()=>{
+   if(!picture.isConnected)return;
+   preview.classList.remove("has-saint-art");
+   preview.innerHTML=avatarArt();
+   if(note)note.textContent="Preview silhouette · artwork pending upload";
+  });
+  preview.append(picture);
+  picture.src=gender==="female"?"../FemaleSaint.png":"../MaleSaint.png";
+ }else{
+  preview.innerHTML=avatarArt();
+ }
  $("preview-caption").textContent=gender.toUpperCase()+" · DEFAULT FORM";
  document.querySelectorAll(".gender-option").forEach(b=>{
   const on=b.dataset.gender===gender;
