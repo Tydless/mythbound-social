@@ -146,7 +146,7 @@ function playTransformationAudio(fallen){
  try{
   const key=fallen?"fire":"sparkle";
   if(!transformBuffers[key]){
-   const rate=ac.sampleRate,duration=fallen?1.65:1.55;
+   const rate=ac.sampleRate,duration=fallen?1.65:1.85;
    const buffer=ac.createBuffer(1,Math.ceil(rate*duration),rate),data=buffer.getChannelData(0);
    if(fallen){
     let low=0,mid=0;
@@ -167,19 +167,45 @@ function playTransformationAudio(fallen){
      }
     }
    }else{
-    const notes=[{t:.04,f:1046.50},{t:.13,f:1318.51},{t:.23,f:1567.98},{t:.36,f:2093.00},{t:.49,f:2637.02},{t:.68,f:3135.96}];
-    for(let k=0;k<notes.length;k++){
-     const {t,f}=notes[k],start=Math.floor(t*rate);
-     for(let i=start;i<data.length;i++){
-      const s=(i-start)/rate,env=Math.min(1,s/.012)*Math.exp(-s/(.19+k*.012));
-      const wave=Math.sin(2*Math.PI*f*s)+.26*Math.sin(2*Math.PI*f*2.01*s)+.11*Math.sin(2*Math.PI*f*2.76*s);
-      data[i]+=wave*env*(.105-k*.008)*Math.min(1,(data.length-i)/(rate*.075));
+    // A single breathing, luminous chord, not a sequence of bell notes.
+    // Layered soft vowel-like harmonics and a diffuse high-frequency shimmer.
+    const tau=2*Math.PI;
+    const voices=[
+     {f:220,g:.070},{f:329.6276,g:.060},{f:440,g:.052},{f:554.3653,g:.026}
+    ];
+    const harmonics=[1,.30,.20,.075,.045];
+    for(const voice of voices){
+     for(const detune of [-.0018,.0018]){
+      const phase=Math.random()*tau;
+      for(let i=0;i<data.length;i++){
+       const t=i/rate,q=t/duration;
+       const attack=Math.sin(Math.PI*.5*Math.min(1,t/.45))**2;
+       const release=Math.cos(Math.PI*.5*Math.max(0,(q-.37)/.63))**2;
+       const angle=tau*voice.f*(1+detune)*t+phase+.10*Math.sin(tau*1.7*t+phase);
+       let vowel=0;
+       for(let k=0;k<harmonics.length;k++)vowel+=harmonics[k]*Math.sin(angle*(k+1)+k*.4);
+       data[i]+=voice.g*.5*vowel*attack*release;
+      }
      }
     }
-    let smooth=0;
+    let slow=0,fast=0;
     for(let i=0;i<data.length;i++){
-     const t=i/rate,n=Math.random()*2-1;smooth+=.25*(n-smooth);
-     data[i]+=(n-smooth)*.016*Math.sin(Math.PI*t/duration)**2;
+     const t=i/rate,q=t/duration,n=Math.random()*2-1;
+     slow+=.025*(n-slow);fast+=.26*(n-fast);
+     const air=Math.sin(Math.PI*q)**2;
+     const shimmer=Math.sin(tau*1318.510*t+.45*Math.sin(tau*.9*t))*.010+
+       Math.sin(tau*1760*t+.35*Math.sin(tau*1.3*t))*.007;
+     data[i]+=air*((fast-slow)*.040+shimmer);
+    }
+    // A very quiet diffuse tail gives the swell a spacious, chapel-like decay.
+    const dry=data.slice();
+    for(const [delay,level] of [[.063,.13],[.117,.095],[.173,.065],[.247,.04]]){
+     const offset=Math.round(delay*rate);
+     for(let i=offset;i<data.length;i++)data[i]+=dry[i-offset]*level;
+    }
+    for(let i=0;i<data.length;i++){
+     const tail=Math.min(1,(data.length-1-i)/(rate*.18));
+     data[i]*=tail*tail;
     }
    }
    transformBuffers[key]=buffer;
