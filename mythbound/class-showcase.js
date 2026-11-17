@@ -148,7 +148,7 @@ function playTransformationAudio(fallen){
  try{
   const key=fallen?"fire":"sparkle";
   if(!transformBuffers[key]){
-   const rate=ac.sampleRate,duration=fallen?1.65:1.85;
+   const rate=ac.sampleRate,duration=fallen?2.48:1.85;
    const buffer=ac.createBuffer(1,Math.ceil(rate*duration),rate),data=buffer.getChannelData(0);
    if(fallen){
     let low=0,mid=0;
@@ -158,8 +158,8 @@ function playTransformationAudio(fallen){
      const env=Math.min(1,t/.20)*Math.pow(Math.max(0,1-t/duration),.75);
      data[i]=(low*.31+(n-mid)*.055)*env;
     }
-    for(let k=0;k<43;k++){
-     const start=Math.floor((.09+Math.random()*1.26)*rate);
+    for(let k=0;k<63;k++){
+     const start=Math.floor((.09+Math.random()*(duration-.30))*rate);
      const length=Math.floor((.007+Math.random()*.031)*rate);
      const strength=.08+Math.random()*.27;
      let previous=0;
@@ -319,30 +319,51 @@ function burnPortrait(stage,oldImage,picture,isFallen){
    for(const L of layers){const gx=x/L.s,gy=y/L.s,ix=Math.floor(gx),iy=Math.floor(gy),u=smooth(gx-ix),v=smooth(gy-iy),i=iy*L.cols+ix;const a=L.grid[i]*(1-u)+L.grid[i+1]*u,b=L.grid[i+L.cols]*(1-u)+L.grid[i+L.cols+1]*u;n+=(a*(1-v)+b*v-.5)*L.a}
    field[y*w+x]=.78*(1-y/h)+.10*x/w+n+.11;
   }
-  const particles=[];const pale=isFallen?[255,174,115]:[255,248,197],hot=isFallen?[222,48,36]:[240,183,80];
+  const particles=[];
+  // A continuous temperature ramp: glowing gold/rose at the consuming edge,
+  // through crimson and wine into smoky violet. Blend two ramps across the field.
+  const warm=[[255,232,181],[255,151,107],[225,53,67],[109,28,64],[42,19,52]];
+  const cool=[[255,213,230],[240,120,173],[173,50,116],[87,34,101],[35,21,56]];
+  const palette=new Uint8Array(32*128*3);
+  for(let u=0;u<32;u++)for(let k=0;k<128;k++){
+   const v=k/127*4,i=Math.min(3,Math.floor(v)),t=smooth(v-i),mix=u/31,j=(u*128+k)*3;
+   for(let ch=0;ch<3;ch++)palette[j+ch]=Math.round((warm[i][ch]*(1-t)+warm[i+1][ch]*t)*(1-mix)+(cool[i][ch]*(1-t)+cool[i+1][ch]*t)*mix);
+  }
+  const hue=new Uint8Array(w*h);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+   const i=y*w+x,variation=.5+.29*Math.sin(x/w*6.1+y/h*3.2)+.15*Math.sin(x/w*12.4-y/h*4.5);
+   hue[i]=Math.max(0,Math.min(31,Math.round(31*variation)));
+  }
+  const emberColors=[[255,224,173],[255,138,109],[240,87,127],[222,124,203],[174,108,233]];
+  const emberGlows=["#d67947","#c33153","#ac295f","#a03f9b","#6e3d9a"];
   stage.append(canvas);ctx.putImageData(original,0,0);stage.classList.add("portrait-revealing");oldImage.style.visibility="hidden";
-  let begin=0,last=0;const duration=1450;
+  let begin=0,last=0;const duration=2300;
   function tick(now){
    if(!stage.isConnected)return;
    if(!begin){begin=now;last=now}
    const elapsed=now-begin,dt=Math.min(40,now-last)/1000;last=now;
-   const p=Math.min(1,elapsed/duration),threshold=-.05+1.15*(p*p*(3-2*p));
+   const p=Math.min(1,elapsed/duration),threshold=-.12+1.24*(.60*p+.40*p*p*(3-2*p));
    for(let i=0,j=0;i<field.length;i++,j+=4){
-    const d=field[i]-threshold,a=Math.max(0,Math.min(1,d/.026)),edge=Math.max(0,1-Math.abs(d-.024)/.045)*a;
-    dst[j]=src[j]*(1-edge)+pale[0]*edge;dst[j+1]=src[j+1]*(1-edge)+(hot[1]+(pale[1]-hot[1])*edge)*edge;dst[j+2]=src[j+2]*(1-edge)+(hot[2]+(pale[2]-hot[2])*edge)*edge;dst[j+3]=src[j+3]*a;
+    const d=field[i]-threshold,a=Math.max(0,Math.min(1,d/.035));
+    if(d<=0){dst[j+3]=0;continue}
+    if(d>=.112){dst[j]=src[j];dst[j+1]=src[j+1];dst[j+2]=src[j+2];dst[j+3]=src[j+3];continue}
+    const heat=Math.max(0,Math.min(127,Math.round((d-.008)/.104*127)));
+    const index=(hue[i]*128+heat)*3;
+    const edge=a*(1-smooth(Math.max(0,Math.min(1,(d-.018)/.094))));
+    dst[j]=src[j]*(1-edge)+palette[index]*edge;dst[j+1]=src[j+1]*(1-edge)+palette[index+1]*edge;dst[j+2]=src[j+2]*(1-edge)+palette[index+2]*edge;dst[j+3]=src[j+3]*a;
    }
    ctx.putImageData(frame,0,0);
-   if(p>.04&&p<.96)for(let k=0;k<100;k++){const i=Math.floor(Math.random()*field.length);if(src[i*4+3]>160&&Math.abs(field[i]-threshold)<.018&&particles.length<85){particles.push({x:i%w,y:Math.floor(i/w),vx:(Math.random()-.5)*45,vy:-22-Math.random()*65,age:0,life:.28+Math.random()*.55,r:.6+Math.random()*1.6})}}
+   if(p>.04&&p<.96)for(let k=0;k<100;k++){const i=Math.floor(Math.random()*field.length);if(src[i*4+3]>160&&Math.abs(field[i]-threshold)<.018&&particles.length<85){particles.push({x:i%w,y:Math.floor(i/w),vx:(Math.random()-.5)*45,vy:-22-Math.random()*65,age:0,life:.38+Math.random()*.65,r:.6+Math.random()*1.6,color:Math.floor(Math.random()*emberColors.length)})}}
    ctx.globalCompositeOperation="lighter";
-   for(let i=particles.length-1;i>=0;i--){const s=particles[i];s.age+=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;if(s.age>=s.life){particles.splice(i,1);continue}const a=Math.sin(Math.PI*s.age/s.life);ctx.globalAlpha=a*.75;ctx.fillStyle="rgb("+pale.join(",")+")";ctx.shadowColor="rgb("+hot.join(",")+")";ctx.shadowBlur=5;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill()}
+   for(let i=particles.length-1;i>=0;i--){const s=particles[i];s.age+=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;if(s.age>=s.life){particles.splice(i,1);continue}const a=Math.sin(Math.PI*s.age/s.life);ctx.globalAlpha=a*.75;ctx.fillStyle="rgb("+emberColors[s.color].join(",")+")";ctx.shadowColor=emberGlows[s.color];ctx.shadowBlur=6;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill()}
    ctx.globalAlpha=1;ctx.shadowBlur=0;ctx.globalCompositeOperation="source-over";
-   if(elapsed<duration+550)requestAnimationFrame(tick);else finish();
+   if(elapsed<duration+700)requestAnimationFrame(tick);else finish();
   }
   requestAnimationFrame(tick);
  }catch(e){oldImage.style.visibility="";stage.classList.remove("portrait-revealing");fallback()}
 }
 
-function renderPreview(){
+function renderPreview(allowTransformation=false){
  // Real artwork for both Saint appearances, with the old concept silhouette
  // as a fallback until the two image files have been uploaded to GitHub.
  stopTransformationAudio();
@@ -364,7 +385,9 @@ function renderPreview(){
   const stage=document.createElement("div");stage.className="saint-portrait-stage";
   picture.alt=cap(gender)+" "+artworkName+" class illustration in an ornate floral frame";
   const source=artwork||(gender==="female"?"../FemaleSaint.png":"../MaleSaint.png");
-  const animate=oldImage&&oldImage.src!==new URL(source,document.baseURI).href&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Only a change between the holy and corrupted paths triggers a transformation.
+  // Gender changes and ordinary class selection are instantaneous.
+  const animate=allowTransformation&&oldImage&&oldImage.classList.contains("fallen-saint-portrait")!==isFallen&&oldImage.src!==new URL(source,document.baseURI).href&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if(animate){
    prepareTransformationAudio();
    oldImage.setAttribute("aria-hidden","true");oldImage.alt="";
@@ -553,7 +576,7 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
  if(changed)stopVoice();
  activePath=next;chosen=0;renderPath();
  if(changed){
-  renderPreview();updateVoiceButton();
+  renderPreview(true);updateVoiceButton();
   if(active==="saint"&&activePath===2)playVoice("Switch",gender==="male");
  }
 }));
@@ -647,7 +670,7 @@ document.querySelectorAll("[data-class]").forEach(button=>{
 });
 document.querySelectorAll(".gender-option").forEach(button=>button.addEventListener("click",()=>{
  const next=button.dataset.gender;if(next===gender||!["male","female"].includes(next))return;
- gender=next;renderPreview();playVoice("Switch",active==="saint"&&activePath===2&&gender==="male");
+ gender=next;renderPreview(false);playVoice("Switch",active==="saint"&&activePath===2&&gender==="male");
 }));
 draw();updateVoiceButton();
 })();
