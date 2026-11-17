@@ -84,11 +84,11 @@ function stopVoice(clearStatus=true){
  if(clearStatus)voiceStatus.textContent="";
  updateVoiceButton();
 }
-function playVoice(kind,quietMissing=false){
+function playVoice(kind){
  stopVoice();
  const filename="Voice"+voiceClass()+cap(gender)+kind+".mp3";
  const audio=new Audio();audio.preload="auto";voicePlaying=audio;
- const fail=()=>{if(voicePlaying!==audio)return;stopVoice(quietMissing);if(!quietMissing)voiceStatus.textContent="Voice preview unavailable — recording pending or playback blocked."};
+ const fail=()=>{if(voicePlaying!==audio)return;stopVoice(false);voiceStatus.textContent="Voice preview unavailable — recording pending or playback blocked."};
  audio.addEventListener("playing",()=>{
   if(voicePlaying!==audio)return;
   if(music&&musicVolume===null){try{musicVolume=music.volume;music.volume=musicVolume*.28}catch{}}
@@ -577,7 +577,7 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
  activePath=next;chosen=0;renderPath();
  if(changed){
   renderPreview(true);updateVoiceButton();
-  if(active==="saint"&&activePath===2)playVoice("Switch",gender==="male");
+  if(active==="saint"&&activePath===2)playVoice("Switch");
  }
 }));
 const atmosphere=document.querySelector(".class-atmosphere");
@@ -670,7 +670,7 @@ document.querySelectorAll("[data-class]").forEach(button=>{
 });
 document.querySelectorAll(".gender-option").forEach(button=>button.addEventListener("click",()=>{
  const next=button.dataset.gender;if(next===gender||!["male","female"].includes(next))return;
- gender=next;renderPreview(false);playVoice("Switch",active==="saint"&&activePath===2&&gender==="male");
+ gender=next;renderPreview(false);playVoice("Switch");
 }));
 draw();updateVoiceButton();
 })();
