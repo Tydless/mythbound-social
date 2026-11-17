@@ -224,3 +224,13 @@
 @media(max-width:650px){
  .class-tile[data-class="saint"]{background-position:center,65% center,center;background-image:linear-gradient(90deg,rgba(19,26,45,.72),rgba(19,26,45,.12)),url("../BannerSaint.png"),linear-gradient(145deg,#8e777d,#41496b)}
 }
+
+
+/* Compact class voice preview control */
+.class-preview-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.class-voice-button{display:grid;place-items:center;width:36px;height:36px;border:1px solid #93a5b46e;border-radius:6px;background:#131e30;color:var(--class-highlight,#f3d5a5);padding:0;transition:background .2s,box-shadow .2s}
+.class-voice-button:hover,.class-voice-button.is-speaking{background:#34465e;border-color:var(--class-highlight,#f3d5a5)}
+.class-voice-button.is-speaking{box-shadow:0 0 12px #e5c58b38}
+.class-voice-status{display:block;color:#b9c6d8;font-size:11px;padding:0 22px}
+.class-voice-status:empty{display:none}
+@media(max-width:650px){.class-voice-status{padding:0 14px}}
