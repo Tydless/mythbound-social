@@ -204,6 +204,31 @@
 .radar-value{font-family:'DM Sans',system-ui,sans-serif;font-size:12px;font-weight:600;letter-spacing:.04em}
 @media(max-width:760px){.class-showcase .showcase-info{padding:22px 13px 16px}.class-showcase .showcase-info>.showcase-section-title{margin-top:22px}.stat-radar{max-width:490px}}
 </style>
+<style>
+/* Class environments: a page-wide backdrop behind, not inside, the codex cards. */
+.class-showcase{position:relative;isolation:isolate;--environment-light:#c3a171;--environment-dark:#29374e}
+.class-showcase .class-atmosphere{position:absolute;inset:0 calc(-1 * clamp(20px,4vw,65px)) -85px;z-index:-1;overflow:hidden;pointer-events:none;mask-image:linear-gradient(to bottom,transparent 0%,#0003 12%,#000b 33%,#000 58%,#000 88%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#0003 12%,#000b 33%,#000 58%,#000 88%,transparent 100%)}
+.class-environment,.class-landscape,.class-embers{position:absolute;inset:0}
+.class-environment{background:radial-gradient(ellipse at 55% 73%,color-mix(in srgb,var(--environment-light) 22%,transparent),transparent 62%),linear-gradient(180deg,transparent,var(--environment-dark) 84%,#141d30);transition:background-color .35s}
+.class-showcase[data-environment="breaker"]{--environment-light:#ca7850;--environment-dark:#462630}
+.class-showcase[data-environment="animar"]{--environment-light:#47c5b2;--environment-dark:#123e43}
+.class-showcase[data-environment="herder"]{--environment-light:#b6d17b;--environment-dark:#304631}
+.class-showcase[data-environment="elemis"]{--environment-light:#82b9f0;--environment-dark:#263858}
+.class-showcase[data-environment="strider"]{--environment-light:#a990dc;--environment-dark:#362b50}
+.class-showcase[data-environment="saint"]{--environment-light:#e9c486;--environment-dark:#414056}
+.class-landscape{background-size:cover;background-position:center 78%;background-repeat:no-repeat;opacity:0;transition:opacity .45s ease}
+.class-atmosphere.has-landscape .class-landscape{opacity:.48}
+.class-atmosphere.has-landscape .class-environment{z-index:1;background:linear-gradient(180deg,transparent 0%,#121a2e28 30%,#121a2e70 66%,#121a2e80 100%),radial-gradient(ellipse at 50% 75%,color-mix(in srgb,var(--environment-light) 13%,transparent),transparent 74%)}
+.class-embers{z-index:2}
+.class-ember{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:var(--size);border-radius:50%;color:#f6d697;background:currentColor;box-shadow:0 0 5px #f8d392aa,0 0 12px #eab86566;opacity:.2;animation:mythbound-ember var(--duration) ease-in-out var(--delay) infinite;will-change:transform,opacity}
+.class-ember.is-star{border-radius:0;clip-path:polygon(50% 0%,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0% 50%,38% 38%)}
+@keyframes mythbound-ember{0%,100%{transform:translate(0,16px);opacity:.06}40%{opacity:.55}75%{transform:translate(var(--drift),-28px);opacity:.23}}
+.class-showcase .showcase-heading #class-name{color:var(--class-highlight);text-shadow:0 0 9px color-mix(in srgb,var(--class-highlight) 56%,transparent),0 0 25px color-mix(in srgb,var(--class-highlight) 28%,transparent)}
+.class-showcase .showcase-info{background:radial-gradient(ellipse at 50% 75%,color-mix(in srgb,#1a253bf2 90%,var(--class-highlight) 10%),#172135f5 75%)}
+.class-showcase .path-overview{background:color-mix(in srgb,#141e30f2 93%,var(--class-highlight) 7%)}
+@media(max-width:760px){.class-atmosphere .class-landscape{background-position:center bottom}.class-showcase .class-atmosphere{mask-image:linear-gradient(to bottom,transparent,#000 45%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 45%,#000 90%,transparent)}.class-ember:nth-child(n+24){display:none}}
+@media(prefers-reduced-motion:reduce){.class-ember{animation:none;opacity:.24;will-change:auto}.class-landscape{transition:none}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -296,6 +321,7 @@
         </div>
 
         <section id="class-details" class="class-details class-showcase" aria-labelledby="class-name">
+          <div class="class-atmosphere" aria-hidden="true"><div class="class-environment"></div><div class="class-landscape"></div><div class="class-embers"></div></div>
           <div class="showcase-overline"><span>THE CLASS CODEX <span aria-hidden="true">/</span> BASIC PATH</span><span id="class-index">06 / 06</span></div>
           <div class="showcase-columns">
             <div class="showcase-info">
