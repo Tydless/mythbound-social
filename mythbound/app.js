@@ -38,6 +38,7 @@ function selectClass(name){
 document.querySelectorAll("[data-class]").forEach(b=>b.addEventListener("click",()=>{navigate("classes");selectClass(b.dataset.class);document.getElementById("class-details").scrollIntoView({behavior:"smooth",block:"nearest"})}));
 function closePanel(){overlay.hidden=true;document.body.classList.remove("sheet-open");if(previousFocus&&document.contains(previousFocus))previousFocus.focus()}
 function openPanel(templateId){
+  if(window.MythboundAccount?.isSignedIn()===false)return;
   previousFocus=document.activeElement;
   sheetContent.replaceChildren(document.getElementById(templateId).content.cloneNode(true));
   overlay.hidden=false;document.body.classList.add("sheet-open");
@@ -46,7 +47,7 @@ function openPanel(templateId){
   if(templateId==="whisper-template"){document.getElementById("reply-form").addEventListener("submit",handleReply)}
 }
 function openProfile(){openPanel("profile-template")}
-function openWhisper(){openPanel("whisper-template");window.MythboundSocial?.markSeen()}
+function openWhisper(){if(window.MythboundAccount?.isSignedIn()===false)return;openPanel("whisper-template");window.MythboundSocial?.markSeen()}
 document.getElementById("fighter-friend").addEventListener("click",openProfile);
 document.getElementById("rail-whisper").addEventListener("click",openWhisper);
 headerWhisper.addEventListener("click",()=>window.MythboundSocial?.openInbox());
@@ -67,6 +68,7 @@ document.addEventListener("keydown",e=>{
 });
 function handleReply(e){
   e.preventDefault();
+  if(window.MythboundAccount?.isSignedIn()===false)return;
   const status=document.getElementById("reply-status");
   if(!DREAMJOURNEY_URL || !/^https:\/\/(?:www\.)?dreamjourneyai\.com\//i.test(DREAMJOURNEY_URL)){
     status.textContent="The Dreamjourney character URL hasn't been configured yet. Add it to DREAMJOURNEY_URL in mythbound/app.js before publishing the full experience.";
