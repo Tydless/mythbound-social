@@ -329,6 +329,13 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
 }
 @media (min-width:761px){.site-footer{padding-bottom:55px}}
 </style>
+<style>
+/* Fine alignment of the floating control and desktop codex. */
+.floating-music#music-toggle{position:fixed;display:grid;grid-template:1fr / 1fr;place-items:center}
+.floating-music#music-toggle .music-note{grid-area:1/1;margin:0;transform:translate(0,1px);width:23px;height:23px}
+.floating-music#music-toggle .music-state{position:absolute}
+@media(min-width:761px){.class-showcase .showcase-info{transform:translateY(-12px)}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -489,7 +496,7 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
 
   <button type="button" id="floating-whisper" class="floating-whisper" aria-label="Read new whisper"><span aria-hidden="true">✉</span> <span>1 new whisper</span></button>
 
-  <button type="button" class="music-toggle floating-music" id="music-toggle" aria-label="Pause Mythbound soundtrack" aria-pressed="true" title="Toggle background music"><svg class="music-note" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V5l12-3v13M9 8l12-3"/><ellipse cx="5.8" cy="17.5" rx="3.2" ry="2.4" fill="currentColor" stroke="none"/><ellipse cx="17.8" cy="15.5" rx="3.2" ry="2.4" fill="currentColor" stroke="none"/><path class="music-slash" d="M3 3l18 18" stroke-width="2.1"/></svg><span class="music-state screen-reader-only">Music On</span></button>
+  <button type="button" class="music-toggle floating-music" id="music-toggle" aria-label="Pause Mythbound soundtrack" aria-pressed="true" title="Toggle background music"><svg class="music-note" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V5l11-3v13M9 8l11-3"/><ellipse cx="5.8" cy="17.5" rx="3.2" ry="2.4" fill="currentColor" stroke="none"/><ellipse cx="16.8" cy="15.5" rx="3.2" ry="2.4" fill="currentColor" stroke="none"/><path class="music-slash" d="M3 3l18 18" stroke-width="2.1"/></svg><span class="music-state screen-reader-only">Music On</span></button>
   <div id="overlay" class="overlay" hidden>
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
       <div class="sheet-top"><span class="eyebrow" id="sheet-kicker">MYTHBOUND</span><button type="button" id="sheet-close" class="sheet-close" aria-label="Close panel">✕</button></div>
