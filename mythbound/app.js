@@ -85,51 +85,75 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
 
 
 /* MYTHBOUND WEBSITE SOUNDTRACK
-   Plays the complete original recording, then repeats it.
-   Sound is on by default unless the visitor chooses mute.
-   Audible autoplay is restricted by browsers, so a first interaction can start it. */
+   Entire original track repeats; music is enabled unless the visitor muted it.
+   Audible autoplay is browser-controlled. A real interaction resumes it.
+   When blocked, clicking Play Music starts playback instead of turning it off. */
 (function installMythboundTheme(){
   const audio=document.getElementById("mythbound-theme");
   const toggle=document.getElementById("music-toggle");
   const label=toggle?.querySelector(".music-state");
   const live=document.getElementById("music-announcement");
   if(!audio||!toggle||!label)return;
-  let enabled=true;
+  let enabled=true, blocked=false, unavailable=false, pending=false;
   try{enabled=localStorage.getItem("mythbound-music-enabled")!=="false"}catch{}
-  let blocked=false, missing=false;
   audio.volume=0.30;
   audio.loop=true;
-  const announce=s=>{if(live)live.textContent=s};
+  audio.muted=false;
+  const announce=message=>{if(live)live.textContent=message};
+  function save(){
+    try{localStorage.setItem("mythbound-music-enabled",String(enabled))}catch{}
+  }
   function sync(){
+    const isPlaying=enabled&&!audio.paused;
     toggle.setAttribute("aria-pressed",String(enabled));
-    toggle.classList.toggle("needs-gesture",enabled&&blocked&&audio.paused);
-    label.textContent=enabled?"Music On":"Music Off";
-    toggle.setAttribute("aria-label",enabled?"Mute Mythbound background music":"Unmute Mythbound background music");
-    toggle.title=enabled?(missing?"Audio file unavailable":blocked?"Music enabled; click anywhere to allow playback":"Mute music"):"Unmute music";
+    toggle.classList.toggle("needs-gesture",enabled&&!isPlaying);
+    label.textContent=!enabled?"Music Off":isPlaying?"Music On":"Play Music";
+    toggle.setAttribute("aria-label",!enabled
+      ?"Enable Mythbound soundtrack"
+      :isPlaying?"Mute Mythbound soundtrack":"Play Mythbound soundtrack");
+    toggle.title=!enabled?"Turn soundtrack on":unavailable?"Soundtrack file unavailable"
+      :isPlaying?"Mute soundtrack":"Click to play: your browser may require interaction";
   }
-  function persist(){try{localStorage.setItem("mythbound-music-enabled",String(enabled))}catch{}}
   function tryPlay(){
-    if(!enabled||missing||!audio.paused)return;
-    const attempt=audio.play();
-    if(attempt && typeof attempt.then==="function"){
-      attempt.then(()=>{blocked=false;sync()}).catch(()=>{blocked=true;sync()});
-    }
+    if(!enabled||unavailable||pending||!audio.paused)return;
+    pending=true;
+    try{
+      const p=audio.play();
+      if(p&&typeof p.then==="function"){
+        p.then(()=>{
+          pending=false;blocked=false;
+          // If muted during the pending request, do not continue playing.
+          if(!enabled)audio.pause();
+          sync();
+        }).catch(()=>{
+          pending=false;
+          blocked=true;sync();
+        });
+      }else{pending=false;sync()}
+    }catch{pending=false;blocked=true;sync()}
   }
-  // User's explicit click ALWAYS toggles the setting, even if sound was blocked.
   toggle.addEventListener("click",()=>{
-    enabled=!enabled;
-    persist();
-    if(enabled){blocked=false;tryPlay();announce("Music enabled")}
-    else{audio.pause();blocked=false;announce("Music muted")}
+    if(!enabled){
+      enabled=true;unavailable=false;save();tryPlay();announce("Music enabled.");
+    }else if(audio.paused){
+      // A blocked autoplay click must START music, not switch the default on state off.
+      tryPlay();
+      announce("Starting Mythbound background music.");
+    }else{
+      enabled=false;save();audio.pause();
+      announce("Music muted.");
+    }
     sync();
   });
-  // Most browsers allow playback after an ordinary click or keyboard gesture.
-  // The music button is excluded so a click to mute never immediately restarts.
-  document.addEventListener("pointerdown",e=>{if(!toggle.contains(e.target))tryPlay()}, {passive:true});
-  document.addEventListener("keydown",e=>{if(!toggle.contains(e.target))tryPlay()});
-  audio.addEventListener("error",()=>{missing=true;sync();announce("Music file could not be loaded")});
+  // Playback request stays in the user-activation event; no off/on workaround needed.
+  document.addEventListener("pointerdown",()=>{if(enabled)tryPlay()},true);
+  document.addEventListener("keydown",()=>{if(enabled)tryPlay()},true);
   audio.addEventListener("play",()=>{blocked=false;sync()});
   audio.addEventListener("pause",sync);
+  audio.addEventListener("canplay",()=>{if(enabled)tryPlay()});
+  audio.addEventListener("error",()=>{unavailable=true;pending=false;sync();announce("The music file could not be loaded.")});
+  window.addEventListener("pageshow",()=>{if(enabled)tryPlay()});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&enabled)tryPlay()});
   sync();
   if(enabled)tryPlay();else audio.pause();
 })();
