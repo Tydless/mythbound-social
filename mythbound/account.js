@@ -42,13 +42,13 @@
     if(!profile)return;
     const avatar=getAvatar(profile.avatar);
     const sigil=account.querySelector(".account-sigil"),label=account.querySelector(".account-label");
-    if(sigil){sigil.hidden=false;sigil.classList.add("mb-account-portrait");sigil.replaceChildren(portrait(avatar))}
+    if(sigil){sigil.hidden=false;sigil.classList.add("mb-account-portrait");sigil.replaceChildren(portrait(avatar));sigil.dataset.presence="online";sigil.title="Online"}
     if(label){
-      const online=document.createElement("small");online.textContent="Online";
+      
       const nickname=document.createElement("span");nickname.className="mb-account-name";nickname.textContent=profile.nickname;
-      label.replaceChildren(nickname,online);
+      label.replaceChildren(nickname);
     }
-    account.setAttribute("aria-label","Edit profile for "+profile.nickname);
+    account.setAttribute("aria-label","Edit profile for "+profile.nickname+" (online)");
     const rail=byId("rail-player-name"), railAvatar=byId("rail-player-avatar");
     if(rail)rail.textContent=profile.nickname;
     if(railAvatar)railAvatar.replaceChildren(portrait(avatar));
@@ -62,7 +62,7 @@
     account.classList.toggle("mb-guest-login",!signedIn);
     if(signedIn){applyIdentity();window.MythboundSocial?.syncUnread();return}
     const sigil=account.querySelector(".account-sigil"),label=account.querySelector(".account-label");
-    if(sigil){sigil.hidden=true;sigil.replaceChildren()}
+    if(sigil){sigil.hidden=true;sigil.replaceChildren();delete sigil.dataset.presence;sigil.removeAttribute("title")}
     if(label)label.textContent="Log in";
     account.setAttribute("aria-label","Log in to Mythbound");
     const rail=byId("rail-player-name"),railAvatar=byId("rail-player-avatar");
