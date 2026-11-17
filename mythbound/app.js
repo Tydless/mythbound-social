@@ -27,9 +27,21 @@ function navigate(page,replace=false){
 navButtons.forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.page)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.go)));
 window.addEventListener("popstate",()=>navigate(location.hash.slice(1)||"home",true));
+function setClassArtwork(host,name){
+  const data=CLASS_DATA[name];if(!host||!data)return;
+  host.classList.add("class-art-host");host.classList.remove("has-class-art");
+  const fallback=document.createElement("span");fallback.className="class-art-fallback";fallback.textContent=data.emblem;
+  const img=document.createElement("img");img.className="class-art-image";img.alt="";img.decoding="async";img.draggable=false;
+  img.addEventListener("load",()=>{if(img.parentNode===host)host.classList.add("has-class-art")},{once:true});
+  img.addEventListener("error",()=>{if(img.parentNode===host)host.classList.remove("has-class-art")},{once:true});
+  host.replaceChildren(fallback,img);img.src="../Icon"+data.name+".png";
+}
+document.querySelectorAll(".class-tile, .preview-class").forEach(button=>{
+  setClassArtwork(button.querySelector(".class-glyph, .preview-symbol"),button.dataset.class);
+});
 function selectClass(name){
   const c=CLASS_DATA[name];if(!c)return;
-  document.getElementById("class-emblem").textContent=c.emblem;
+  setClassArtwork(document.getElementById("class-emblem"),name);
   document.getElementById("class-type").textContent=c.role;
   document.getElementById("class-name").textContent=c.name;
   document.getElementById("class-description").textContent=c.description;
