@@ -50,7 +50,7 @@ const SPECIALIZATIONS={
 const pathData=()=>activePath===0?{name:cap(active),description:"Master the foundations of your class.",skills:DATA[active].skills,signatureMoves:[]}:SPECIALIZATIONS[active]?.[activePath]||{name:"Specialization "+activePath,description:"This advanced path has yet to be revealed.",skills:[],signatureMoves:[]};
 
 /* A fixed gender greeting plus three independent, cyclic voice previews.
-   Assets: ../VoiceSaintMaleSwitch.mp3, ../VoiceSaintMale1.mp3, etc.
+   Assets: ../VoiceSaintMaleSwitch.mp3, ../VoiceFallenSaintFemaleSwitch.mp3, etc.
    One player at a time; missing recordings never break the codex. */
 const voiceNext=Object.create(null);
 let voicePlaying=null,musicVolume=null;
@@ -64,10 +64,12 @@ const genderSwitch=document.querySelector(".gender-switch");
 genderSwitch.before(controls);controls.append(genderSwitch,voiceButton);
 document.querySelector(".preview-toolbar").after(voiceStatus);
 const cap=s=>s[0].toUpperCase()+s.slice(1);
-const voiceKey=()=>active+":"+gender;
+const voiceClass=()=>active==="saint"&&activePath===2?"FallenSaint":cap(active);
+const voiceClassName=()=>voiceClass()==="FallenSaint"?"Fallen Saint":cap(active);
+const voiceKey=()=>voiceClass()+":"+gender;
 const nextVoice=()=>voiceNext[voiceKey()]||1;
 function updateVoiceButton(){
- const label="Play "+cap(active)+" "+gender+" voice line "+nextVoice()+" of 3";
+ const label="Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
  voiceButton.title=label;voiceButton.setAttribute("aria-label",label);
  voiceButton.classList.toggle("is-speaking",!!voicePlaying);
 }
@@ -82,11 +84,11 @@ function stopVoice(clearStatus=true){
  if(clearStatus)voiceStatus.textContent="";
  updateVoiceButton();
 }
-function playVoice(kind){
+function playVoice(kind,quietMissing=false){
  stopVoice();
- const filename="Voice"+cap(active)+cap(gender)+kind+".mp3";
+ const filename="Voice"+voiceClass()+cap(gender)+kind+".mp3";
  const audio=new Audio();audio.preload="auto";voicePlaying=audio;
- const fail=()=>{if(voicePlaying!==audio)return;stopVoice(false);voiceStatus.textContent="Voice preview unavailable — recording pending or playback blocked."};
+ const fail=()=>{if(voicePlaying!==audio)return;stopVoice(quietMissing);if(!quietMissing)voiceStatus.textContent="Voice preview unavailable — recording pending or playback blocked."};
  audio.addEventListener("playing",()=>{
   if(voicePlaying!==audio)return;
   if(music&&musicVolume===null){try{musicVolume=music.volume;music.volume=musicVolume*.28}catch{}}
@@ -548,8 +550,12 @@ function renderPath(){
 $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener("click",()=>{
  const next=Number(b.dataset.path);
  const changed=next!==activePath;
+ if(changed)stopVoice();
  activePath=next;chosen=0;renderPath();
- if(changed)renderPreview();
+ if(changed){
+  renderPreview();updateVoiceButton();
+  if(active==="saint"&&activePath===2)playVoice("Switch",gender==="male");
+ }
 }));
 const atmosphere=document.querySelector(".class-atmosphere");
 let environmentRequest=0;
@@ -641,7 +647,7 @@ document.querySelectorAll("[data-class]").forEach(button=>{
 });
 document.querySelectorAll(".gender-option").forEach(button=>button.addEventListener("click",()=>{
  const next=button.dataset.gender;if(next===gender||!["male","female"].includes(next))return;
- gender=next;renderPreview();playVoice("Switch");
+ gender=next;renderPreview();playVoice("Switch",active==="saint"&&activePath===2&&gender==="male");
 }));
 draw();updateVoiceButton();
 })();
