@@ -29,6 +29,15 @@
 .hero-copy .hero-title-logo .official-mythbound-logo{width:100%;height:auto;max-height:340px;object-fit:contain;object-position:left center;filter:drop-shadow(0 5px 14px rgba(8,15,32,.38))}
 @media(max-width:650px){.hero-copy .hero-title-logo{width:min(100%,430px);margin:0 0 18px}.hero-copy .hero-title-logo .official-mythbound-logo{max-height:250px}}
 </style>
+<style>
+/* Compact horizontal wordmark in navigation and footer; full emblem stays on the hero. */
+.site-header .brand.wordmark-host.logo-ready{width:clamp(190px,17vw,285px)}
+.site-header .brand.wordmark-host .official-mythbound-logo{height:auto;width:100%;max-height:58px;object-fit:contain;object-position:left center}
+.footer-brand.wordmark-host{width:min(100%,240px);margin:0 0 14px}
+.footer-brand.wordmark-host .official-mythbound-logo{width:100%;height:auto}
+@media(max-width:1000px){.site-header .brand.wordmark-host.logo-ready{width:205px}}
+@media(max-width:650px){.site-header .brand.wordmark-host.logo-ready{width:clamp(190px,60vw,250px)}.site-header .brand.wordmark-host .official-mythbound-logo{height:auto;max-height:54px}.footer-brand.wordmark-host{width:188px}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -52,7 +61,7 @@
   <a class="skip-link" href="#main-content">Skip to content</a>
   <div class="grain" aria-hidden="true"></div>
   <header class="site-header">
-    <a class="brand logo-host" href="#home" aria-label="Mythbound home"><img class="official-mythbound-logo" src="../Mythbound_Six_Paths_Transparent.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback"><span class="brand-mark" aria-hidden="true">✧</span><span>MYTHBOUND</span><small>ONLINE</small></span></a>
+    <a class="brand logo-host wordmark-host" href="#home" aria-label="Mythbound home"><img class="official-mythbound-logo" src="../Mythbound_Wordmark.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback"><span class="brand-mark" aria-hidden="true">✧</span><span>MYTHBOUND</span><small>ONLINE</small></span></a>
     <nav class="main-nav" aria-label="Main navigation">
       <button type="button" data-page="home" class="nav-item is-active" aria-current="page">Home</button>
       <button type="button" data-page="discover" class="nav-item">Discover</button>
@@ -160,7 +169,7 @@
         </section>
       </section>
 
-      <footer class="site-footer"><span>MYTHBOUND ✧ ONLINE</span><p>Mythbound is a fictional game created for an interactive story experience. There are no real downloads, purchases, game accounts or online players.</p></footer>
+      <footer class="site-footer"><div class="footer-brand logo-host wordmark-host"><img class="official-mythbound-logo" src="../Mythbound_Wordmark.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback">MYTHBOUND ✧ ONLINE</span></div><p>Mythbound is a fictional game created for an interactive story experience. There are no real downloads, purchases, game accounts or online players.</p></footer>
     </main>
 
     <aside class="social-rail" aria-label="Game social sidebar">
