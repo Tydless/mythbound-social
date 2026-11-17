@@ -158,13 +158,16 @@ function renderPreview(){
   b.setAttribute("aria-pressed",String(on));
  });
 }
+let radarDismiss=null;
+document.addEventListener("pointerdown",e=>{if(!e.target.closest(".radar-marker"))radarDismiss?.()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")radarDismiss?.()});
 function renderStats(){
  const values=DATA[active].stats, ns="http://www.w3.org/2000/svg";
  const colors=["#ee958b","#87b8f3","#9ed9a8","#f1c985","#c3a6f1"];
  const svg=document.createElementNS(ns,"svg");
  svg.setAttribute("viewBox","0 0 480 350");
  svg.setAttribute("class","stat-radar");
- svg.setAttribute("role","img");
+ svg.setAttribute("role","group");
  svg.setAttribute("aria-labelledby","stat-radar-title stat-radar-description");
  function node(tag,attrs={},parent=svg,text){
   const el=document.createElementNS(ns,tag);
@@ -189,19 +192,50 @@ function renderStats(){
  }
  node("polygon",{points:polygon(values.map(v=>r*v/5)),fill:"url(#radar-fill)",stroke:DATA[active].color,"stroke-width":2.1,"stroke-linejoin":"round",class:"radar-shape"});
  const glyphs=["M7 17L17 7M12 6l6 0 0 6M6 13l5 5M5 19l-2 2","M12 3l7 3v6c0 5-7 9-7 9s-7-4-7-9V6z","M12 5v14M5 12h14","M4 18c4-8 10-12 17-13-1 8-5 14-14 15M4 20l11-10","M20 12a8 8 0 1 1-6-8 5 5 0 1 1-7 7 2 2 0 1 0 3 2"];
- const labelPositions=[{x:263,y:31,a:"start"},{x:389,y:125,a:"start"},{x:338,y:302,a:"start"},{x:142,y:302,a:"end"},{x:91,y:125,a:"end"}];
+ const labelPositions=[{x:240,y:16,a:"middle"},{x:390,y:133,a:"start"},{x:336,y:311,a:"start"},{x:144,y:311,a:"end"},{x:90,y:133,a:"end"}];
  for(let i=0;i<5;i++){
-  const [x,y]=point(i,r*values[i]/5);
-  node("circle",{cx:x,cy:y,r:7,fill:colors[i],opacity:".20"});
-  node("circle",{cx:x,cy:y,r:4.1,fill:colors[i],stroke:"#fff6df","stroke-width":1.2});
   const [ix,iy]=point(i,129),color=colors[i];
-  const group=node("g",{transform:"translate("+ix.toFixed(2)+" "+iy.toFixed(2)+")"});
+  const group=node("g",{transform:"translate("+ix.toFixed(2)+" "+iy.toFixed(2)+")","aria-hidden":"true"});
   node("circle",{r:17,fill:"#172238",stroke:color,"stroke-width":1.5},group);
   node("path",{d:glyphs[i],transform:"translate(-10 -10) scale(.83)",stroke:color,fill:"none","stroke-width":2.1,"stroke-linecap":"round","stroke-linejoin":"round"},group);
   const l=labelPositions[i];
   node("text",{x:l.x,y:l.y,"text-anchor":l.a,fill:color,class:"radar-label"},svg,statLabels[i]);
-  node("text",{x:l.x,y:l.y+20,"text-anchor":l.a,fill:"#e6eaf0",class:"radar-value"},svg,values[i]+" / 5");
  }
+ const markers=[];
+ for(let i=0;i<5;i++){
+  const [x,y]=point(i,r*values[i]/5);
+  const marker=node("g",{class:"radar-marker",tabindex:"0",role:"button","aria-label":statLabels[i]+": "+values[i]+" out of 5","aria-pressed":"false"});
+  node("circle",{cx:x,cy:y,r:7,fill:colors[i],opacity:".20"},marker);
+  node("circle",{cx:x,cy:y,r:4.1,fill:colors[i],stroke:"#fff6df","stroke-width":1.2,class:"radar-marker-dot"},marker);
+  node("circle",{cx:x,cy:y,r:15,fill:"transparent",class:"radar-hit"},marker);
+  markers.push({marker,x,y,i});
+ }
+ // One tooltip, painted above every chart element; the rating is otherwise invisible.
+ const tooltip=node("g",{class:"radar-tooltip","aria-hidden":"true"});
+ const tipRect=node("rect",{width:136,height:31,rx:6,fill:"#121c30",stroke:DATA[active].color,"stroke-width":1},tooltip);
+ const tipText=node("text",{x:68,y:16,"text-anchor":"middle","dominant-baseline":"middle",class:"radar-tooltip-text"},tooltip);
+ let pinned=null,hovered=null,focused=null;
+ function showTip(){
+  const current=pinned||hovered||focused;
+  markers.forEach(m=>{m.marker.classList.toggle("is-revealed",m===current);m.marker.setAttribute("aria-pressed",String(m===pinned))});
+  tooltip.classList.toggle("is-visible",!!current);
+  if(!current)return;
+  tooltip.setAttribute("transform","translate("+Math.max(4,Math.min(340,current.x-68))+" "+Math.max(4,current.y-48)+")");
+  tipRect.setAttribute("stroke",colors[current.i]);
+  tipText.setAttribute("fill",colors[current.i]);
+  tipText.textContent=statLabels[current.i]+" · "+values[current.i]+" / 5";
+ }
+ for(const m of markers){
+  m.marker.addEventListener("pointerenter",e=>{if(e.pointerType==="mouse"||e.pointerType==="pen"){hovered=m;showTip()}});
+  m.marker.addEventListener("pointerleave",()=>{if(hovered===m)hovered=null;showTip()});
+  m.marker.addEventListener("focus",()=>{if(m.marker.matches(":focus-visible")){focused=m;showTip()}});
+  m.marker.addEventListener("blur",()=>{if(focused===m)focused=null;showTip()});
+  const toggle=()=>{pinned=pinned===m?null:m;hovered=null;focused=null;showTip()};
+  m.marker.addEventListener("click",e=>{e.stopPropagation();toggle()});
+  m.marker.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle()}else if(e.key==="Escape"){pinned=hovered=focused=null;showTip()}});
+ }
+ svg.addEventListener("click",()=>{pinned=hovered=focused=null;showTip()});
+ radarDismiss=()=>{pinned=hovered=focused=null;showTip()};
  stats.replaceChildren(svg);
 }
 function skillDetail(){
