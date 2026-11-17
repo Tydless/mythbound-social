@@ -127,6 +127,8 @@ function avatarArt(){
 function renderPreview(){
  // Real artwork for both Saint appearances, with the old concept silhouette
  // as a fallback until the two image files have been uploaded to GitHub.
+ const previous=preview.querySelector(".saint-portrait-stage .portrait-incoming")||preview.querySelector(".saint-portrait-stage .saint-portrait");
+ const oldImage=previous?.complete&&previous.naturalWidth?previous.cloneNode(false):null;
  preview.replaceChildren();
  preview.classList.remove("has-saint-art");
  preview.style.setProperty("--preview-accent",DATA[active].color);
@@ -138,14 +140,29 @@ function renderPreview(){
  if(note)note.textContent="Concept illustration · final models coming later";
  if(active==="saint"){
   const picture=document.createElement("img");
-  picture.className="saint-portrait"+(activePath===2?" fallen-saint-portrait":"");
+  const isFallen=activePath===2;
+  picture.className="saint-portrait"+(isFallen?" fallen-saint-portrait":"");
   const stage=document.createElement("div");stage.className="saint-portrait-stage";
   picture.alt=cap(gender)+" "+artworkName+" class illustration in an ornate floral frame";
+  const source=artwork||(gender==="female"?"../FemaleSaint.png":"../MaleSaint.png");
+  const animate=oldImage&&oldImage.src!==new URL(source,document.baseURI).href&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(animate){
+   oldImage.classList.remove("portrait-incoming");oldImage.classList.add("portrait-previous");stage.append(oldImage);
+   picture.classList.add("portrait-incoming");
+   stage.style.setProperty("--reveal-core",isFallen?"#ffbaa0":"#fff5cf");
+   stage.style.setProperty("--reveal-glow",isFallen?"#e74338":"#efc16a");
+  }
   picture.loading="eager";
   picture.decoding="async";
   picture.addEventListener("load",()=>{
    if(!picture.isConnected)return;
    preview.classList.add("has-saint-art");
+   if(animate){
+    const wave=document.createElement("span");wave.className="portrait-reveal-wave";wave.setAttribute("aria-hidden","true");stage.append(wave);
+    for(let i=0;i<9;i++){const spark=document.createElement("span");spark.className="portrait-reveal-spark";spark.setAttribute("aria-hidden","true");spark.style.setProperty("--spark-x",(12+(i*37)%77)+"%");spark.style.setProperty("--spark-y",(10+i*9)+"%");spark.style.setProperty("--spark-delay",(i*.055)+"s");spark.style.setProperty("--spark-drift",((i%3-1)*16)+"px");stage.append(spark)}
+    stage.classList.add("portrait-revealing");
+    setTimeout(()=>{if(!stage.isConnected)return;stage.classList.remove("portrait-revealing");picture.classList.remove("portrait-incoming");oldImage.remove();stage.querySelectorAll(".portrait-reveal-wave,.portrait-reveal-spark").forEach(e=>e.remove())},1200);
+   }
    if(note)note.textContent=artworkName+" · illustrated class artwork";
   });
   picture.addEventListener("error",()=>{
@@ -155,7 +172,7 @@ function renderPreview(){
    if(note)note.textContent="Preview silhouette · artwork pending upload";
   });
   stage.append(picture);preview.append(stage);
-  picture.src=artwork||(gender==="female"?"../FemaleSaint.png":"../MaleSaint.png");
+  picture.src=source;
  }else{
   preview.innerHTML=avatarArt();
  }
