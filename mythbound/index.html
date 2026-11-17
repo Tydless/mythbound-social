@@ -11,6 +11,7 @@
   <script defer src="app.js"></script>
   <script defer src="class-showcase.js"></script>
   <script defer src="account.js"></script>
+  <script defer src="social.js"></script>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -146,12 +147,15 @@
     </main>
 
     <aside class="social-rail" aria-label="Game social sidebar">
-      <div class="rail-header"><span class="eyebrow">YOUR ADVENTURE</span><div class="rail-player-heading"><span class="rail-player-avatar" id="rail-player-avatar"></span><div><strong id="rail-player-name">Traveler</strong><small><span class="online-dot"></span> Online</small></div></div></div>
-      <section class="rail-panel" aria-labelledby="friends-title"><div class="rail-title"><h2 id="friends-title">Friends</h2><span>1 / 1</span></div>
+      <div class="rail-header"><span class="eyebrow">YOUR ADVENTURE</span><div class="rail-player-heading"><span class="rail-player-avatar" id="rail-player-avatar"></span><div><strong id="rail-player-name">Traveler</strong><small><span class="online-dot"></span> Online · Lv. 50</small></div></div></div>
+      <section class="rail-panel" aria-labelledby="friends-title"><div class="rail-title"><h2 id="friends-title">Friends</h2><button type="button" id="all-friends" class="mb-mini-action" aria-label="Open all friends">2 online / 3</button></div>
         <button type="button" class="friend-row" id="fighter-friend"><span class="friend-avatar saint-avatar" aria-hidden="true">✥</span><span class="friend-meta"><strong>Fighter</strong><small>Saint · Lv. 84</small><small class="online-label">● Online</small></span><span class="friend-chevron">›</span></button>
-        <p class="rail-note">Your only friend is online. Convenient timing, huh?</p>
+        <button type="button" class="friend-row" id="chaotic-friend"><span class="mb-buddy-avatar" aria-hidden="true">◈</span><span class="friend-meta"><strong>Chaotic Buddy</strong><small>Animar · Lv. 118</small><small class="online-label">● Online</small></span><span class="friend-chevron">›</span></button>
+        <button type="button" class="friend-row" id="responsible-friend"><span class="mb-buddy-avatar mb-default-avatar" aria-hidden="true">?</span><span class="friend-meta"><strong>Responsible Buddy</strong><small>Lv. 12</small><small class="mb-offline">Last online 39 days ago</small></span><span class="friend-chevron">›</span></button>
+        <p class="rail-note">You and Fighter have 2 mutual friends.</p>
       </section>
-      <section class="rail-panel whispers-panel" aria-labelledby="rail-whispers-title"><div class="rail-title"><h2 id="rail-whispers-title">Whispers</h2><span class="mini-count">1 new</span></div>
+      <section class="rail-panel whispers-panel" aria-labelledby="rail-whispers-title"><div class="rail-title"><h2 id="rail-whispers-title">Inbox</h2><span class="mini-count">1 new</span></div>
+        <button type="button" id="open-inbox" class="mb-inbox-shortcut"><span aria-hidden="true">✉</span><span>View all conversations</span><span aria-hidden="true">›</span></button>
         <button type="button" class="whisper-preview" id="rail-whisper"><span class="friend-avatar saint-avatar" aria-hidden="true">✥</span><span><strong>Fighter</strong><small>Yo, I've got time. You in for a raid?</small></span><span class="unread-dot"></span></button>
       </section>
       <p class="rail-caption">Fictional in-game companion interface</p>
@@ -174,10 +178,7 @@
       <div class="profile-quote">“I have enough heals. You, apparently, don't have enough brain cells.”</div>
       <div class="profile-stat-grid"><div><span>Main class</span><strong>Saint</strong></div><div><span>Playstyle</span><strong>Raid support</strong></div><div><span>Favorite thing</span><strong>Outfit collecting</strong></div></div>
       <h3>About my character</h3><p>Perfect dye combinations. Beautiful armor. Good healing rotations. I know what I'm doing, so please stop running into the boss.</p>
-      <h3>My crew <small>2 friends</small></h3>
-      <div class="crew-row"><span>✦</span><div><strong>Chaotic Buddy</strong><small>Lv. 118 · Online</small></div></div>
-      <div class="crew-row"><span>◇</span><div><strong>Responsible Buddy</strong><small>Lv. 12 · Last online 39 days ago</small></div></div>
-      <p class="crew-note">Only names, levels and activity are visible for these players.</p>
+      <div class="mb-mutual-note">✧ You and Fighter have <strong>2 mutual friends</strong>.</div>
       <button type="button" id="profile-message" class="solid-action wide">Open Fighter's whisper ↗</button>
     </div>
   </template>
