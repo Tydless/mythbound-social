@@ -38,6 +38,54 @@
 @media(max-width:1000px){.site-header .brand.wordmark-host.logo-ready{width:205px}}
 @media(max-width:650px){.site-header .brand.wordmark-host.logo-ready{width:clamp(190px,60vw,250px)}.site-header .brand.wordmark-host .official-mythbound-logo{height:auto;max-height:54px}.footer-brand.wordmark-host{width:188px}}
 </style>
+
+<style>
+/* Mobile-specific navigation and title-screen layout. Desktop stays unchanged. */
+.mobile-menu-toggle,.mobile-menu-item,.mobile-hero-download{display:none}
+@media(max-width:760px){
+ .site-header{display:flex;flex-wrap:nowrap;justify-content:space-between;gap:8px;min-height:64px;padding:8px 12px;border-bottom:1px solid #d8b78255}
+ .site-header .brand.wordmark-host,.site-header .brand.wordmark-host.logo-ready{flex:0 1 auto;width:clamp(125px,43vw,220px);min-width:0}
+ .site-header .brand.wordmark-host .official-mythbound-logo{width:100%;height:auto;max-height:48px;object-position:left center}
+ .site-header .brand .logo-fallback{font-size:12px;gap:2px}
+ .site-header .brand .logo-fallback small{display:none}
+ .site-header .header-actions{flex:none;display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-end;gap:6px}
+ .site-header .music-toggle{display:grid;place-items:center;min-width:36px;width:36px;height:36px;min-height:36px;padding:0;border-radius:50%}
+ .site-header .music-state{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .site-header .music-note{font-size:22px;line-height:1}
+ .site-header .music-toggle[aria-pressed="false"] .music-note{opacity:.45;text-decoration:line-through}
+ .site-header .account-chip{display:flex;align-items:center;padding:0;gap:0;min-width:36px;min-height:36px;justify-content:center}
+ .site-header .account-chip:not(.mb-guest-login) .account-label{display:none!important}
+ .site-header .account-sigil.mb-account-portrait{width:36px;height:37px}
+ .site-header #header-whisper,.site-header #download-button,.site-header .mb-session-action,#floating-whisper{display:none!important}
+ .site-header .mobile-menu-toggle{position:relative;display:grid;place-items:center;flex:none;width:36px;height:36px;padding:0;color:#f0d6a8;background:transparent;border:0;border-radius:5px}
+ .mobile-menu-toggle[aria-expanded="true"]{background:#34415a}
+ .mobile-menu-unread{position:absolute;right:1px;top:1px;width:8px;height:8px;border-radius:50%;background:#edbf7d;box-shadow:0 0 0 2px #141e30}
+ .site-header .main-nav{display:none;position:absolute;top:100%;right:10px;left:10px;width:auto;max-height:calc(100dvh - 85px);overflow:auto;margin:0;padding:8px;order:initial;flex-direction:column;gap:0;background:#182236;border:1px solid #bfa37266;border-radius:0 0 10px 10px;box-shadow:0 14px 35px #0008}
+ .site-header.mobile-nav-open .main-nav{display:flex}
+ .site-header .main-nav .nav-item{display:flex;align-items:center;justify-content:space-between;text-align:left;min-height:44px;padding:12px 14px;font-size:14px;border-radius:4px}
+ .site-header .main-nav .nav-item.is-active{background:#bfa37220;color:#f5d5a6}
+ .site-header .main-nav .nav-item.is-active:after{display:none}
+ .site-header .main-nav #mobile-inbox{border-top:1px solid #a5b2ca35;margin-top:6px}
+ .mobile-inbox-count{background:#e8c38d;color:#19253a;padding:0 7px;border-radius:10px;font-size:11px}
+ body.mythbound-guest .mobile-social-item,body.mythbound-guest .mobile-menu-unread{display:none!important}
+ .hero{min-height:0;display:block;margin:10px 10px 0;border-radius:12px;background-color:#142039}
+ .hero::before{inset:6px;border-radius:8px}
+ .hero.has-watercolor-landscape{background-size:100% auto;background-position:center top;background-repeat:no-repeat}
+ .hero.has-watercolor-landscape::after{background:linear-gradient(180deg,transparent 0,rgba(20,32,57,.06) 19vw,rgba(20,32,57,.70) 40vw,#142039 58vw,#142039 100%)}
+ .hero-copy{width:100%;max-width:none;padding:clamp(110px,35vw,245px) 20px 24px;text-align:center}
+ .hero-copy .hero-title-logo{width:min(100%,430px);margin:0 auto 18px;text-align:center}
+ .hero-copy .hero-title-logo .official-mythbound-logo{max-height:none;width:100%;height:auto;object-position:center;display:none}
+ .hero-copy .hero-title-logo.logo-ready .official-mythbound-logo{display:block}
+ .hero-copy .hero-title-logo .logo-fallback{justify-content:center}
+ .hero-copy .hero-title-logo.logo-ready .logo-fallback{display:none}
+ .hero-copy .mobile-hero-download{display:inline-flex;justify-content:center;align-items:center;gap:7px;min-height:44px;width:min(100%,245px);font-size:15px;padding:11px 17px;margin:0 auto 22px}
+ .hero-copy p{max-width:450px;margin:0 auto;font-size:14px;line-height:1.7}
+ .hero-buttons{justify-content:center;gap:9px;margin-top:20px}
+ .hero-buttons button{font-size:12px;padding:9px 12px}
+ .hero-edition{position:relative;left:auto;bottom:auto;display:block;text-align:center;padding:0 14px 21px;font-size:9px}
+}
+@media(max-width:360px){.site-header{gap:4px;padding-inline:8px}.site-header .header-actions{gap:4px}.site-header .brand.wordmark-host.logo-ready{width:clamp(110px,42vw,155px)}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -62,17 +110,21 @@
   <div class="grain" aria-hidden="true"></div>
   <header class="site-header">
     <a class="brand logo-host wordmark-host" href="#home" aria-label="Mythbound home"><img class="official-mythbound-logo" src="../Mythbound_Wordmark.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback"><span class="brand-mark" aria-hidden="true">✧</span><span>MYTHBOUND</span><small>ONLINE</small></span></a>
-    <nav class="main-nav" aria-label="Main navigation">
+    <nav id="primary-navigation" class="main-nav" aria-label="Main navigation">
       <button type="button" data-page="home" class="nav-item is-active" aria-current="page">Home</button>
       <button type="button" data-page="discover" class="nav-item">Discover</button>
       <button type="button" data-page="news" class="nav-item">News</button>
       <button type="button" data-page="classes" class="nav-item">Classes</button>
+      <button type="button" id="mobile-inbox" class="nav-item mobile-menu-item mobile-social-item">Inbox <span id="mobile-inbox-count" class="mobile-inbox-count" hidden>1</span></button>
+      <button type="button" id="mobile-friends" class="nav-item mobile-menu-item mobile-social-item">Friends</button>
+      <button type="button" id="mobile-logout" class="nav-item mobile-menu-item mobile-social-item">Log out</button>
     </nav>
     <div class="header-actions">
       <button type="button" class="music-toggle" id="music-toggle" aria-label="Pause Mythbound soundtrack" aria-pressed="true" title="Toggle background music"><span class="music-note" aria-hidden="true">♫</span><span class="music-state">Music On</span></button>
       <button type="button" id="header-whisper" class="notification-button" aria-label="Open unread whisper"><span aria-hidden="true">✉</span><span class="notification-count">1</span></button>
       <button type="button" id="account-button" class="account-chip"><span class="account-sigil">T</span><span class="account-label">Traveler <small>Online</small></span></button>
       <button type="button" id="download-button" class="download-button">Download <span aria-hidden="true">↗</span></button>
+      <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Open navigation menu" aria-controls="primary-navigation" aria-expanded="false"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span id="mobile-menu-unread" class="mobile-menu-unread" hidden></span></button>
     </div>
   </header>
 
@@ -81,7 +133,7 @@
       <section id="page-home" class="page is-visible" aria-labelledby="home-title">
         <div class="hero">
           <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="star star-one">✧</div><div class="star star-two">✦</div><div class="world-gate"><div class="gate-center">✶</div></div><div class="horizon"></div><div class="land land-one"></div><div class="land land-two"></div></div>
-          <div class="hero-copy"><h1 id="home-title" class="hero-title-logo logo-host"><img class="official-mythbound-logo" src="../Mythbound_Six_Paths_Transparent.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback">Mythbound Online</span></h1><p>Beyond the veil of remembered stories, six paths await. Find your calling. Forge your legend. Leave a trace in the world of Mythbound.</p><div class="hero-buttons"><button type="button" data-go="classes" class="solid-action">Explore the classes <span aria-hidden="true">↗</span></button><button type="button" data-go="discover" class="outline-action">Discover the world <span aria-hidden="true">→</span></button></div></div>
+          <div class="hero-copy"><h1 id="home-title" class="hero-title-logo logo-host"><img class="official-mythbound-logo" src="../Mythbound_Six_Paths_Transparent.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback">Mythbound Online</span></h1><button type="button" id="mobile-download" class="download-button mobile-hero-download">Download <span aria-hidden="true">↗</span></button><p>Beyond the veil of remembered stories, six paths await. Find your calling. Forge your legend. Leave a trace in the world of Mythbound.</p><div class="hero-buttons"><button type="button" data-go="classes" class="solid-action">Explore the classes <span aria-hidden="true">↗</span></button><button type="button" data-go="discover" class="outline-action">Discover the world <span aria-hidden="true">→</span></button></div></div>
           <span class="hero-edition">CHRONICLE I · THE FIRST AWAKENING</span>
         </div>
         <div class="section-heading"><span class="eyebrow">A GLIMPSE BEYOND THE VEIL</span><h2>Choose the legend you become</h2><p>Every path tells a different story. No two journeys need feel the same.</p></div>
@@ -216,5 +268,33 @@
   </template>
   <audio id="mythbound-theme" src="../mythbound-theme.mp3" preload="auto" autoplay loop aria-hidden="true"></audio>
   <span id="music-announcement" class="screen-reader-only" role="status" aria-live="polite"></span>
+
+<script>
+(function(){
+ const header=document.querySelector(".site-header"),toggle=document.getElementById("mobile-menu-toggle"),nav=document.getElementById("primary-navigation");
+ const mobile=window.matchMedia("(max-width:760px)");
+ const isOpen=()=>toggle.getAttribute("aria-expanded")==="true";
+ function setOpen(open,focus=false){
+  open=open&&mobile.matches;
+  header.classList.toggle("mobile-nav-open",open);
+  toggle.setAttribute("aria-expanded",String(open));
+  toggle.setAttribute("aria-label",open?"Close navigation menu":"Open navigation menu");
+  if(focus)toggle.focus({preventScroll:true});
+ }
+ toggle.addEventListener("click",()=>setOpen(!isOpen()));
+ nav.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>{if(mobile.matches)setOpen(false,true)}));
+ document.addEventListener("click",e=>{if(isOpen()&&!header.contains(e.target))setOpen(false)});
+ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&isOpen()){setOpen(false,true);e.preventDefault()}});
+ if(mobile.addEventListener)mobile.addEventListener("change",()=>setOpen(false));else mobile.addListener(()=>setOpen(false));
+ document.getElementById("mobile-inbox").addEventListener("click",()=>{setOpen(false,true);window.MythboundSocial?.openInbox()});
+ document.getElementById("mobile-friends").addEventListener("click",()=>{setOpen(false,true);window.MythboundSocial?.openFriends()});
+ document.getElementById("mobile-logout").addEventListener("click",()=>{setOpen(false,true);header.querySelector(".mb-session-action")?.click()});
+ document.getElementById("mobile-download").addEventListener("click",()=>document.getElementById("download-button").click());
+ const badge=document.querySelector("#header-whisper .notification-count");
+ const syncBadge=()=>{const unread=!!badge&&!badge.hidden;document.getElementById("mobile-menu-unread").hidden=!unread;document.getElementById("mobile-inbox-count").hidden=!unread};
+ if(badge){new MutationObserver(syncBadge).observe(badge,{attributes:true,attributeFilter:["hidden"]});syncBadge()}
+ new MutationObserver(()=>{if(document.body.classList.contains("mythbound-login-open"))setOpen(false)}).observe(document.body,{attributes:true,attributeFilter:["class"]});
+})();
+</script>
 </body>
 </html>
