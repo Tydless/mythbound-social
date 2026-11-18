@@ -129,8 +129,10 @@
     const nickname=name.value.trim(),avatar=getAvatar(selected);
     if(!nickname||!avatar)return;
     const returningFromGuest=guest;
+    const newPlaythrough=!signedIn&&!editing;
     profile={nickname:nickname.slice(0,24),avatar:avatar.id};signedIn=true;guest=false;
     try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));sessionStorage.setItem(SESSION_KEY,"1")}catch{}
+    if(newPlaythrough)window.MythboundSocial?.resetReadState();
     renderSession();hide();
     if(!editing&&!returningFromGuest&&typeof navigate==="function")navigate("home",true);
     (editing&&location.hash==="#profile"?byId("own-edit-profile"):account)?.focus({preventScroll:true});

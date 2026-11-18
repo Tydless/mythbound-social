@@ -3,13 +3,12 @@
   "use strict";
   const $=id=>document.getElementById(id);
   const content=$("sheet-content");
-  const readKey="mythbound-read-message-ids-v2";
-  // Reissue the first invitation once after development testing. Old prototype
-  // flags/IDs must not silently mark this delivery read. Keep this ID stable
-  // from now on so opening the actual whisper persists across reloads.
+  const readKey="mythbound-session-read-message-ids-v1";
+  // Read receipts belong to this playthrough, not the saved player identity.
+  // Reloads retain them, but a fresh tab/session or explicit login starts anew.
   const incoming=[{id:"fighter-raid-invite-live-1",thread:"fighter",text:"Yo, I've got time. You in for a raid?",time:"JUST NOW"}];
   function loadRead(){
-    try{const raw=localStorage.getItem(readKey);if(raw!==null){const parsed=JSON.parse(raw);if(Array.isArray(parsed))return new Set(parsed.filter(x=>typeof x==="string"))}}catch{}
+    try{const raw=sessionStorage.getItem(readKey);if(raw!==null){const parsed=JSON.parse(raw);if(Array.isArray(parsed))return new Set(parsed.filter(x=>typeof x==="string"))}}catch{}
     return new Set();
   }
   let readIds=loadRead();
@@ -49,7 +48,12 @@
     if(window.MythboundAccount?.isSignedIn()===false)return;
     for(const id of loadRead())readIds.add(id);
     for(const m of incoming)if(m.thread===thread)readIds.add(m.id);
-    try{localStorage.setItem(readKey,JSON.stringify([...readIds]))}catch{}
+    try{sessionStorage.setItem(readKey,JSON.stringify([...readIds]))}catch{}
+    syncUnread();
+  }
+  function resetReadState(){
+    readIds.clear();
+    try{sessionStorage.removeItem(readKey)}catch{}
     syncUnread();
   }
   function badge(node,n){if(node){node.hidden=n===0;node.textContent=n>99?"99+":String(n);node.title=unreadLabel(n)}}
@@ -190,7 +194,7 @@
     log.scrollTop=log.scrollHeight;
   }
   // Entry points for existing site controls; the original Fighter reply redirect stays intact.
-  window.MythboundSocial={openInbox,openFriends,openFriend,markSeen,syncUnread,unreadCount,renderFighterMessages};
+  window.MythboundSocial={openInbox,openFriends,openFriend,markSeen,syncUnread,unreadCount,renderFighterMessages,resetReadState};
   $("chaotic-friend")?.addEventListener("click",()=>openFriend("chaotic"));
   $("responsible-friend")?.addEventListener("click",()=>openFriend("responsible"));
   $("all-friends")?.addEventListener("click",openFriends);
@@ -200,5 +204,5 @@
     if(node){node.replaceChildren(avatar(people[id]));node.removeAttribute("aria-hidden")}
   }
   syncUnread();
-  window.addEventListener("storage",e=>{if(e.key===readKey||e.key===null){readIds=loadRead();syncUnread()}});
+  window.addEventListener("storage",e=>{if(e.storageArea===sessionStorage&&(e.key===readKey||e.key===null)){readIds=loadRead();syncUnread()}});
 })();
