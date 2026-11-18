@@ -64,7 +64,7 @@ const controls=document.createElement("div");controls.className="class-preview-c
 const genderSwitch=document.querySelector(".gender-switch");
 genderSwitch.before(controls);controls.append(genderSwitch,voiceButton);
 document.querySelector(".preview-toolbar").after(voiceStatus);
-const teaserNote=document.createElement("span");teaserNote.className="unrevealed-voice-note";teaserNote.textContent="Teaser voice line · Not yet revealed";teaserNote.hidden=true;voiceStatus.after(teaserNote);
+const teaserNote=document.createElement("span");teaserNote.className="unrevealed-voice-note";teaserNote.textContent="Teaser voice line · Not yet revealed";teaserNote.hidden=true;controls.before(teaserNote);
 const cap=s=>s[0].toUpperCase()+s.slice(1);
 const voiceClass=()=>active==="saint"&&activePath===1?"Archsaint":active==="saint"&&activePath===2?"FallenSaint":cap(active);
 const voiceClassName=()=>voiceClass()==="FallenSaint"?"Fallen Saint":voiceClass();
@@ -520,6 +520,7 @@ function renderPreview(allowTransformation=false){
    if(note)note.textContent="Preview silhouette · artwork pending upload";
   });
   stage.append(picture);preview.append(stage);
+  preview.classList.add("has-saint-art");
   picture.src=source;
  }else{
   preview.innerHTML=avatarArt();

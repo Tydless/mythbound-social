@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-archsaintchoir2";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-saintlayout1";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -610,6 +610,18 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 .heavenly-effect .heavenly-glow{inset:0;background:radial-gradient(ellipse at 50% 26%,#fff8dcad,transparent 45%),radial-gradient(ellipse at 50% 48%,#d5efff46,transparent 57%),radial-gradient(ellipse at 45% 55%,#ffe0ef32,transparent 55%)}
 .heavenly-effect .heavenly-ray{top:9%;height:86%;filter:blur(7px);background:linear-gradient(180deg,transparent 0%,#fff7dd91 12%,#d9efff70 36%,#f9e9ff20 73%,transparent 96%)}
 .heavenly-effect .heavenly-ring{top:31%;width:27%;height:8%}
+</style>
+<style>
+/* All Saint paths share the same portrait and codex coordinates. */
+#page-classes{overflow-anchor:none}
+.class-showcase .preview-toolbar{align-items:center;flex-wrap:nowrap}
+.class-showcase .preview-toolbar .class-preview-controls{flex:none;flex-wrap:nowrap}
+.class-showcase .preview-toolbar .unrevealed-voice-note{flex:1;min-width:0;margin-right:auto;padding:0;text-align:right;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.class-showcase[data-environment="saint"] .showcase-heading{min-height:90px}
+.class-showcase[data-environment="saint"] .class-meta-icons{min-height:38px}
+.class-showcase[data-unrevealed="true"] .showcase-seal{margin-inline:4.5px}
+@media(max-width:760px){.class-showcase[data-environment="saint"] .class-meta-icons{min-height:34px}}
+@media(max-width:650px){.class-showcase[data-environment="saint"] .showcase-heading{min-height:70px}.class-showcase[data-unrevealed="true"] .showcase-seal{margin-inline:3px;font-size:38px}}
 </style>
 </head>
 <body class="mythbound-login-open">
