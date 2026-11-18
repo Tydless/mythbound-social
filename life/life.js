@@ -15,8 +15,8 @@ function log(source,type,d={}){M.record(source,type,d)}
 function refreshIdentity(){const p=M.player();$("player").textContent=p.nickname;$("desktop-greeting").textContent="Welcome back, "+p.nickname+"."}
 function notify(t){$("notice").textContent=t;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("notice").textContent="",2400)}
 function save(){const p=body?.position||start;start={x:p.x,z:p.z};$("saved").textContent=M.save({room:current,x:start.x,z:start.z,version:1})?"Progress saved":"Storage unavailable"}
-function roomLabel(){$("room-name").textContent=roomDefs[current].name;$("room-detail").textContent=roomDefs[current].detail;$("quick-travel").textContent=current==="home"?"Visit Fighter's apartment":"Return to your room"}
-function modalOpen(){return desktop.hidden===false||$("menu").open||$("memories").open}
+function roomLabel(){$("room-name").textContent=roomDefs[current].name;$("room-detail").textContent=roomDefs[current].detail;$("quick-travel").textContent="Open city map"}
+function modalOpen(){return desktop.hidden===false||$("menu").open||$("memories").open||$("city").open}
 function interact(){if(!modalOpen()&&nearest)nearest.run()}
 function focusRoom(){keys.clear();touches.clear();if(!modalOpen())canvas.focus({preventScroll:true})}
 function launchDesktop(){save();keys.clear();touches.clear();desktop.hidden=false;desktopHome();refreshIdentity();log("life","computer.opened",{room:current});$("desktop-home").focus()}
@@ -54,11 +54,17 @@ function watchWebsite(){
 function closeDesktop(){if(desktop.hidden)return;log("life","computer.closed",{room:current});desktopHome();desktop.hidden=true;refreshIdentity();save();focusRoom()}
 for(const app of apps){const b=document.createElement("button");b.className="app";const icon=document.createElement("span");icon.className="app-icon";icon.style.setProperty("--app-color",app.color);icon.textContent=app.icon;const title=document.createElement("strong");title.textContent=app.name;const sub=document.createElement("small");sub.textContent=app.description;b.append(icon,title,sub);b.onclick=()=>openApp(app);$("apps").append(b)}
 frame.addEventListener("load",watchWebsite);$("desktop-home").onclick=desktopHome;$("close-desktop").onclick=closeDesktop;
-function travel(){current=current==="home"?"friend":"home";start={x:0,z:-1.8};if(engine)buildRoom();roomLabel();save();log("life","room.visited",{room:current});notify("Arrived at "+roomDefs[current].name);focusRoom()}
+const cityPlaces=[{id:"home",name:"Your home",icon:"⌂",x:48,y:34,description:"Return to your own room and personal computer."},{id:"friend",name:"Fighter's apartment",icon:"▤",x:83.5,y:61,description:"Visit your gaming buddy's apartment."}];
+let selectedPlace=current,travelled=false;
+function selectPlace(id){const p=cityPlaces.find(v=>v.id===id);if(!p)return;selectedPlace=id;document.querySelectorAll("[data-city-place]").forEach(b=>{const here=b.dataset.cityPlace===current,on=b.dataset.cityPlace===id;b.classList.toggle("current",here);b.classList.toggle("selected",on);b.setAttribute("aria-pressed",String(on));b.setAttribute("aria-label",cityPlaces.find(v=>v.id===b.dataset.cityPlace).name+(here?" — current location":""));const tag=b.querySelector("small");if(tag)tag.textContent=here?"YOU ARE HERE":"AVAILABLE"});$("city-status").textContent=id===current?"CURRENT LOCATION":"DESTINATION";$("city-place").textContent=p.name;$("city-description").textContent=p.description;$("city-enter").textContent=id===current?"Return to room":"Enter location"}
+for(const p of cityPlaces){for(const [container,cls] of [["city-pins","city-pin"],["city-list","city-card"]]){const b=document.createElement("button");b.type="button";b.className=cls;b.dataset.cityPlace=p.id;b.style.setProperty("--x",p.x+"%");b.style.setProperty("--y",p.y+"%");const icon=document.createElement("span");icon.className="city-icon";icon.textContent=p.icon;const label=document.createElement("strong");label.textContent=p.name;b.append(icon,label);if(cls==="city-card")b.append(document.createElement("small"));b.onclick=()=>selectPlace(p.id);$(container).append(b)}}
+function openCity(){if($("city").open)return;save();keys.clear();touches.clear();travelled=false;selectPlace(current);log("life","city.opened",{from:current});$("city").showModal()}
+function travelTo(id){if(!roomDefs[id]||!cityPlaces.some(p=>p.id===id))return;if(id===current){$("city").close();return}const from=current;current=id;start={x:0,z:-1.8};nearest=null;$("interact").hidden=true;if(engine)buildRoom();else body=null;roomLabel();save();travelled=true;log("life","room.visited",{room:current,from,via:"city-map"});$("city").close();notify("Arrived at "+roomDefs[current].name)}
+$("city-enter").onclick=()=>travelTo(selectedPlace);$("city-close").onclick=()=>$("city").close();$("city").addEventListener("close",()=>{if(!travelled)log("life","city.closed",{room:current});focusRoom()});
 function resetPosition(){start={x:0,z:-1.8};if(body){body.position.x=start.x;body.position.z=start.z}save();notify("Position reset")}
 function resetCamera(){if(camera){camera.alpha=-Math.PI/3;camera.beta=.96;camera.radius=15;camera.target.set(0,.6,0)}}
 $("settings").onclick=()=>{save();keys.clear();$("menu").showModal()};$("resume").onclick=()=>$("menu").close();
-$("quick-computer").onclick=()=>{$("menu").close();launchDesktop()};$("quick-travel").onclick=()=>{$("menu").close();travel()};
+$("quick-computer").onclick=()=>{$("menu").close();launchDesktop()};$("quick-travel").onclick=()=>{$("menu").close();openCity()};
 $("reset").onclick=()=>{resetPosition();$("menu").close()};$("camera-reset").onclick=()=>{resetCamera();$("menu").close()};$("menu").addEventListener("close",focusRoom);
 function showJournal(){
  save();keys.clear();const p=M.player();$("memory-identity").textContent=p.nickname+" · "+p.id+" · "+M.all().length+" events";
@@ -112,7 +118,7 @@ function buildRoom(){
  // Interaction indicators float above real objects.
  function target(name,x,z,reach,label,run,markerY){targets.push({name,x,z,reach,label,run});const mark=B.MeshBuilder.CreateTorus("interaction "+name,{diameter:.32,thickness:.055,tessellation:24},scene);mark.rotation.x=Math.PI/2;mark.position.set(x,markerY,z);mark.material=palette.gold}
  target("computer",2.65,.35,1.35,"Use computer",launchDesktop,1.15);
- target("door",1.68,-3.12,1.2,current==="home"?"Visit Fighter's apartment":"Return home",travel,.08);
+ target("door",1.68,-3.12,1.2,"Leave room · City map",openCity,.08);
  body=new B.TransformNode("player",scene);body.position.set(Math.max(-4.65,Math.min(4.65,start.x)),0,Math.max(-3.65,Math.min(3.65,start.z)));
  function part(name,x,y,z,w,h,d,m){const q=box(name,x,y,z,w,h,d,m);q.parent=body;shadows.addShadowCaster(q);return q}
  const torso=part("player torso",0,.7,0,.38,.48,.25,palette.shirt),head=sphere("player head",0,1.13,0,.37,.36,.35,palette.skin,body);shadows.addShadowCaster(head);
@@ -142,7 +148,7 @@ function buildRoom(){
 refreshIdentity();roomLabel();log("life","session.started",{room:current});
 try{
  const B=window.BABYLON;if(!B||!B.Engine.isSupported())throw Error("WebGL unavailable");
- engine=new B.Engine(canvas,true,{preserveDrawingBuffer:false,stencil:true});buildRoom();engine.runRenderLoop(()=>{if(!desktop.hidden||document.hidden)return;scene?.render()});window.addEventListener("resize",()=>engine.resize());$("loading").hidden=true;focusRoom();
+ engine=new B.Engine(canvas,true,{preserveDrawingBuffer:false,stencil:true});buildRoom();engine.runRenderLoop(()=>{if(!desktop.hidden||$("city").open||document.hidden)return;scene?.render()});window.addEventListener("resize",()=>engine.resize());$("loading").hidden=true;focusRoom();
 }catch(err){console.warn("Room startup",err);$("loading").textContent="3D could not start. Your computer and travel controls are still available from Menu.";if(engine){engine.dispose();engine=null;body=null}}
 setInterval(()=>{if(!modalOpen())save()},4000);
 })();
