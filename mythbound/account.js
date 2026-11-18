@@ -15,7 +15,7 @@
   const screen=byId("mythbound-login"), form=byId("returning-player-form"), name=byId("player-nickname"),
     password=byId("fictional-password"), grid=byId("avatar-choices"), submit=byId("player-login-button"),
     title=byId("login-title"), sub=byId("login-subtitle"), cancel=byId("profile-cancel"),
-    logout=byId("profile-logout"), selectedLabel=byId("selected-avatar-label"), account=byId("account-button");
+    logout=byId("profile-logout"), account=byId("account-button");
   if(!screen||!form||!name||!password||!grid||!submit||!account)return;
   const PROFILE_KEY="mythbound-local-profile-v1", SESSION_KEY="mythbound-roleplay-session-v1";
   let profile=null, signedIn=false, guest=false, editing=false, selected="";
@@ -99,7 +99,6 @@
     password.textContent=hasName?"••••••••••":"";
     password.classList.toggle("is-filled",hasName);
     password.setAttribute("aria-label",hasName?"Simulated saved password, no real password is used":"Simulated password appears after entering a nickname");
-    selectedLabel.textContent=getAvatar(selected)?.label||"Choose one";
     submit.disabled=!hasName||!getAvatar(selected);
   }
   function show(isEdit=false){

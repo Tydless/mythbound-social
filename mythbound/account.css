@@ -22,7 +22,6 @@ body.mythbound-login-open{min-height:100vh;min-height:100dvh;background:#121a2d}
 .mb-fake-password .mb-password-hint{font-size:10px;color:#9cacc2;white-space:nowrap}
 .mb-fake-password:has(.is-filled) .mb-password-hint{color:#aee0c8}
 .mb-avatar-heading{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border-top:1px solid #d5bd8a32;padding-top:14px;margin-bottom:10px}
-.mb-avatar-heading small{color:#a9dcd7;font-size:11px;font-weight:600}
 .mb-avatar-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px 10px;justify-items:center;margin:0 0 18px}
 .mb-avatar-option{display:flex;flex-direction:column;gap:5px;align-items:center;width:100%;padding:5px 3px 6px;border:1px solid transparent;border-radius:9px;background:transparent;color:#d4ddea;transition:background .15s,border .15s,transform .15s;min-width:0}
 .mb-avatar-option:hover{border-color:#d0b47c68;background:#a8bddd13;transform:translateY(-2px)}

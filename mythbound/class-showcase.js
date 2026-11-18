@@ -659,7 +659,7 @@ function renderClassMeta(d){
 
 function draw(){
  const d=DATA[active];
- $("class-index").textContent=String(Object.keys(DATA).indexOf(active)+1).padStart(2,"0")+" / 06";
+ $("class-index").textContent=String(Array.from(document.querySelectorAll(".class-grid .class-tile"),b=>b.dataset.class).indexOf(active)+1).padStart(2,"0")+" / 06";
  renderClassMeta(d);
  $("class-details").style.setProperty("--class-highlight",d.color);
  drawEnvironment();renderStats();renderPath();renderPreview();

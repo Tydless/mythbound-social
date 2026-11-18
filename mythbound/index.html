@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-saintportraits1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-loginclassorder1";
     for(const f of ["styles.css","account.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -547,13 +547,13 @@ body.mythbound-guest .mb-header-friends{display:none!important}
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
     <div class="mb-login-inner">
       <div class="mb-login-brand logo-host"><img class="official-mythbound-logo" src="../Mythbound_Six_Paths_Transparent.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback"><span aria-hidden="true">✧</span> MYTHBOUND <small>ONLINE</small></span></div>
-      <div class="mb-login-intro"><span class="eyebrow">YOUR ADVENTURE CONTINUES</span><h1 id="login-title">Welcome back!</h1><p id="login-subtitle">We added a new feature: Choose your avatar-based profile picture!</p></div>
+      <div class="mb-login-intro"><h1 id="login-title">Welcome back!</h1><p id="login-subtitle">We added a new feature: Choose your avatar-based profile picture!</p></div>
       <form id="returning-player-form" autocomplete="off">
         <div class="mb-login-fields">
           <div class="mb-login-field"><label for="player-nickname">Nickname</label><input id="player-nickname" type="text" maxlength="24" required placeholder="Your in-game nickname" autocomplete="off" spellcheck="false"></div>
           <div class="mb-login-field"><label id="fictional-password-label">Password</label><div class="mb-fake-password" aria-labelledby="fictional-password-label"><span id="fictional-password" role="status"></span><span class="mb-password-hint">Auto-filled</span></div></div>
         </div>
-        <div class="mb-avatar-heading"><span class="mb-avatar-title" id="avatar-choices-label">Profile picture selection</span><small id="selected-avatar-label">Choose one</small></div>
+        <div class="mb-avatar-heading"><span class="mb-avatar-title" id="avatar-choices-label">Profile picture selection</span></div>
         <div id="avatar-choices" class="mb-avatar-grid" role="group" aria-labelledby="avatar-choices-label"></div>
         <button type="submit" id="player-login-button" class="mb-login-submit" disabled>Log In</button>
         <div class="mb-profile-actions"><button type="button" id="profile-cancel" hidden>Cancel</button><button type="button" id="profile-logout" hidden>Log out</button></div>
@@ -674,18 +674,18 @@ body.mythbound-guest .mb-header-friends{display:none!important}
       <section id="page-classes" class="page" aria-labelledby="classes-title" hidden>
         <div class="inner-hero violet"><span class="eyebrow">CHARACTER CREATION / SIX PATHS</span><h1 id="classes-title">What will you become?</h1><p>Each class has male and female avatars, adjustable face, height and coloring, and a signature style. Rare cosmetic skins can transform appearances and effects.</p></div>
         <div class="class-grid">
-          <button type="button" class="class-tile" data-class="breaker"><span class="class-glyph">✊</span><span class="class-role">FRONTLINE · TANK</span><strong>Breaker</strong><small>Martial arts powerhouse</small></button>
-          <button type="button" class="class-tile" data-class="animar"><span class="class-glyph">◈</span><span class="class-role">ADAPTIVE · EXPERT</span><strong>Animar</strong><small>Shapeshifting specialist</small></button>
-          <button type="button" class="class-tile" data-class="herder"><span class="class-glyph">❃</span><span class="class-role">SUPPORT · COMPANIONS</span><strong>Herder</strong><small>Mounted animal commander</small></button>
-          <button type="button" class="class-tile" data-class="elemis"><span class="class-glyph">✳</span><span class="class-role">MAGIC · ELEMENTS</span><strong>Elemis</strong><small>Elemental fairy caster</small></button>
           <button type="button" class="class-tile" data-class="strider"><span class="class-glyph">⚔</span><span class="class-role">MELEE · DUELIST</span><strong>Strider</strong><small>Precision and speed</small></button>
           <button type="button" class="class-tile" data-class="saint"><span class="class-glyph">✥</span><span class="class-role">SUPPORT · PRIEST</span><strong>Saint</strong><small>Sanctuary and healing</small></button>
+          <button type="button" class="class-tile" data-class="breaker"><span class="class-glyph">✊</span><span class="class-role">FRONTLINE · TANK</span><strong>Breaker</strong><small>Martial arts powerhouse</small></button>
+          <button type="button" class="class-tile" data-class="elemis"><span class="class-glyph">✳</span><span class="class-role">MAGIC · ELEMENTS</span><strong>Elemis</strong><small>Elemental fairy caster</small></button>
+          <button type="button" class="class-tile" data-class="herder"><span class="class-glyph">❃</span><span class="class-role">SUPPORT · COMPANIONS</span><strong>Herder</strong><small>Mounted animal commander</small></button>
+          <button type="button" class="class-tile" data-class="animar"><span class="class-glyph">◈</span><span class="class-role">ADAPTIVE · EXPERT</span><strong>Animar</strong><small>Shapeshifting specialist</small></button>
         </div>
 
         <section id="class-details" class="class-details class-showcase" aria-labelledby="class-name">
           <div class="class-atmosphere" aria-hidden="true"><div class="class-environment"></div><div class="class-landscape"></div><div class="class-embers"></div></div>
           <div class="class-foreground-motes" aria-hidden="true"></div>
-          <div class="showcase-overline"><span>THE CLASS CODEX <span aria-hidden="true">/</span> BASIC PATH</span><span id="class-index">06 / 06</span></div>
+          <div class="showcase-overline"><span>THE CLASS CODEX <span aria-hidden="true">/</span> BASIC PATH</span><span id="class-index">02 / 06</span></div>
           <div class="showcase-columns">
             <div class="showcase-info">
               <div class="showcase-heading">
