@@ -3,12 +3,13 @@
   "use strict";
   const $=id=>document.getElementById(id);
   const content=$("sheet-content");
-  const legacyKey="mythbound-fighter-whisper-seen-v1",readKey="mythbound-read-message-ids-v2";
-  // Future story messages need a unique stable ID and a conversation thread.
-  const incoming=[{id:"fighter-raid-invite-1",thread:"fighter",text:"Yo, I've got time. You in for a raid?",time:"JUST NOW"}];
+  const readKey="mythbound-read-message-ids-v2";
+  // Reissue the first invitation once after development testing. Old prototype
+  // flags/IDs must not silently mark this delivery read. Keep this ID stable
+  // from now on so opening the actual whisper persists across reloads.
+  const incoming=[{id:"fighter-raid-invite-live-1",thread:"fighter",text:"Yo, I've got time. You in for a raid?",time:"JUST NOW"}];
   function loadRead(){
-    try{const raw=localStorage.getItem(readKey);if(raw!==null){const parsed=JSON.parse(raw);if(Array.isArray(parsed))return new Set(parsed.filter(x=>typeof x==="string"))}
-    if(localStorage.getItem(legacyKey)==="true")return new Set(["fighter-raid-invite-1"])}catch{}
+    try{const raw=localStorage.getItem(readKey);if(raw!==null){const parsed=JSON.parse(raw);if(Array.isArray(parsed))return new Set(parsed.filter(x=>typeof x==="string"))}}catch{}
     return new Set();
   }
   let readIds=loadRead();
@@ -199,5 +200,5 @@
     if(node){node.replaceChildren(avatar(people[id]));node.removeAttribute("aria-hidden")}
   }
   syncUnread();
-  window.addEventListener("storage",e=>{if(e.key===readKey||e.key===legacyKey||e.key===null){readIds=loadRead();syncUnread()}});
+  window.addEventListener("storage",e=>{if(e.key===readKey||e.key===null){readIds=loadRead();syncUnread()}});
 })();
