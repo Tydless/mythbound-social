@@ -66,15 +66,19 @@ genderSwitch.before(controls);controls.append(genderSwitch,voiceButton);
 document.querySelector(".preview-toolbar").after(voiceStatus);
 const teaserNote=document.createElement("span");teaserNote.className="unrevealed-voice-note";teaserNote.textContent="Teaser voice line · Not yet revealed";teaserNote.hidden=true;voiceStatus.after(teaserNote);
 const cap=s=>s[0].toUpperCase()+s.slice(1);
-const voiceClass=()=>active==="saint"&&activePath===2?"FallenSaint":cap(active);
-const voiceClassName=()=>voiceClass()==="FallenSaint"?"Fallen Saint":cap(active);
+const voiceClass=()=>active==="saint"&&activePath===1?"Archsaint":active==="saint"&&activePath===2?"FallenSaint":cap(active);
+const voiceClassName=()=>voiceClass()==="FallenSaint"?"Fallen Saint":voiceClass();
+// Only the approved male Archsaint recordings have been uploaded so far.
+const archsaintVoicePending=()=>voiceClass()==="Archsaint"&&gender==="female";
+const voiceUnavailable=()=>isUnrevealed()||archsaintVoicePending();
 const voiceKey=()=>voiceClass()+":"+gender;
 const nextVoice=()=>voiceNext[voiceKey()]||1;
 function updateVoiceButton(){
- const mystery=isUnrevealed();
- const label=mystery?"Teaser voice line — not yet available":"Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
- voiceButton.disabled=mystery;
- teaserNote.hidden=!mystery;
+ const mystery=isUnrevealed(),pending=archsaintVoicePending();
+ const label=mystery?"Teaser voice line — not yet available":pending?"Female Archsaint voice lines — coming soon":"Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
+ voiceButton.disabled=voiceUnavailable();
+ teaserNote.textContent=mystery?"Teaser voice line · Not yet revealed":"Female Archsaint voice preview · Coming soon";
+ teaserNote.hidden=!mystery&&!pending;
  voiceButton.title=label;voiceButton.setAttribute("aria-label",label);
  voiceButton.classList.toggle("is-speaking",!!voicePlaying);
 }
@@ -90,7 +94,7 @@ function stopVoice(clearStatus=true){
  updateVoiceButton();
 }
 function playVoice(kind){
- if(isUnrevealed())return;
+ if(voiceUnavailable()){stopVoice();return}
  document.dispatchEvent(new Event("mythbound:class-voice-start"));
  stopVoice();
  const filename="Voice"+voiceClass()+cap(gender)+kind+".mp3";
@@ -106,7 +110,7 @@ function playVoice(kind){
  try{const result=audio.play();if(result&&typeof result.catch==="function")result.catch(fail)}catch{fail()}
 }
 voiceButton.addEventListener("click",()=>{
- if(isUnrevealed())return;
+ if(voiceUnavailable())return;
  const key=voiceKey(),line=nextVoice();
  voiceNext[key]=line%3+1;playVoice(String(line));
 });
@@ -638,8 +642,8 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
  activePath=next;chosen=0;renderPath();
  if(changed){
   renderPreview(true);updateVoiceButton();
-  // Both directions of the Saint transformation have a greeting.
-  if(active==="saint"&&(activePath===2||(previousPath===2&&activePath===0)))playVoice("Switch");
+  // Greet on entry to either voiced specialization, or on return to base Saint.
+  if(active==="saint"&&(activePath===1||activePath===2||((previousPath===1||previousPath===2)&&activePath===0)))playVoice("Switch");
  }
 }));
 const atmosphere=document.querySelector(".class-atmosphere");
