@@ -1,0 +1,3 @@
+# Mythbound audio credits
+
+- **Choir of Voices - Single Chord** — bone666138, [Freesound](https://freesound.org/people/bone666138/sounds/274121/), [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). A three-part vocal harmony recorded by the creator's wife. Playback uses a pinned copy from the public [Tethered game repository](https://github.com/baron-elmwich/tethered-game/blob/f23cd62702aa235f9056e1ac4d096a74cf1c5237/Assets/Audio/274121__bone666138__choir-of-voices-single-chord.wav), with volume and fade applied by Mythbound. The original synthesized effect remains a fallback if the recording is unavailable.

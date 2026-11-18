@@ -68,17 +68,16 @@ const teaserNote=document.createElement("span");teaserNote.className="unrevealed
 const cap=s=>s[0].toUpperCase()+s.slice(1);
 const voiceClass=()=>active==="saint"&&activePath===1?"Archsaint":active==="saint"&&activePath===2?"FallenSaint":cap(active);
 const voiceClassName=()=>voiceClass()==="FallenSaint"?"Fallen Saint":voiceClass();
-// Only the approved male Archsaint recordings have been uploaded so far.
-const archsaintVoicePending=()=>voiceClass()==="Archsaint"&&gender==="female";
-const voiceUnavailable=()=>isUnrevealed()||archsaintVoicePending();
+// Both Archsaint voices are available. The unrevealed specialization is still pending.
+const voiceUnavailable=()=>isUnrevealed();
 const voiceKey=()=>voiceClass()+":"+gender;
 const nextVoice=()=>voiceNext[voiceKey()]||1;
 function updateVoiceButton(){
- const mystery=isUnrevealed(),pending=archsaintVoicePending();
- const label=mystery?"Teaser voice line — not yet available":pending?"Female Archsaint voice lines — coming soon":"Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
+ const mystery=isUnrevealed();
+ const label=mystery?"Teaser voice line — not yet available":"Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
  voiceButton.disabled=voiceUnavailable();
- teaserNote.textContent=mystery?"Teaser voice line · Not yet revealed":"Female Archsaint voice preview · Coming soon";
- teaserNote.hidden=!mystery&&!pending;
+ teaserNote.textContent="Teaser voice line · Not yet revealed";
+ teaserNote.hidden=!mystery;
  voiceButton.title=label;voiceButton.setAttribute("aria-label",label);
  voiceButton.classList.toggle("is-speaking",!!voicePlaying);
 }
@@ -140,7 +139,9 @@ function avatarArt(){
  return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 380 420' role='img' aria-label='"+gender+" "+active+" concept avatar'><circle cx='190' cy='218' r='167' fill='none' stroke='"+c.color+"' opacity='.35' stroke-dasharray='3 9'/>"+aura+wings+sheep+tail+lower+dress+blade+"<path d='M146 170Q189 143 232 168L247 276Q180 294 132 269Z' fill='"+c.color+"' stroke='#e3e0dc' stroke-width='4'/><path d='M147 176l-32 79M229 176l41 74' fill='none' stroke='"+c.color+"' stroke-width='20' stroke-linecap='round'/>"+fists+"<circle cx='189' cy='110' r='"+size+"' fill='"+skin+"' stroke='#f6dec8' stroke-width='4'/><path d='"+hairShape+"' fill='"+hair+"' stroke='#688295' stroke-width='4'/><path d='M172 119h9m19 0h9' stroke='#635b5b' stroke-width='3' stroke-linecap='round'/><path d='M184 139q7 4 13-1' fill='none' stroke='#936c70' stroke-width='2'/></svg>";
 }
 // Original transformation foley. Unlock on the selection gesture; play only when the new image is ready.
-let transformAudioContext=null, transformAudioSource=null;
+let transformAudioContext=null, transformAudioSource=null, recordedChoir=null;
+// Choir of Voices - Single Chord, bone666138, CC0. See audio-credits.md.
+const choirSource="https://raw.githubusercontent.com/baron-elmwich/tethered-game/f23cd62702aa235f9056e1ac4d096a74cf1c5237/Assets/Audio/274121__bone666138__choir-of-voices-single-chord.wav";
 const transformBuffers=Object.create(null);
 function transformationMuted(){try{return localStorage.getItem("mythbound-music-enabled")==="false"}catch{return false}}
 function prepareTransformationAudio(){
@@ -152,6 +153,7 @@ function prepareTransformationAudio(){
  }catch{}
 }
 function stopTransformationAudio(){
+ if(recordedChoir){const old=recordedChoir;recordedChoir=null;old.pause();old.removeAttribute("src");old.load()}
  if(transformAudioSource){try{transformAudioSource.stop()}catch{}transformAudioSource=null}
 }
 
@@ -188,7 +190,25 @@ function specialSound(ac,kind){
  if(peak>.4)for(let i=0;i<data.length;i++)data[i]*=.4/peak;
  return b;
 }
-function playSpecialSound(kind){
+function playRecordedChoir(){
+ if(transformationMuted()||document.hidden||classPage.hidden)return;
+ stopTransformationAudio();
+ const audio=new Audio(choirSource);recordedChoir=audio;audio.preload="auto";audio.volume=.38;
+ const fallback=()=>{if(recordedChoir!==audio)return;stopTransformationAudio();if(active==="saint"&&activePath===1&&!classPage.hidden)playSpecialSound("archsaint",true)};
+ audio.addEventListener("error",fallback,{once:true});
+ audio.addEventListener("ended",()=>{if(recordedChoir===audio)stopTransformationAudio()},{once:true});
+ function fade(){
+  if(recordedChoir!==audio)return;
+  const t=audio.currentTime;
+  if(t>=4.8){stopTransformationAudio();return}
+  audio.volume=.38*Math.max(0,Math.min(1,(4.8-t)/1.35));
+  requestAnimationFrame(fade);
+ }
+ audio.addEventListener("playing",()=>requestAnimationFrame(fade),{once:true});
+ try{audio.play().catch(fallback)}catch{fallback()}
+}
+function playSpecialSound(kind,forceSynth=false){
+ if(kind==="archsaint"&&!forceSynth){playRecordedChoir();return}
  if(transformationMuted()||document.hidden||classPage.hidden)return;
  const ac=transformAudioContext;if(!ac||ac.state==="closed")return;
  stopTransformationAudio();
@@ -305,7 +325,9 @@ function playTransformationAudio(fallen){
 document.addEventListener("visibilitychange",()=>{if(document.hidden)stopTransformationAudio()});
 window.addEventListener("pagehide",stopTransformationAudio);
 $("music-toggle")?.addEventListener("click",()=>{if(transformationMuted())stopTransformationAudio()});
-new MutationObserver(()=>{if($("page-classes").hidden||document.body.classList.contains("mythbound-login-open"))stopTransformationAudio()}).observe($("page-classes"),{attributes:true,attributeFilter:["hidden"]});
+const transformVisibility=new MutationObserver(()=>{if(classPage.hidden||document.body.classList.contains("mythbound-login-open"))stopTransformationAudio()});
+transformVisibility.observe(classPage,{attributes:true,attributeFilter:["hidden"]});transformVisibility.observe(document.body,{attributes:true,attributeFilter:["class"]});
+document.addEventListener("mythbound:party-voice-start",stopTransformationAudio);
 
 // Divine manifestation: a broad feathered gradient rising over the old image,
 // with little star-shaped glints that appear along its moving boundary.

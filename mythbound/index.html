@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-specialtransforms4";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-archsaintchoir2";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -599,6 +599,17 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 @keyframes mb-mystery-seam{0%{opacity:0;transform:translateY(10%)}44%{opacity:.75}100%{opacity:0;transform:translateY(-380%)}}
 @keyframes mb-mystery-mote{0%{opacity:0;transform:translate(0,0)}42%{opacity:.65}100%{opacity:0;transform:translate(var(--drift),-55px)}}
 @media(prefers-reduced-motion:reduce){.portrait-special-effect{display:none!important}}
+</style>
+<style>
+/* Feather the heavenly light on all four edges, independently of the portrait rectangle. */
+.class-showcase .saint-portrait-stage .portrait-special-effect.heavenly-effect{
+ inset:-14% -16%;overflow:visible;
+ -webkit-mask-image:radial-gradient(ellipse closest-side at 50% 47%,#000 39%,#000d 58%,#0005 81%,transparent 100%);
+ mask-image:radial-gradient(ellipse closest-side at 50% 47%,#000 39%,#000d 58%,#0005 81%,transparent 100%);
+}
+.heavenly-effect .heavenly-glow{inset:0;background:radial-gradient(ellipse at 50% 26%,#fff8dcad,transparent 45%),radial-gradient(ellipse at 50% 48%,#d5efff46,transparent 57%),radial-gradient(ellipse at 45% 55%,#ffe0ef32,transparent 55%)}
+.heavenly-effect .heavenly-ray{top:9%;height:86%;filter:blur(7px);background:linear-gradient(180deg,transparent 0%,#fff7dd91 12%,#d9efff70 36%,#f9e9ff20 73%,transparent 96%)}
+.heavenly-effect .heavenly-ring{top:31%;width:27%;height:8%}
 </style>
 </head>
 <body class="mythbound-login-open">
