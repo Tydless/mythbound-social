@@ -9,17 +9,17 @@ const apps=[
 ];
 const roomDefs={home:{name:"Your room",detail:"A little corner of your own.",wall:"#75878c",floor:"#9f826d",cloth:"#b8c7b8",rug:"#587c78",wood:"#735e51"},friend:{name:"Fighter's apartment",detail:"A provisional room for your gaming buddy.",wall:"#82818e",floor:"#886f61",cloth:"#ab919f",rug:"#68556f",wood:"#685c55"}};
 let saved=M.load()||{},current=roomDefs[saved.room]?saved.room:"home",start={x:Number.isFinite(saved.x)?saved.x:0,z:Number.isFinite(saved.z)?saved.z:-1.4};
-let scene,engine,camera,body,targets=[],obstacles=[],nearest=null,paused=false,activeApp=null,toastTimer,attachedDoc=null,frameVisitId=0;
+let decorations=LifeDecor.clean(saved.decor),scene,engine,camera,body,targets=[],obstacles=[],nearest=null,paused=false,activeApp=null,toastTimer,attachedDoc=null,frameVisitId=0;
 const keys=new Set(),touches=new Set(),canvas=$("room"),desktop=$("desktop"),frame=$("website");
 function log(source,type,d={}){M.record(source,type,d)}
 function refreshIdentity(){const p=M.player();$("player").textContent=p.nickname;$("desktop-greeting").textContent="Welcome back, "+p.nickname+"."}
 function notify(t){$("notice").textContent=t;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("notice").textContent="",2400)}
-function save(){const p=body?.position||start;start={x:p.x,z:p.z};$("saved").textContent=M.save({room:current,x:start.x,z:start.z,version:1})?"Progress saved":"Storage unavailable"}
-function roomLabel(){$("room-name").textContent=roomDefs[current].name;$("room-detail").textContent=roomDefs[current].detail;$("quick-travel").textContent="Open city map"}
-function modalOpen(){return desktop.hidden===false||$("menu").open||$("memories").open||$("city").open}
+function save(){const p=body?.position||start;start={x:p.x,z:p.z};$("saved").textContent=M.save({room:current,x:start.x,z:start.z,version:2,decor:decorations})?"Progress saved":"Storage unavailable"}
+function roomLabel(){$("room-name").textContent=roomDefs[current].name;$("room-detail").textContent=roomDefs[current].detail;$("quick-travel").textContent="Open city map";$("decorate").hidden=current!=="home";$("radio-open").hidden=current!=="home"}
+function modalOpen(){return desktop.hidden===false||$("menu").open||$("memories").open||$("city").open||$("decor-dialog").open||$("radio-dialog").open}
 function interact(){if(!modalOpen()&&nearest)nearest.run()}
 function focusRoom(){keys.clear();touches.clear();if(!modalOpen())canvas.focus({preventScroll:true})}
-function launchDesktop(){save();keys.clear();touches.clear();desktop.hidden=false;desktopHome();refreshIdentity();log("life","computer.opened",{room:current});$("desktop-home").focus()}
+function launchDesktop(){LifeRadio.pause();save();keys.clear();touches.clear();desktop.hidden=false;desktopHome();refreshIdentity();log("life","computer.opened",{room:current});$("desktop-home").focus()}
 function desktopHome(){frameVisitId++;frame.hidden=true;frame.src="about:blank";activeApp=null;attachedDoc=null;$("desktop-launcher").hidden=false;$("external").hidden=true;$("desktop-title").textContent="Desktop"}
 function openApp(app){activeApp=app;frameVisitId++;$("desktop-launcher").hidden=true;frame.hidden=false;$("desktop-title").textContent=app.name;$("external").href=app.path;$("external").hidden=false;log(app.id,"website.opened",{from:"virtual-computer",room:current});frame.src=app.path}
 function websiteForLocation(url){if(url.origin!==location.origin)return null;const base=new URL("../",location.href).pathname;const sub=url.pathname.startsWith(base)?url.pathname.slice(base.length):"";if(sub.startsWith("mythbound/"))return apps[0];if(sub.startsWith("livewire/"))return apps[2];if(sub.startsWith("viewpoint/"))return apps[3];if(sub===""||sub==="index.html")return apps[1];return null}
@@ -59,8 +59,12 @@ let selectedPlace=current,travelled=false;
 function selectPlace(id){const p=cityPlaces.find(v=>v.id===id);if(!p)return;selectedPlace=id;document.querySelectorAll("[data-city-place]").forEach(b=>{const here=b.dataset.cityPlace===current,on=b.dataset.cityPlace===id;b.classList.toggle("current",here);b.classList.toggle("selected",on);b.setAttribute("aria-pressed",String(on));b.setAttribute("aria-label",cityPlaces.find(v=>v.id===b.dataset.cityPlace).name+(here?" — current location":""));const tag=b.querySelector("small");if(tag)tag.textContent=here?"YOU ARE HERE":"AVAILABLE"});$("city-status").textContent=id===current?"CURRENT LOCATION":"DESTINATION";$("city-place").textContent=p.name;$("city-description").textContent=p.description;$("city-enter").textContent=id===current?"Return to room":"Enter location"}
 for(const p of cityPlaces){for(const [container,cls] of [["city-pins","city-pin"],["city-list","city-card"]]){const b=document.createElement("button");b.type="button";b.className=cls;b.dataset.cityPlace=p.id;b.style.setProperty("--x",p.x+"%");b.style.setProperty("--y",p.y+"%");const icon=document.createElement("span");icon.className="city-icon";icon.textContent=p.icon;const label=document.createElement("strong");label.textContent=p.name;b.append(icon,label);if(cls==="city-card")b.append(document.createElement("small"));b.onclick=()=>selectPlace(p.id);$(container).append(b)}}
 function openCity(){if($("city").open)return;save();keys.clear();touches.clear();travelled=false;selectPlace(current);log("life","city.opened",{from:current});$("city").showModal()}
-function travelTo(id){if(!roomDefs[id]||!cityPlaces.some(p=>p.id===id))return;if(id===current){$("city").close();return}const from=current;current=id;start={x:0,z:-1.8};nearest=null;$("interact").hidden=true;if(engine)buildRoom();else body=null;roomLabel();save();travelled=true;log("life","room.visited",{room:current,from,via:"city-map"});$("city").close();notify("Arrived at "+roomDefs[current].name)}
+function travelTo(id){if(!roomDefs[id]||!cityPlaces.some(p=>p.id===id))return;if(id===current){$("city").close();return}const from=current;LifeRadio.pause();current=id;start={x:0,z:-1.8};nearest=null;$("interact").hidden=true;if(engine)buildRoom();else body=null;roomLabel();save();travelled=true;log("life","room.visited",{room:current,from,via:"city-map"});$("city").close();notify("Arrived at "+roomDefs[current].name)}
 $("city-enter").onclick=()=>travelTo(selectedPlace);$("city-close").onclick=()=>$("city").close();$("city").addEventListener("close",()=>{if(!travelled)log("life","city.closed",{room:current});focusRoom()});
+const editor=LifeDecor.editor({get:()=>decorations,avatar:()=>body?.position||start,set:(next,type,details)=>{decorations=next;save();log("life",type,details)},close:()=>{if(engine&&current==="home"){save();const view=camera?{a:camera.alpha,b:camera.beta,r:camera.radius}:null;buildRoom();if(view){camera.alpha=view.a;camera.beta=view.b;camera.radius=view.r}}focusRoom()}});
+function openDecor(){if(current!=="home")return;save();keys.clear();touches.clear();editor.open()}
+function openRadio(){if(current!=="home")return;keys.clear();touches.clear();LifeRadio.open()}
+$("decorate").onclick=openDecor;$("radio-open").onclick=openRadio;LifeRadio.onClose(focusRoom);
 function resetPosition(){start={x:0,z:-1.8};if(body){body.position.x=start.x;body.position.z=start.z}save();notify("Position reset")}
 function resetCamera(){if(camera){camera.alpha=-Math.PI/3;camera.beta=.96;camera.radius=15;camera.target.set(0,.6,0)}}
 $("settings").onclick=()=>{save();keys.clear();$("menu").showModal()};$("resume").onclick=()=>$("menu").close();
@@ -111,6 +115,25 @@ function buildRoom(){
  box("shelf",-.05,1.02,3.22,1.35,2.04,1.05,palette.wood,true);
  for(let i=0;i<3;i++){box("shelf board",-.05,.18+i*.78,2.65,1.26,.08,.14,palette.cream);for(let k=0;k<4;k++)box("book",-.5+k*.26,.4+i*.78,2.64,.18,.34,.13,k%2?palette.rug:palette.cloth)}
  box("side table",-3.98,.44,-1.1,1.16,.86,1.12,palette.wood,true);cylinder("lamp base",-3.98,.92,-1.1,.44,.09,palette.metal);cylinder("lamp stalk",-3.98,1.19,-1.1,.075,.48,palette.metal);cylinder("lamp shade",-3.98,1.53,-1.1,.62,.34,palette.gold);
+ if(current==="home"){
+ // A small physical radio on the existing side table, beside the lamp.
+ box("radio body",-3.8,1.04,-.86,.59,.29,.24,palette.metal);
+ box("radio display",-3.8,1.07,-1.002,.29,.11,.025,palette.screen);
+ box("radio speaker",-4.01,1.03,-1.002,.11,.17,.025,palette.dark);
+ box("radio aerial",-3.57,1.34,-.82,.025,.36,.025,palette.cream);
+ const accent=mat("decor accent","#a999bd"),pink=mat("decor pink","#bc8395");
+ for(const p of decorations){
+  const root=new B.TransformNode("decor "+p.id,scene);root.position.set(p.x,0,p.z);root.rotation.y=p.rot*Math.PI/2;
+  const block=(n,x,y,z,w,h,d,m)=>{const mesh=box(n,x,y,z,w,h,d,m);mesh.parent=root;return mesh};
+  const cyl=(n,x,y,z,d,h,m)=>{const mesh=cylinder(n,x,y,z,d,h,m);mesh.parent=root;return mesh};
+  if(p.type==="plant"){cyl("potted plant",0,.18,0,.43,.36,palette.cream);sphere("plant foliage",0,.59,0,.46,.62,.46,palette.green,root)}
+  if(p.type==="chair"){block("chair seat",0,.43,0,.94,.25,.91,accent);block("chair back",0,.79,.38,.94,.71,.18,accent);for(const x of [-.41,.41])block("chair arm",x,.64,0,.14,.2,.83,accent);for(const x of [-.31,.31])for(const z of [-.31,.31])block("chair foot",x,.12,z,.12,.24,.12,palette.wood)}
+  if(p.type==="table"){block("coffee table",0,.53,0,1.45,.13,.48,palette.wood);for(const x of [-.60,.60])for(const z of [-.16,.16])block("table leg",x,.24,z,.08,.48,.08,palette.wood)}
+  if(p.type==="lamp"){cyl("floor lamp foot",0,.055,0,.45,.11,palette.metal);cyl("floor lamp stem",0,.72,0,.055,1.4,palette.metal);cyl("floor lamp shade",0,1.38,0,.44,.35,palette.gold)}
+  if(p.type==="rug"){const rug=block("small rug",0,.043,0,1.48,.022,.98,pink);rug.receiveShadows=true;for(const z of [-.39,.39])block("rug stripe",0,.057,z,1.35,.006,.035,palette.cream)}
+  if(p.type!=="rug")obstacles.push(LifeDecor.bounds(p));
+ }
+ }
  cylinder("plant pot",4.12,.26,-2.8,.56,.52,palette.cream);sphere("leaves",4.12,.85,-2.8,.85,.94,.85,palette.green);obstacles.push({x:4.12,z:-2.8,w:.65,d:.65});
  // Doorway at the front edge. A standing frame makes the exit clear.
  box("door left",.88,1.12,-3.78,.13,2.24,.22,palette.wood);box("door right",2.48,1.12,-3.78,.13,2.24,.22,palette.wood);box("door header",1.68,2.23,-3.78,1.73,.16,.22,palette.wood);box("door panel",2.64,1.07,-3.38,.11,2.12,1.18,palette.wood);
@@ -119,6 +142,7 @@ function buildRoom(){
  function target(name,x,z,reach,label,run,markerY){targets.push({name,x,z,reach,label,run});const mark=B.MeshBuilder.CreateTorus("interaction "+name,{diameter:.32,thickness:.055,tessellation:24},scene);mark.rotation.x=Math.PI/2;mark.position.set(x,markerY,z);mark.material=palette.gold}
  target("computer",2.65,.35,1.35,"Use computer",launchDesktop,1.15);
  target("door",1.68,-3.12,1.2,"Leave room · City map",openCity,.08);
+ if(current==="home")target("radio",-2.65,-1.1,1.05,"Use radio",openRadio,.08);
  body=new B.TransformNode("player",scene);body.position.set(Math.max(-4.65,Math.min(4.65,start.x)),0,Math.max(-3.65,Math.min(3.65,start.z)));
  function part(name,x,y,z,w,h,d,m){const q=box(name,x,y,z,w,h,d,m);q.parent=body;shadows.addShadowCaster(q);return q}
  const torso=part("player torso",0,.7,0,.38,.48,.25,palette.shirt),head=sphere("player head",0,1.13,0,.37,.36,.35,palette.skin,body);shadows.addShadowCaster(head);
