@@ -8,9 +8,9 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-unrevealedpath1";
-    for(const f of ["styles.css","account.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
-    for(const f of ["app.js","class-showcase.js","account.js","social.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-worldatlas1";
+    for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
+    for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
   </script>
   <noscript><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="account.css"></noscript>
@@ -660,24 +660,54 @@ body.mythbound-guest .mb-header-friends{display:none!important}
           <section class="mw-section" id="mw-atlas" aria-labelledby="mw-atlas-title">
             <div class="mw-section-head"><div><span class="mw-kicker">I · Cartography</span><h2 id="mw-atlas-title">The World Atlas</h2></div><p>Discover the lands beyond your doorstep.</p></div>
             <div class="mw-atlas">
-              <div class="mw-atlas-top"><strong>✧ &nbsp; Mythbound Atlas</strong><span>Map not yet revealed</span></div>
-              <div class="mw-map">
-                <svg class="mw-map-decoration" viewBox="0 0 960 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="480" cy="240" r="205" stroke-dasharray="2 8"/><circle cx="480" cy="240" r="166"/><circle cx="480" cy="240" r="256" stroke-dasharray="1 9"/><path d="M0 240h960M480 0v480M224 0l512 480M736 0 224 480"/><path d="M0 85Q130 20 200 75T350 65M660 420Q810 360 960 400M0 104Q130 39 200 94T350 84M660 439Q810 379 960 419M0 123Q130 58 200 113T350 103" stroke-dasharray="4 5"/></g></svg>
-                <span class="mw-map-corner nw">FIELD ATLAS · 01</span><span class="mw-map-corner se">TERRA INCOGNITA</span>
-                <div class="mw-map-copy">
-                  <svg class="mw-compass" viewBox="0 0 120 120" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="60" cy="60" r="41" opacity=".6"/><circle cx="60" cy="60" r="34" stroke-dasharray="1 5"/><path d="M60 13v94M13 60h94M29 29l62 62M91 29 29 91" opacity=".35"/><path d="m60 19 8 33 33 8-33 8-8 33-8-33-33-8 33-8Z" fill="#a88b5633"/><path d="M60 19v41l41 0M60 101V60H19"/><circle cx="60" cy="60" r="6" fill="#e6c68b" stroke="#20313e"/><g fill="currentColor" stroke="none" font-size="9" font-family="Georgia" text-anchor="middle"><text x="60" y="10">N</text><text x="60" y="117">S</text><text x="8" y="63">W</text><text x="112" y="63">E</text></g></svg>
-                  <h3>Uncharted Lands</h3><p>The world map will appear here once the lands are revealed.</p><span class="mw-pending">Cartography pending</span>
-                </div>
+              <div class="mw-atlas-top"><strong>✧ &nbsp; Mythbound Atlas</strong><span>World survey · Provisional</span></div>
+              <div class="mw-map mw-interactive-map" id="mw-interactive-map" aria-label="Illustrative map of Mythbound">
+                <svg class="mw-terrain" viewBox="0 0 960 550" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <pattern id="mw-sea-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M0 40V0H40" fill="none" stroke="#c6cbb4" stroke-opacity=".09"/></pattern>
+                    <pattern id="mw-land-grain" width="17" height="17" patternUnits="userSpaceOnUse"><circle cx="2" cy="5" r=".8" fill="#e6d2a5" opacity=".15"/><circle cx="12" cy="14" r=".7" fill="#101c29" opacity=".25"/></pattern>
+                    <radialGradient id="mw-sea"><stop stop-color="#405e65"/><stop offset="1" stop-color="#21343e"/></radialGradient>
+                    <filter id="mw-coast-shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#111d29" flood-opacity=".45"/></filter>
+                  </defs>
+                  <rect width="960" height="550" fill="url(#mw-sea)"/><rect width="960" height="550" fill="url(#mw-sea-grid)"/>
+                  <g fill="none" stroke="#b1c4be" stroke-opacity=".16" stroke-width="1.3">
+                    <path d="M46 290Q72 275 100 290M53 304Q80 289 107 304M787 455Q819 443 851 455M780 468Q812 456 844 468M369 60Q405 44 441 60M378 72Q408 58 438 72"/>
+                    <path d="M84 433Q104 424 124 433M832 215Q858 199 884 215M832 228Q858 212 884 228"/>
+                    <circle cx="480" cy="275" r="255" stroke-dasharray="2 8"/>
+                  </g>
+                  <g class="mw-land" filter="url(#mw-coast-shadow)" stroke="#b6b18a" stroke-width="2" stroke-linejoin="round">
+                    <path data-terrain="fable" d="M123 186 104 147 142 107 187 88 221 103 260 83 306 105 334 144 373 158 380 207 323 243 269 238 230 283 178 259 145 218Z" fill="#4d795c"/>
+                    <path data-terrain="wondrous" d="M306 105 346 80 399 91 447 75 493 98 545 93 580 123 624 124 652 160 611 200 555 211 514 190 460 218 413 194 380 207 373 158 334 144Z" fill="#77749a"/>
+                    <path data-terrain="greatfields" d="M230 283 269 238 323 243 380 207 413 194 460 218 514 190 555 211 611 200 640 245 612 296 553 326 509 313 466 354 407 343 359 373 302 341 256 347 216 316Z" fill="#829464"/>
+                    <path data-terrain="bloodmoon" d="M652 160 703 163 729 192 773 202 801 240 782 282 805 326 773 359 725 357 690 336 649 342 612 296 640 245 611 200Z" fill="#865361"/>
+                    <path data-terrain="dunes" d="M216 316 256 347 302 341 359 373 407 343 466 354 509 313 553 326 612 296 649 342 690 336 725 357 710 396 671 435 628 426 585 467 526 468 488 497 439 479 386 499 343 466 293 475 259 441 217 426 192 384Z" fill="#ae8b54"/>
+                    <path data-terrain="heavenly" d="M703 68 734 45 769 50 799 33 833 49 869 48 893 75 882 101 853 112 816 108 787 124 750 113 718 115 694 92Z" fill="#c1c2c6" stroke="#eed6a6" stroke-dasharray="5 3"/>
+                  </g>
+                  <g fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <g stroke="#d6d7a0" stroke-opacity=".55" stroke-width="1.8">
+                      <path d="M156 169l8-13 8 13h-5v7h-6v-7Zm28 9 10-16 10 16h-7v7h-6v-7Zm46-50 9-14 9 14h-6v7h-6v-7Zm42 18 9-14 9 14h-6v7h-6v-7Z"/>
+                      <path d="M283 285q8-13 16 0t16 0m-29 10q8-13 16 0t16 0M518 265q8-13 16 0t16 0m-25 11q8-13 16 0t16 0"/>
+                    </g>
+                    <g stroke="#e5d4ea" stroke-opacity=".55" stroke-width="1.7"><path d="m364 121 12-15 11 15m-23 0 23 0M527 128l11-16 14 16m-25 0h25M408 155v-16m-8 8h16m125 4v-12m-6 6h12"/><path d="M729 81q12-9 24 0t24 0m60 9q11-9 22 0m-59-32 3-7 3 7 7 3-7 3-3 7-3-7-7-3Z"/></g>
+                    <g stroke="#f0c3c3" stroke-opacity=".45" stroke-width="1.7"><path d="m685 206 13-21 12 21h-25Zm20 10 12-19 12 19Zm54 79 7-12 8 12m-4-1v12m-17 0v-12"/><path d="M736 246a16 16 0 1 1 16-22 12 12 0 0 0-16 22Z"/></g>
+                    <g stroke="#f2d8a0" stroke-opacity=".6" stroke-width="1.8"><path d="M260 398q19-15 38 0t38 0m-68 13q22-12 44 0m255 9q23-19 46 0t46 0m-76 11q22-13 44 0"/><path d="m478 421 12-18 12 18m-24 0h24"/></g>
+                  </g>
+                  <g transform="translate(72 73)" stroke="#e2c891" fill="none" opacity=".82"><circle r="28" stroke-width=".8"/><path d="M0-25 5-5 25 0 5 5 0 25-5 5-25 0-5-5Z" fill="#dcc79435"/><path d="M0-25V25M-25 0H25"/><text x="0" y="-34" fill="#e2c891" stroke="none" text-anchor="middle" font-size="11" font-family="Georgia">N</text></g>
+                </svg>
+                <div id="mw-map-markers" class="mw-map-markers" role="group" aria-label="Select a region"></div>
+                <span class="mw-map-corner nw">FIELD ATLAS · 01</span><span class="mw-map-corner se">ILLUSTRATIVE GEOGRAPHY</span>
               </div>
-              <div class="mw-atlas-bottom"><div class="mw-legend" aria-label="Planned map legend"><span><b>◇</b>Regions</span><span><b>⌂</b>Settlements</span><span><b>✦</b>Dungeons</span><span><b>✧</b>Landmarks</span></div><span>Interactive atlas · forthcoming</span></div>
+              <div class="mw-atlas-bottom"><div class="mw-legend" aria-label="Map legend"><span><b>◇</b>Region</span><span><b>✦</b>Starting region</span><span><b>○</b>Realm</span></div><span>Choose a region to explore its entry.</span></div>
+              <div id="mw-region-detail" class="mw-region-detail" aria-live="polite" aria-atomic="true"></div>
             </div>
           </section>
           <section class="mw-section" id="mw-regions" aria-labelledby="mw-regions-title">
             <div class="mw-section-head"><div><span class="mw-kicker">II · Beyond the horizon</span><h2 id="mw-regions-title">Regions of Mythbound</h2></div><p>New landscapes, new stories, new adventures.</p></div>
-            <div class="mw-region-grid"><article class="mw-region"><div class="mw-region-art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 19 7-12 4 7 3-5 6 10H3Z"/><path d="m8 10 2 3 2-3"/></svg></div><div class="mw-region-copy"><span class="mw-kicker">Region I · Unrevealed</span><h3>Undiscovered region</h3><p>Landscape, inhabitants and local lore to be revealed.</p></div></article><article class="mw-region"><div class="mw-region-art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 19 7-12 4 7 3-5 6 10H3Z"/><path d="m8 10 2 3 2-3"/></svg></div><div class="mw-region-copy"><span class="mw-kicker">Region II · Unrevealed</span><h3>Undiscovered region</h3><p>Landscape, inhabitants and local lore to be revealed.</p></div></article><article class="mw-region"><div class="mw-region-art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 19 7-12 4 7 3-5 6 10H3Z"/><path d="m8 10 2 3 2-3"/></svg></div><div class="mw-region-copy"><span class="mw-kicker">Region III · Unrevealed</span><h3>Undiscovered region</h3><p>Landscape, inhabitants and local lore to be revealed.</p></div></article></div>
+            <div class="mw-region-grid" id="mw-region-directory"></div>
           </section>
           <section class="mw-section" id="mw-locations" aria-labelledby="mw-locations-title">
             <div class="mw-section-head"><div><span class="mw-kicker">III · The adventurer's guide</span><h2 id="mw-locations-title">Places to Discover</h2></div><p>From peaceful settlements to the perils of a raid.</p></div>
+            <div id="mw-location-region" class="mw-location-region"></div>
             <div class="mw-features">
               <article class="mw-feature"><span class="mw-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9h5v4h3V5h2v8h3V9h5v12M2 21h20M10 21v-5h4v5M3 9V5h2v2h3V5M16 5v4m5-4v4m-5-2h5"/></svg></span><div class="mw-feature-copy"><h3>Cities & Settlements</h3><p>Discover places to meet other travelers, trade, rest and prepare for the next adventure.</p><span class="mw-kicker">Location entries forthcoming</span></div></article>
               <article class="mw-feature"><span class="mw-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-6 9 6v12H3Zm5 0v-8a4 4 0 0 1 8 0v8M3 9h18M12 3v4"/></svg></span><div class="mw-feature-copy"><h3>Dungeons & Raids</h3><p>A future guide to encounters, recommended levels, party sizes and rewards.</p><span class="mw-kicker">Encounter entries forthcoming</span></div></article>

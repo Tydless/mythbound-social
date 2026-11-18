@@ -1,0 +1,56 @@
+/* The first Mythbound world survey — all geography is provisional. */
+#page-discover .mw-interactive-map{display:block;aspect-ratio:960/550;min-height:0;max-height:none;background:#21343e}
+#page-discover .mw-interactive-map::before{display:none}
+#page-discover .mw-interactive-map::after{inset:9px;z-index:3}
+.mw-terrain,.mw-map-markers{position:absolute;inset:0;width:100%;height:100%}
+.mw-terrain [data-terrain]{cursor:pointer;transition:filter .2s,stroke .2s;stroke-width:2;vector-effect:non-scaling-stroke}
+.mw-terrain [data-terrain]:hover{filter:brightness(1.12)}
+.mw-terrain [data-terrain].is-active{filter:brightness(1.2);stroke:#f0dfae;stroke-width:3}
+.mw-map-markers{pointer-events:none;z-index:2}
+#page-discover .mw-interactive-map .mw-map-corner{z-index:3;pointer-events:none;text-shadow:0 1px 4px #17232d}
+#page-discover .mw-interactive-map .mw-map-corner.nw{left:18px;top:13px}
+#page-discover .mw-interactive-map .mw-map-corner.se{right:18px;bottom:12px}
+.mw-map-pin{pointer-events:auto;position:absolute;left:var(--pin-x);top:var(--pin-y);transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;max-width:22%;border:0;background:none;color:#f4e8d2;padding:3px;isolation:isolate;white-space:normal}
+.mw-pin-symbol{display:grid;place-items:center;width:clamp(23px,3.1vw,38px);height:clamp(23px,3.1vw,38px);border:1px solid var(--region-accent);border-radius:50%;background:#1a2835e8;color:var(--region-accent);font-size:clamp(15px,2.1vw,24px);line-height:1;box-shadow:0 3px 9px #080e1a66;transition:background .2s,box-shadow .2s}
+.mw-pin-label{display:block;padding:4px 7px;border-radius:3px;background:#17232ee8;border:1px solid #d2bb894a;color:#f5e9d2;font:600 clamp(9px,1.15vw,15px)/1.25 'Cinzel',Georgia,serif;text-align:center;box-shadow:0 2px 6px #10182344}
+.mw-map-pin:hover .mw-pin-symbol,.mw-map-pin.is-active .mw-pin-symbol{background:var(--region-accent);color:#1a2736;box-shadow:0 0 15px var(--region-accent)}
+.mw-map-pin.is-active .mw-pin-label{border-color:var(--region-accent);color:var(--region-accent)}
+.mw-map-pin:focus-visible{outline:2px solid #fff4d9;outline-offset:3px;border-radius:4px}
+.mw-region-detail{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px;align-items:center;padding:clamp(18px,3vw,30px);border-top:1px solid var(--atlas-line);background:radial-gradient(ellipse at left,color-mix(in srgb,var(--region-accent) 13%,transparent),transparent 55%),#192537}
+.mw-detail-symbol{display:grid;place-items:center;width:76px;height:76px;border:1px solid var(--region-accent);border-radius:50%;color:var(--region-accent);background:#172232;box-shadow:0 0 22px color-mix(in srgb,var(--region-accent) 14%,transparent)}
+.mw-detail-symbol svg{width:42px;height:42px}
+.mw-detail-copy .mw-kicker,.mw-region-entry .mw-kicker,.mw-location-current .mw-kicker{color:var(--region-accent)}
+.mw-detail-copy h3,.mw-location-current h3{margin:3px 0 8px;font:600 clamp(21px,2.4vw,30px)/1.2 'Cinzel',Georgia,serif;color:#f0e1c9}
+.mw-detail-copy p,.mw-location-current p{margin:0;color:#c2cddd;font-size:13px;line-height:1.6}
+.mw-detail-copy .mw-region-note{margin-top:7px;font-size:12px;color:#9faec1}
+.mw-detail-guide{white-space:nowrap}
+#page-discover .mw-region-entry{display:flex;flex-direction:column;transition:border-color .2s,box-shadow .2s}
+#page-discover .mw-region-entry:has(.mw-region-open.is-active){border-color:var(--region-accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--region-accent) 20%,transparent)}
+#page-discover .mw-region-entry .mw-region-art{background:radial-gradient(ellipse at 50% 65%,color-mix(in srgb,var(--region-accent) 25%,transparent),transparent 64%),linear-gradient(145deg,color-mix(in srgb,#233349 74%,var(--region-accent) 26%),#182638)}
+#page-discover .mw-region-entry .mw-region-art svg{color:var(--region-accent)}
+.mw-region-entry .mw-region-copy{flex:1;display:flex;flex-direction:column;align-items:flex-start}
+.mw-region-entry .mw-region-copy p{margin-bottom:16px;flex:1}
+.mw-region-open{margin-top:auto;border:1px solid var(--atlas-line);background:#172233;color:#e4d5b3;font-size:11px;font-weight:600;padding:7px 12px;border-radius:3px}
+.mw-region-open:hover,.mw-region-open.is-active{border-color:var(--region-accent);color:var(--region-accent)}
+.mw-location-region{margin-bottom:19px;padding:16px;border:1px solid var(--atlas-line);background:#192638}
+.mw-location-tabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.mw-location-tab{background:#111c2c;border:1px solid #7c8a9b55;color:#c2cddd;padding:6px 9px;font-size:11px;border-radius:3px}
+.mw-location-tab:hover,.mw-location-tab.is-active{background:#293949;border-color:var(--region-accent);color:var(--region-accent)}
+.mw-location-current{padding-top:14px;border-top:1px solid var(--atlas-line)}
+.mw-location-current h3{font-size:21px}
+@media(max-width:760px){
+ #page-discover .mw-interactive-map{aspect-ratio:1.24;min-height:295px}
+ .mw-region-detail{grid-template-columns:44px minmax(0,1fr);gap:12px;padding:15px}
+ .mw-detail-symbol{width:44px;height:44px}.mw-detail-symbol svg{width:27px;height:27px}
+ .mw-detail-guide{grid-column:2;justify-self:start}
+ .mw-pin-label{font-size:10px;padding:3px 4px}
+ .mw-map-pin{max-width:26%}
+}
+@media(max-width:460px){
+ #page-discover .mw-region-entry{display:grid;grid-template-columns:90px minmax(0,1fr)}
+ #page-discover .mw-region-entry .mw-region-art::after{width:65px;height:65px}
+ #page-discover .mw-region-entry .mw-region-art svg{width:38px;height:38px}
+ .mw-pin-label{font-size:9px}.mw-map-pin{max-width:25%;gap:2px}.mw-pin-symbol{width:22px;height:22px;font-size:14px}
+ #page-discover .mw-interactive-map .mw-map-corner{font-size:7px}
+}
+@media(prefers-reduced-motion:reduce){.mw-map-pin *,.mw-terrain [data-terrain],.mw-region-entry{transition:none}}
