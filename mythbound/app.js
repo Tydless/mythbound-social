@@ -59,10 +59,12 @@ function scrollToClassCodex(){
   });
 }
 document.querySelectorAll("[data-class]").forEach(b=>b.addEventListener("click",()=>{navigate("classes");selectClass(b.dataset.class);scrollToClassCodex()}));
-function closePanel(){overlay.hidden=true;document.body.classList.remove("sheet-open");if(previousFocus&&document.contains(previousFocus))previousFocus.focus()}
+function closePanel(){overlay.hidden=true;overlay.classList.remove("mb-launcher-modal");document.body.classList.remove("sheet-open");if(previousFocus&&document.contains(previousFocus))previousFocus.focus()}
 function openPanel(templateId){
   if(window.MythboundAccount?.isSignedIn()===false)return;
   previousFocus=document.activeElement;
+  overlay.classList.remove("mb-launcher-modal");
+  document.getElementById("sheet-kicker").textContent="MYTHBOUND · SOCIAL";
   sheetContent.replaceChildren(document.getElementById(templateId).content.cloneNode(true));
   overlay.hidden=false;document.body.classList.add("sheet-open");
   document.getElementById("sheet-close").focus();
@@ -81,6 +83,7 @@ whisperButton.addEventListener("click",()=>window.MythboundSocial?.openInbox());
 document.getElementById("download-button").addEventListener("click",()=>{
   const signedIn=window.MythboundAccount?.isSignedIn()===true;
   previousFocus=document.activeElement;
+  overlay.classList.add("mb-launcher-modal");
   sheetContent.replaceChildren();
   const title=document.createElement("div");
   title.className="profile-content";

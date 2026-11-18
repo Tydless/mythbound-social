@@ -87,6 +87,7 @@
   function display(nodes,kicker){
     if(window.MythboundAccount?.isSignedIn()===false)return;
     if(overlay.hidden)previousFocus=document.activeElement;
+    overlay.classList.remove("mb-launcher-modal");
     content.replaceChildren(...nodes);
     $("sheet-kicker").textContent=kicker;
     overlay.hidden=false;document.body.classList.add("sheet-open");$("sheet-close").focus();
