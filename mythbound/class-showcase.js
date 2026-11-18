@@ -38,6 +38,7 @@ const stats=$("class-stats"),skills=$("class-skills"),detail=$("skill-detail"),p
 if(!stats||!skills||!detail||!preview)return;
 const statLabels=["Damage","Defense","Support","Mobility","Control"];
 let active="saint",gender="male",chosen=0,activePath=0;
+const isUnrevealed=()=>active==="saint"&&activePath===3;
 // Add approved specialization content here, grouped by class and path number.
 // Each entry may provide name, description, icon, skills (same format as DATA), and signatureMoves.
 const SPECIALIZATIONS={
@@ -63,13 +64,17 @@ const controls=document.createElement("div");controls.className="class-preview-c
 const genderSwitch=document.querySelector(".gender-switch");
 genderSwitch.before(controls);controls.append(genderSwitch,voiceButton);
 document.querySelector(".preview-toolbar").after(voiceStatus);
+const teaserNote=document.createElement("span");teaserNote.className="unrevealed-voice-note";teaserNote.textContent="Teaser voice line · Not yet revealed";teaserNote.hidden=true;voiceStatus.after(teaserNote);
 const cap=s=>s[0].toUpperCase()+s.slice(1);
 const voiceClass=()=>active==="saint"&&activePath===2?"FallenSaint":cap(active);
 const voiceClassName=()=>voiceClass()==="FallenSaint"?"Fallen Saint":cap(active);
 const voiceKey=()=>voiceClass()+":"+gender;
 const nextVoice=()=>voiceNext[voiceKey()]||1;
 function updateVoiceButton(){
- const label="Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
+ const mystery=isUnrevealed();
+ const label=mystery?"Teaser voice line — not yet available":"Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
+ voiceButton.disabled=mystery;
+ teaserNote.hidden=!mystery;
  voiceButton.title=label;voiceButton.setAttribute("aria-label",label);
  voiceButton.classList.toggle("is-speaking",!!voicePlaying);
 }
@@ -85,6 +90,7 @@ function stopVoice(clearStatus=true){
  updateVoiceButton();
 }
 function playVoice(kind){
+ if(isUnrevealed())return;
  stopVoice();
  const filename="Voice"+voiceClass()+cap(gender)+kind+".mp3";
  const audio=new Audio();audio.preload="auto";voicePlaying=audio;
@@ -99,6 +105,7 @@ function playVoice(kind){
  try{const result=audio.play();if(result&&typeof result.catch==="function")result.catch(fail)}catch{fail()}
 }
 voiceButton.addEventListener("click",()=>{
+ if(isUnrevealed())return;
  const key=voiceKey(),line=nextVoice();
  voiceNext[key]=line%3+1;playVoice(String(line));
 });
@@ -371,7 +378,7 @@ function renderPreview(allowTransformation=false){
  const oldImage=previous?.complete&&previous.naturalWidth?previous.cloneNode(false):null;
  preview.replaceChildren();
  preview.classList.remove("has-saint-art");
- preview.style.setProperty("--preview-accent",DATA[active].color);
+ preview.style.setProperty("--preview-accent",isUnrevealed()?"#b8bed8":DATA[active].color);
  const specialization=activePath===0?null:SPECIALIZATIONS[active]?.[activePath];
  const artwork=specialization?.artwork?.[gender];
  const artworkName=artwork?specialization.name:cap(active);
@@ -381,13 +388,13 @@ function renderPreview(allowTransformation=false){
  if(active==="saint"){
   const picture=document.createElement("img");
   const isFallen=activePath===2;
-  picture.className="saint-portrait"+(isFallen?" fallen-saint-portrait":"");
+  picture.className="saint-portrait"+(isFallen?" fallen-saint-portrait":"")+(isUnrevealed()?" unrevealed-portrait":"");
   const stage=document.createElement("div");stage.className="saint-portrait-stage";
   picture.alt=cap(gender)+" "+artworkName+" class illustration in an ornate floral frame";
   const source=artwork||(gender==="female"?"../FemaleSaint.png":"../MaleSaint.png");
   // Only a change between the holy and corrupted paths triggers a transformation.
   // Gender changes and ordinary class selection are instantaneous.
-  const animate=allowTransformation&&oldImage&&oldImage.classList.contains("fallen-saint-portrait")!==isFallen&&oldImage.src!==new URL(source,document.baseURI).href&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const animate=allowTransformation&&!isUnrevealed()&&oldImage&&!oldImage.classList.contains("unrevealed-portrait")&&oldImage.classList.contains("fallen-saint-portrait")!==isFallen&&oldImage.src!==new URL(source,document.baseURI).href&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if(animate){
    prepareTransformationAudio();
    oldImage.setAttribute("aria-hidden","true");oldImage.alt="";
@@ -401,6 +408,7 @@ function renderPreview(allowTransformation=false){
   picture.addEventListener("load",()=>{
    if(!picture.isConnected)return;
    preview.classList.add("has-saint-art");
+   if(isUnrevealed()&&allowTransformation&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches)picture.classList.add("unrevealed-portrait-reveal");
    if(animate){
     playTransformationAudio(isFallen);
     if(isFallen)burnPortrait(stage,oldImage,picture,true);
@@ -411,7 +419,7 @@ function renderPreview(allowTransformation=false){
   picture.addEventListener("error",()=>{
    if(!picture.isConnected)return;
    preview.classList.remove("has-saint-art");
-   preview.innerHTML=avatarArt();
+   if(isUnrevealed()){const missing=document.createElement("p");missing.className="unrevealed-missing";missing.textContent="Preview not yet available";preview.replaceChildren(missing)}else preview.innerHTML=avatarArt();
    if(note)note.textContent="Preview silhouette · artwork pending upload";
   });
   stage.append(picture);preview.append(stage);
@@ -430,7 +438,9 @@ let radarDismiss=null;
 document.addEventListener("pointerdown",e=>{if(!e.target.closest(".radar-marker"))radarDismiss?.()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")radarDismiss?.()});
 function renderStats(){
- const values=DATA[active].stats, ns="http://www.w3.org/2000/svg";
+ radarDismiss=null;
+ const mystery=isUnrevealed();
+ const values=mystery?null:DATA[active].stats, ns="http://www.w3.org/2000/svg";
  const colors=["#ee958b","#87b8f3","#9ed9a8","#f1c985","#c3a6f1"];
  const svg=document.createElementNS(ns,"svg");
  svg.setAttribute("viewBox","0 0 480 350");
@@ -443,8 +453,8 @@ function renderStats(){
   if(text!==undefined)el.textContent=text;
   parent.append(el);return el;
  }
- node("title",{id:"stat-radar-title"},svg,cap(active)+" class strengths");
- node("desc",{id:"stat-radar-description"},svg,statLabels.map((s,i)=>s+": "+values[i]+" out of 5").join("; "));
+ node("title",{id:"stat-radar-title"},svg,mystery?"Unrevealed class strengths":cap(active)+" class strengths");
+ node("desc",{id:"stat-radar-description"},svg,mystery?"All five strength ratings are undisclosed. No values are displayed.":statLabels.map((s,i)=>s+": "+values[i]+" out of 5").join("; "));
  const cx=240,cy=170,r=105;
  const point=(i,d)=>{const a=-Math.PI/2+i*2*Math.PI/5;return [cx+Math.cos(a)*d,cy+Math.sin(a)*d]};
  const polygon=(distances)=>distances.map((d,i)=>point(i,d).map(n=>n.toFixed(2)).join(",")).join(" ");
@@ -457,6 +467,22 @@ function renderStats(){
  for(let level=1;level<=5;level++)node("polygon",{points:polygon(Array(5).fill(r*level/5)),class:level===5?"radar-grid radar-grid-outer":"radar-grid"});
  for(let i=0;i<5;i++){
   const [x,y]=point(i,r);node("line",{x1:cx,y1:cy,x2:x,y2:y,class:"radar-spoke"});
+ }
+ if(mystery){
+  svg.setAttribute("role","img");svg.classList.add("unrevealed-radar");
+  const labels=[{x:240,y:16,a:"middle"},{x:390,y:133,a:"start"},{x:336,y:311,a:"start"},{x:144,y:311,a:"end"},{x:90,y:133,a:"end"}];
+  for(let i=0;i<5;i++){
+   const [x,y]=point(i,129),l=labels[i];
+   const group=node("g",{class:"unrevealed-radar-node",transform:"translate("+x+" "+y+")","aria-hidden":"true"});
+   node("circle",{r:18,fill:"#252938",stroke:"currentColor","stroke-width":1},group);
+   node("text",{x:0,y:1,"text-anchor":"middle","dominant-baseline":"middle",class:"unrevealed-radar-question"},group,"?");
+   node("text",{x:l.x,y:l.y,"text-anchor":l.a,fill:"#bdc2d4",class:"radar-label"},svg,statLabels[i]);
+  }
+  const seal=node("g",{class:"unrevealed-radar-seal","aria-hidden":"true"});
+  node("circle",{cx,cy,r:34,fill:"#171c2b",stroke:"#b8bed8","stroke-dasharray":"3 6","stroke-opacity":".6"},seal);
+  node("text",{x:cx,y:cy+2,"text-anchor":"middle","dominant-baseline":"middle",class:"unrevealed-radar-center"},seal,"?");
+  node("text",{x:cx,y:cy+54,"text-anchor":"middle",class:"unrevealed-radar-caption"},svg,"RATINGS UNDISCLOSED");
+  stats.replaceChildren(svg);return;
  }
  node("polygon",{points:polygon(values.map(v=>r*v/5)),fill:"url(#radar-fill)",stroke:DATA[active].color,"stroke-width":2.1,"stroke-linejoin":"round",class:"radar-shape"});
  const glyphs=["M7 17L17 7M12 6l6 0 0 6M6 13l5 5M5 19l-2 2","M12 3l7 3v6c0 5-7 9-7 9s-7-4-7-9V6z","M12 5v14M5 12h14","M4 18c4-8 10-12 17-13-1 8-5 14-14 15M4 20l11-10","M20 12a8 8 0 1 1-6-8 5 5 0 1 1-7 7 2 2 0 1 0 3 2"];
@@ -535,6 +561,14 @@ function skillDetail(){
 }
 function renderSkills(){
  skills.replaceChildren();
+ if(isUnrevealed()){
+  skills.hidden=true;detail.replaceChildren();
+  const sealed=document.createElement("div");sealed.className="unrevealed-sealed-panel";
+  const lock=document.createElement("span");lock.className="unrevealed-lock";lock.setAttribute("aria-hidden","true");lock.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></svg>';
+  const heading=document.createElement("strong");heading.textContent="ABILITIES SEALED";
+  const copy=document.createElement("p");copy.textContent="No abilities have been revealed for this path.";
+  sealed.append(lock,heading,copy);detail.append(sealed);return;
+ }
  pathData().skills.forEach((s,i)=>{
   const btn=document.createElement("button");btn.type="button";btn.className="skill-icon"+(i===chosen?" is-current":"");
   btn.setAttribute("aria-label","Inspect "+s[1]);btn.setAttribute("aria-pressed",String(i===chosen));btn.title=s[1];
@@ -544,7 +578,22 @@ function renderSkills(){
  });
  skillDetail();
 }
+function renderPathPresentation(){
+ const host=$("class-details"),mystery=isUnrevealed(),wasMystery=host.dataset.unrevealed==="true";
+ if(mystery)host.dataset.unrevealed="true";else delete host.dataset.unrevealed;
+ host.style.setProperty("--class-highlight",mystery?"#b8bed8":DATA[active].color);
+ $("class-codex-path-label").textContent=mystery?"UNREVEALED PATH":"BASIC PATH";
+ $("path-inspect-label").textContent=mystery?"UNDISCLOSED":"SELECT TO INSPECT";
+ if(mystery){
+  const emblem=$("class-emblem");emblem.classList.remove("class-art-host","has-class-art");emblem.textContent="?";
+  $("class-name").textContent="Coming soon";
+  $("class-type").textContent="UNREVEALED SPECIALIZATION";
+  $("class-description").textContent="Not every path has been written in the chronicles. What lies beyond this one remains a mystery.";
+ }else if(wasMystery&&typeof selectClass==="function")selectClass(active);
+ renderClassMeta(DATA[active]);renderStats();
+}
 function renderPath(){
+ renderPathPresentation();
  const path=pathData(),buttons=$("class-paths");
  if(buttons){
   buttons.querySelectorAll("[data-path]").forEach(b=>{
@@ -554,6 +603,9 @@ function renderPath(){
    b.querySelector(".path-name").textContent=i===0?"Base class":info?.name||"???";
    b.title=i===0?cap(active)+" · Base class":info?.name||"Specialization "+i+" — unrevealed";
    b.setAttribute("aria-label",b.title);
+   const unknown=active==="saint"&&i===3;
+   b.classList.toggle("is-unrevealed-path",unknown);
+   if(i===3)b.querySelector(".path-symbol").textContent=unknown?"?":"◈";
    if(i===0&&typeof setClassArtwork==="function")setClassArtwork(b.querySelector(".path-symbol"),active);
   });
  }
@@ -561,10 +613,16 @@ function renderPath(){
  if(title)title.textContent=path.name+(activePath===0?" · Base class":"");
  if(desc)desc.textContent=path.description;
  if(label)label.textContent=activePath===0?"BASE PATH":path.type||"ADVANCED PATH";
- if(core)core.textContent=activePath===0?"Core abilities":"Specialization abilities";
+ if(core)core.textContent=isUnrevealed()?"Unrevealed abilities":activePath===0?"Core abilities":"Specialization abilities";
  if(sig){
   sig.replaceChildren();
-  if(path.signatureMoves?.length){path.signatureMoves.forEach(move=>{const p=document.createElement("p");p.textContent=move;sig.append(p)})}
+  if(isUnrevealed()){
+   const panel=document.createElement("div");panel.className="unrevealed-signature";
+   const mark=document.createElement("span");mark.className="unrevealed-signature-mark";mark.setAttribute("aria-hidden","true");mark.textContent="?";
+   const title=document.createElement("strong");title.textContent="FOOTAGE UNAVAILABLE";
+   const copy=document.createElement("p");copy.textContent="This path has yet to make its debut.";
+   panel.append(mark,title,copy);sig.append(panel);
+  }else if(path.signatureMoves?.length){path.signatureMoves.forEach(move=>{const p=document.createElement("p");p.textContent=move;sig.append(p)})}
   else{const p=document.createElement("p");p.className="signature-pending";p.textContent="To be revealed";sig.append(p)}
  }
  skills.hidden=!path.skills.length;
@@ -648,6 +706,14 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeRoleTooltips()}
 function renderClassMeta(d){
  const combat=$("class-combat"),difficulty=$("class-difficulty");
  combat.replaceChildren();difficulty.replaceChildren();
+ if(isUnrevealed()){
+  const role=document.createElement("span");role.className="unrevealed-meta-label";role.textContent="ROLE · UNKNOWN";combat.append(role);
+  combat.setAttribute("aria-label","Combat role undisclosed");
+  difficulty.setAttribute("aria-label","Difficulty undisclosed");difficulty.title="Not yet revealed";
+  const label=document.createElement("span");label.className="difficulty-label";label.textContent="DIFFICULTY";
+  const unknown=document.createElement("span");unknown.className="unrevealed-difficulty";unknown.textContent="???";difficulty.append(label,unknown);return;
+ }
+ combat.setAttribute("aria-label","Combat roles");
  for(const [key,label] of CLASS_ROLES[active]){
   const icon=document.createElement("button");icon.type="button";icon.className="class-role-icon";icon.dataset.tooltip=label;icon.setAttribute("aria-label",label);icon.setAttribute("aria-expanded","false");icon.style.padding="0";icon.addEventListener("click",()=>{const open=!icon.classList.contains("is-tooltip-open");closeRoleTooltips();if(open){icon.classList.add("is-tooltip-open");icon.setAttribute("aria-expanded","true")}});
   icon.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+ROLE_ICONS[key]+'</svg>';combat.append(icon);
@@ -658,11 +724,8 @@ function renderClassMeta(d){
 }
 
 function draw(){
- const d=DATA[active];
  $("class-index").textContent=String(Array.from(document.querySelectorAll(".class-grid .class-tile"),b=>b.dataset.class).indexOf(active)+1).padStart(2,"0")+" / 06";
- renderClassMeta(d);
- $("class-details").style.setProperty("--class-highlight",d.color);
- drawEnvironment();renderStats();renderPath();renderPreview();
+ drawEnvironment();renderPath();renderPreview();
 }
 document.querySelectorAll("[data-class]").forEach(button=>{
  button.addEventListener("click",()=>{

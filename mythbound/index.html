@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-classcolors1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-unrevealedpath1";
     for(const f of ["styles.css","account.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -542,7 +542,42 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 #overlay.mb-launcher-modal .profile-content p{margin:0 0 22px;line-height:1.6}
 #overlay.mb-launcher-modal #download-return{min-height:40px;margin:0}
 @media(max-width:450px){#overlay.mb-launcher-modal:not([hidden]){padding:16px}#overlay.mb-launcher-modal .profile-content{padding:29px 20px 24px}}
-</style></head>
+</style>
+<style>
+/* Unrevealed Saint path: presentation only. No new artwork or inferred gameplay. */
+.class-showcase .showcase-overline #class-codex-path-label{padding:0;color:inherit}
+.class-showcase[data-unrevealed="true"]{--environment-light:#9da7cb;--environment-dark:#1a1d31;--codex-border:#737c9b}
+.class-showcase[data-unrevealed="true"] .class-landscape{opacity:0}
+.class-showcase[data-unrevealed="true"] .class-environment{background:radial-gradient(ellipse at 72% 37%,#818bb528,transparent 47%),radial-gradient(ellipse at 24% 73%,#9692bf16,transparent 52%),linear-gradient(180deg,transparent,#16192be3 76%,#141827);z-index:1}
+.class-showcase[data-unrevealed="true"] .class-embers{opacity:.38}
+.class-showcase[data-unrevealed="true"] .class-foreground-motes{opacity:.45}
+.class-showcase[data-unrevealed="true"] .showcase-info{background:radial-gradient(ellipse at 50% 65%,#30344e,#191c2c 78%);box-shadow:inset 0 0 0 4px #191c2c,inset 0 0 0 5px #a3adcb40,0 12px 32px #080f2044}
+.class-showcase[data-unrevealed="true"] .showcase-info::before,.class-showcase[data-unrevealed="true"] .showcase-info::after{border-color:#191c2c}
+.class-showcase[data-unrevealed="true"] .showcase-seal{display:grid;place-items:center;color:#c3c9df;font:400 48px 'Cinzel',Georgia,serif;text-shadow:0 0 18px #b8bed875;border:1px dashed #a4aec77a;border-radius:50%;background:radial-gradient(circle,#b8bed81a,transparent 68%)}
+.class-showcase .path-option.is-unrevealed-path .path-symbol{font-family:'Cinzel',Georgia,serif;color:#c3c9df;border:1px dashed #8992b15c;border-radius:50%;text-shadow:0 0 12px #c3c9df55}
+.class-showcase[data-unrevealed="true"] .path-overview{background:linear-gradient(145deg,#25293be8,#181b2ce8);border-color:#8790ae69}
+.class-showcase[data-unrevealed="true"] .class-meta .unrevealed-meta-label,.class-showcase[data-unrevealed="true"] .class-meta .unrevealed-difficulty{font-size:10px;letter-spacing:.12em;font-weight:700;color:#c6ccdf;background:#222738;border:1px dashed #a1aaca70;border-radius:4px;padding:7px 10px;white-space:nowrap}
+.class-showcase[data-unrevealed="true"] .class-meta .unrevealed-difficulty{font-size:14px;letter-spacing:.18em;line-height:1}
+.class-showcase[data-unrevealed="true"] .unrevealed-radar{color:#b8bed8}
+.unrevealed-radar-question{fill:#d5d9e8;font:600 20px Georgia,serif}
+.unrevealed-radar-center{fill:#dfe2f1;font:400 43px 'Cinzel',Georgia,serif}
+.unrevealed-radar-caption{fill:#b8bed8;font:700 8px 'DM Sans',sans-serif;letter-spacing:.15em}
+.unrevealed-radar-seal{animation:unrevealed-breathe 5s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes unrevealed-breathe{0%,100%{opacity:.62}50%{opacity:1;filter:drop-shadow(0 0 9px #aeb8df55)}}
+.unrevealed-voice-note{display:block;text-align:right;padding:0 0 8px;color:#b0b7cc;font-size:10px;font-style:italic;letter-spacing:.025em}
+.class-showcase[data-unrevealed="true"] .class-voice-button:disabled{opacity:.45;cursor:not-allowed}
+.class-showcase[data-unrevealed="true"] .skill-detail{background:#191d2c77;border:1px dashed #a4aec366;min-height:155px}
+.unrevealed-sealed-panel,.unrevealed-signature{display:flex;min-height:125px;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:7px;color:#c7ccdf;padding:14px}
+.unrevealed-lock svg{display:block;width:32px;height:32px;color:#bdc5dd}
+.unrevealed-sealed-panel strong,.unrevealed-signature strong{font-size:10px;letter-spacing:.17em;font-weight:800}
+.unrevealed-sealed-panel p,.unrevealed-signature p{font-size:12px;color:#aeb5ca;line-height:1.6;margin:0}
+.unrevealed-signature{min-height:155px;border:1px dashed #a4aec355;border-radius:7px;background:radial-gradient(ellipse at center,#737c9e15,transparent 68%),#191d2c77}
+.unrevealed-signature-mark{font:400 36px 'Cinzel',Georgia,serif;color:#b8bed8;line-height:1;text-shadow:0 0 16px #aeb8df55}
+.class-showcase .saint-portrait-stage .unrevealed-portrait-reveal{animation:unrevealed-appear 1s ease-out both}
+@keyframes unrevealed-appear{from{opacity:0;filter:blur(6px) drop-shadow(0 18px 22px #08122265)}to{opacity:1;filter:blur(0) drop-shadow(0 18px 22px #08122265)}}
+@media(prefers-reduced-motion:reduce){.unrevealed-radar-seal,.class-showcase .saint-portrait-stage .unrevealed-portrait-reveal{animation:none}}
+</style>
+</head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
     <div class="mb-login-inner">
@@ -685,7 +720,7 @@ body.mythbound-guest .mb-header-friends{display:none!important}
         <section id="class-details" class="class-details class-showcase" aria-labelledby="class-name">
           <div class="class-atmosphere" aria-hidden="true"><div class="class-environment"></div><div class="class-landscape"></div><div class="class-embers"></div></div>
           <div class="class-foreground-motes" aria-hidden="true"></div>
-          <div class="showcase-overline"><span>THE CLASS CODEX <span aria-hidden="true">/</span> BASIC PATH</span><span id="class-index">02 / 06</span></div>
+          <div class="showcase-overline"><span>THE CLASS CODEX <span aria-hidden="true">/</span> <span id="class-codex-path-label">BASIC PATH</span></span><span id="class-index">02 / 06</span></div>
           <div class="showcase-columns">
             <div class="showcase-info">
               <div class="showcase-heading">
@@ -722,7 +757,7 @@ body.mythbound-guest .mb-header-friends{display:none!important}
             <div class="subclass-intro"><div><span class="eyebrow" id="path-type">BASE PATH</span><h3 id="path-detail-title">Saint · Base class</h3></div></div>
             <p id="path-description">Master the foundations of your class.</p>
             <div class="path-ability-layout"><div>
-              <div class="showcase-section-title skills-title"><h3 id="path-core-title">Core abilities</h3><span>SELECT TO INSPECT</span></div>
+              <div class="showcase-section-title skills-title"><h3 id="path-core-title">Core abilities</h3><span id="path-inspect-label">SELECT TO INSPECT</span></div>
               <div id="class-skills" class="skill-row" role="group" aria-label="Selected path skills"></div>
               <div id="skill-detail" class="skill-detail" aria-live="polite" aria-atomic="true"></div>
             </div><div class="path-signature-panel"><div class="showcase-section-title"><h3>Ability showcase</h3></div><div id="path-signatures"></div></div></div>
