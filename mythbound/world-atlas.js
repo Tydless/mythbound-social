@@ -43,7 +43,15 @@ function choose(id,{scroll=false}={}){
   const btn=make("button","mw-location-tab",v.name);btn.type="button";btn.dataset.atlasRegion=v.id;btn.classList.toggle("is-active",v.id===id);btn.setAttribute("aria-pressed",String(v.id===id));btn.addEventListener("click",()=>{choose(v.id);location.querySelector('[data-atlas-region="'+v.id+'"]')?.focus({preventScroll:true})});tabs.append(btn)
  }
  location.replaceChildren(tabs,locationHeading);
- if(scroll)moveTo($("mw-atlas"));
+ if(scroll){
+  requestAnimationFrame(()=>{
+   const atlas=world.querySelector(".mw-atlas"),header=document.querySelector(".site-header");
+   if(!atlas)return;
+   const headerBottom=header?Math.max(0,header.getBoundingClientRect().bottom):0;
+   const top=Math.max(0,window.scrollY+atlas.getBoundingClientRect().top-headerBottom-10);
+   window.scrollTo({top,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+  });
+ }
 }
 for(const r of regions){
  const pin=make("button","mw-map-pin");pin.type="button";pin.dataset.atlasRegion=r.id;
