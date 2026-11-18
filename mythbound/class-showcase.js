@@ -42,9 +42,9 @@ let active="saint",gender="male",chosen=0,activePath=0;
 // Each entry may provide name, description, icon, skills (same format as DATA), and signatureMoves.
 const SPECIALIZATIONS={
  saint:{
-  1:{name:"Archsaint",type:"TRUE PATH",description:"Embrace the Saint's sacred calling. Master greater blessings, restorative miracles and divine protection, sheltering the entire party through the power of holy light.",skills:[],signatureMoves:[]},
+  1:{name:"Archsaint",type:"TRUE PATH",artwork:{male:"../ArchsaintMalePortrait.png",female:"../ArchsaintFemalePortrait.png"},description:"Embrace the Saint's sacred calling. Master greater blessings, restorative miracles and divine protection, sheltering the entire party through the power of holy light.",skills:[],signatureMoves:[]},
   2:{name:"Fallen Saint",type:"CORRUPTED PATH",artwork:{male:"../FallenSaintMalePortrait.png",female:"../FallenSaintFemalePortrait.png"},description:"Twist sacred power into forbidden magic. Siphon life, bestow cursed blessings and sacrifice your own vitality to unleash devastating attacks.",skills:[],signatureMoves:[]},
-  3:{name:"Coming soon",type:"UNREVEALED PATH",description:"A new path awaits those who dare to question their sacred calling. More will be revealed in a future chronicle.",skills:[],signatureMoves:[]}
+  3:{name:"Coming soon",type:"UNREVEALED PATH",artwork:{male:"../ComingSoonSaintMalePortrait.png",female:"../ComingSoonSaintFemalePortrait.png"},description:"A new path awaits those who dare to question their sacred calling. More will be revealed in a future chronicle.",skills:[],signatureMoves:[]}
  }
 };
 const pathData=()=>activePath===0?{name:cap(active),description:"Master the foundations of your class.",skills:DATA[active].skills,signatureMoves:[]}:SPECIALIZATIONS[active]?.[activePath]||{name:"Specialization "+activePath,description:"This advanced path has yet to be revealed.",skills:[],signatureMoves:[]};
