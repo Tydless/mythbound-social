@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-worldatlasfocus2";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-navorder1";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -603,9 +603,9 @@ body.mythbound-guest .mb-header-friends{display:none!important}
     <a class="brand logo-host wordmark-host" href="#home" aria-label="Mythbound home"><img class="official-mythbound-logo" src="../Mythbound_Wordmark.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback"><span class="brand-mark" aria-hidden="true">✧</span><span>MYTHBOUND</span><small>ONLINE</small></span></a>
     <nav id="primary-navigation" class="main-nav" aria-label="Main navigation">
       <button type="button" data-page="home" class="nav-item is-active" aria-current="page">Home</button>
-      <button type="button" data-page="discover" class="nav-item">The World</button>
       <button type="button" data-page="news" class="nav-item">News</button>
       <button type="button" data-page="classes" class="nav-item">Classes</button>
+      <button type="button" data-page="discover" class="nav-item">The World</button>
       <button type="button" id="mobile-inbox" class="nav-item mobile-menu-item mobile-social-item">Inbox <span id="mobile-inbox-count" class="mobile-inbox-count" hidden>0</span></button>
       <button type="button" id="mobile-friends" class="nav-item mobile-menu-item mobile-social-item">Friends</button>
       <button type="button" id="mobile-refresh" class="nav-item mobile-menu-item"><span>Check for updates</span><span aria-hidden="true">↻</span></button>
