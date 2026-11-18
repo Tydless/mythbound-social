@@ -91,6 +91,7 @@ function stopVoice(clearStatus=true){
 }
 function playVoice(kind){
  if(isUnrevealed())return;
+ document.dispatchEvent(new Event("mythbound:class-voice-start"));
  stopVoice();
  const filename="Voice"+voiceClass()+cap(gender)+kind+".mp3";
  const audio=new Audio();audio.preload="auto";voicePlaying=audio;
@@ -115,6 +116,7 @@ const voiceVisibility=new MutationObserver(()=>{
 });
 voiceVisibility.observe(classPage,{attributes:true,attributeFilter:["hidden"]});
 voiceVisibility.observe(document.body,{attributes:true,attributeFilter:["class"]});
+document.addEventListener("mythbound:party-voice-start",()=>stopVoice());
 document.addEventListener("visibilitychange",()=>{if(document.hidden)stopVoice()});
 window.addEventListener("pagehide",()=>stopVoice());
 

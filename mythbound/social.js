@@ -159,12 +159,133 @@
     body.append(make("p","mb-social-note","2 mutual friends"));
     display([back("Back to friends",openFriends),head,body],"MYTHBOUND · PLAYER PROFILE");
   }
+  // Only supplied, successfully loaded recordings appear in the fictional archive.
+  // Files live at the repository root. No microphone access or synthesized speech.
+  const partyRecordings=[
+    {id:"chaotic-01",person:"chaotic",time:"20:48",file:"VoiceChatChaoticBuddy01.mp3"},
+    {id:"player-01",person:"player",time:"20:49",file:"VoiceChatPlayer01.mp3"},
+    {id:"fighter-01",person:"fighter",time:"20:49",file:"VoiceChatFighter01.mp3",requires:"player-01"},
+    {id:"responsible-01",person:"responsible",time:"20:50",file:"VoiceChatResponsibleBuddy01.mp3",requires:"player-01"}
+  ];
+  const partyVersion=new URL(document.currentScript?.src||location.href,document.baseURI).searchParams.get("v");
+  const partyMusic=$("mythbound-theme");
+  let playingPartyAudio=null,partyMusicVolume=null;
+  const playIcon='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l12-7z"/></svg>';
+  const pauseIcon='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>';
+  const microphoneIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-3 0h6"/></svg>';
+  function releasePartyVoice(audio){
+    if(playingPartyAudio!==audio)return;
+    playingPartyAudio=null;
+    if(partyMusic&&partyMusicVolume!==null){try{partyMusic.volume=partyMusicVolume}catch{}}
+    partyMusicVolume=null;
+  }
+  function stopPartyVoice(){
+    const audio=playingPartyAudio;
+    if(audio){audio.pause();releasePartyVoice(audio)}
+  }
+  function startPartyVoice(audio){
+    if(playingPartyAudio===audio)return;
+    stopPartyVoice();
+    document.dispatchEvent(new Event("mythbound:party-voice-start"));
+    playingPartyAudio=audio;
+    if(partyMusic){try{partyMusicVolume=partyMusic.volume;partyMusic.volume=partyMusicVolume*.28}catch{}}
+  }
+  function durationText(value){
+    const n=Math.max(0,Math.floor(Number.isFinite(value)?value:0));
+    return Math.floor(n/60)+":"+String(n%60).padStart(2,"0");
+  }
+  function createPartyVoice(recording,person,onAvailability){
+    const bubble=make("div","mb-chat-bubble mb-voice-bubble"),audio=make("audio");
+    audio.preload="metadata";audio.hidden=true;
+    const controls=make("div","mb-voice-controls"),play=make("button","mb-voice-play");
+    play.type="button";play.disabled=true;play.innerHTML=playIcon;
+    const track=make("div","mb-voice-track"),wave=make("div","mb-voice-wave");
+    wave.setAttribute("aria-hidden","true");
+    for(let i=0;i<34;i++){
+      const segment=make("span");segment.style.height=(4+Math.round(Math.abs(Math.sin(i*2.31)*Math.cos(i*.29))*20))+"px";wave.append(segment);
+    }
+    const seek=make("input","mb-voice-seek");seek.type="range";seek.min="0";seek.max="1";seek.step=".01";seek.value="0";seek.disabled=true;seek.setAttribute("aria-label","Seek voice message");
+    track.append(wave,seek);
+    const time=make("span","mb-voice-time","0:00"),label=make("span","mb-voice-label","Voice message"),status=make("span","mb-voice-status");
+    status.hidden=true;status.setAttribute("role","status");
+    controls.append(play,track,time);bubble.append(controls,label,status,audio);
+    let available=false;
+    function sync(){
+      const duration=audio.duration,valid=Number.isFinite(duration)&&duration>0,now=audio.currentTime||0;
+      seek.value=String(valid?now:0);
+      track.style.setProperty("--voice-progress",(valid?Math.min(1,now/duration)*100:0)+"%");
+      const playing=!audio.paused&&!audio.ended;
+      play.innerHTML=playing?pauseIcon:playIcon;
+      play.setAttribute("aria-label",(playing?"Pause":"Play")+" voice message from "+person.name);
+      time.textContent=playing||(!audio.ended&&now>0)?durationText(now)+" / "+durationText(duration):durationText(duration);
+      bubble.classList.toggle("is-playing",playing);
+    }
+    audio.addEventListener("loadedmetadata",()=>{
+      available=Number.isFinite(audio.duration)&&audio.duration>0;
+      if(available){seek.max=String(audio.duration);play.disabled=false;seek.disabled=false;sync()}
+      onAvailability(available);
+    });
+    audio.addEventListener("error",()=>{available=false;play.disabled=true;seek.disabled=true;releasePartyVoice(audio);onAvailability(false)});
+    audio.addEventListener("play",()=>{
+      if(!audio.isConnected||overlay.hidden){audio.pause();return}
+      startPartyVoice(audio);sync();
+    });
+    audio.addEventListener("pause",()=>{releasePartyVoice(audio);sync()});
+    audio.addEventListener("ended",()=>{releasePartyVoice(audio);sync()});
+    audio.addEventListener("timeupdate",sync);audio.addEventListener("seeking",sync);
+    play.addEventListener("click",()=>{
+      if(!available)return;
+      if(!audio.paused){audio.pause();return}
+      if(audio.ended)audio.currentTime=0;
+      stopPartyVoice();status.hidden=true;
+      const failed=()=>{releasePartyVoice(audio);status.textContent="Playback unavailable. Try again.";status.hidden=false;sync()};
+      try{const pending=audio.play();pending?.catch(failed)}catch{failed()}
+    });
+    seek.addEventListener("input",()=>{if(available){audio.currentTime=Number(seek.value);sync()}});
+    const url=new URL("../"+recording.file,document.baseURI);
+    if(partyVersion)url.searchParams.set("v",partyVersion);
+    return {bubble,load:()=>{audio.src=url.href}};
+  }
+  new MutationObserver(()=>{if(overlay.hidden||!content.querySelector(".mb-group-log"))stopPartyVoice()}).observe(overlay,{attributes:true,attributeFilter:["hidden"]});
+  new MutationObserver(()=>{if(playingPartyAudio&&!playingPartyAudio.isConnected)stopPartyVoice()}).observe(content,{childList:true});
+  document.addEventListener("visibilitychange",()=>{if(document.hidden)stopPartyVoice()});
+  document.addEventListener("mythbound:class-voice-start",stopPartyVoice);
+  window.addEventListener("pagehide",stopPartyVoice);
   function openGroup(){
     if(window.MythboundAccount?.isSignedIn()===false)return;
     const player=nickname();
     const head=heading("The Usual Suspects","4 members · "+player+", Fighter, Chaotic Buddy, Responsible Buddy");
     head.prepend(groupAvatar());
     const log=make("div","mb-group-log");log.setAttribute("role","log");
+    const savedAvatar=$("rail-player-avatar")?.querySelector("img")?.getAttribute("src");
+    const playerPerson={name:player,file:savedAvatar?.startsWith("../")?savedAvatar.slice(3):undefined,glyph:"✧"};
+    const ready=new Set(),voiceRows=new Map(),voiceLoads=[];
+    let windJoke=null;
+    function updateVoiceRows(){
+      const atBottom=log.scrollHeight-log.scrollTop-log.clientHeight<48;
+      const firstVisible=Array.from(log.children).find(el=>!el.hidden&&el.getBoundingClientRect().bottom>log.getBoundingClientRect().top);
+      const offset=firstVisible?.getBoundingClientRect().top;
+      for(const {row,recording} of voiceRows.values()){
+        const visible=ready.has(recording.id)&&(!recording.requires||ready.has(recording.requires));
+        if(!visible&&row.contains(playingPartyAudio))stopPartyVoice();
+        row.hidden=!visible;
+      }
+      if(windJoke)windJoke.hidden=!ready.has("player-01");
+      if(atBottom)log.scrollTop=log.scrollHeight;
+      else if(firstVisible&&!firstVisible.hidden&&offset!==undefined)log.scrollTop+=firstVisible.getBoundingClientRect().top-offset;
+    }
+    function voice(recording){
+      const p=recording.person==="player"?playerPerson:people[recording.person];
+      const row=make("div","mb-chat-row mb-voice-row"+(recording.person==="player"?" mb-chat-own":"")),col=make("div","mb-chat-col"),meta=make("div","mb-chat-meta");
+      row.hidden=true;meta.append(make("strong","",p.name+(recording.person==="player"?" · You":"")),make("time","",recording.time));
+      const control=createPartyVoice(recording,p,available=>{
+        if(!row.isConnected)return;
+        if(available)ready.add(recording.id);else ready.delete(recording.id);
+        updateVoiceRows();
+      });
+      col.append(meta,control.bubble);row.append(avatar(p),col);log.append(row);
+      voiceRows.set(recording.id,{row,recording});voiceLoads.push(control.load);
+    }
     const stamp=s=>log.append(make("p","mb-chat-date",s));
     function msg(id,time,value){
       const p=people[id],row=make("div","mb-chat-row"),col=make("div","mb-chat-col"),meta=make("div","mb-chat-meta");
@@ -178,6 +299,9 @@
     msg("responsible","20:46","You said that three runs ago.");
     msg("chaotic","20:46","but "+player+" isn't even here yet");
     msg("responsible","20:47","Then go to bed.");
+    for(const recording of partyRecordings)voice(recording);
+    msg("chaotic","20:51","guys i think "+player+" just unlocked the Wind element");
+    windJoke=log.lastElementChild;windJoke.hidden=true;
     stamp("YESTERDAY");
     msg("chaotic","22:11","raid tonight?? "+player+" hasn't logged in yet");
     msg("fighter","22:12","Let's just fill the slots. I'll ask later.");
@@ -188,8 +312,13 @@
     msg("chaotic","23:09","WAIT WHY DID YOU ROLL ON MY DROP");
     msg("fighter","23:09","Skill issue.");
     msg("chaotic","23:10","THE LOOT WAS MINE FIRST");
-    const footer=make("div","mb-group-footer","Conversation history · Group replies are not available in this preview.");
+    const footer=make("div","mb-group-footer mb-group-composer"),controls=make("div","mb-composer-controls");
+    const field=make("input","mb-group-reply");field.type="text";field.disabled=true;field.placeholder="Group replies unavailable";field.setAttribute("aria-label","Group replies unavailable");
+    const record=make("button","mb-record-voice");record.type="button";record.disabled=true;record.innerHTML=microphoneIcon;record.setAttribute("aria-label","Record voice message — temporarily disabled");record.setAttribute("aria-describedby","mb-voice-policy");record.title="Voice recording temporarily disabled";
+    const notice=make("p","mb-voice-policy","Notice: Voice message recording is temporarily disabled due to repeated misuse of the feature. Existing messages can still be played.");notice.id="mb-voice-policy";
+    controls.append(field,record);footer.append(controls,notice);
     display([back(),head,log,footer],"MYTHBOUND · PARTY CHAT");markSeen("party");
+    voiceLoads.forEach(load=>load());
     // Start with the latest messages; older ones remain accessible by scrolling.
     log.scrollTop=log.scrollHeight;
   }
