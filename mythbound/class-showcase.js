@@ -37,6 +37,13 @@ const $=id=>document.getElementById(id);
 const stats=$("class-stats"),skills=$("class-skills"),detail=$("skill-detail"),preview=$("class-preview");
 if(!stats||!skills||!detail||!preview)return;
 const statLabels=["Damage","Defense","Support","Mobility","Control"];
+const statDescriptions=[
+ "How much physical or magical damage a class can deal.",
+ "How well a class can withstand attacks and survive incoming damage.",
+ "How effectively a class can heal, protect or empower its allies.",
+ "How easily a class can move, reposition and evade attacks.",
+ "How effectively a class can restrict, disrupt or manipulate enemies."
+];
 let active="saint",gender="male",chosen=0,activePath=0;
 const isUnrevealed=()=>active==="saint"&&activePath===3;
 // Add approved specialization content here, grouped by class and path number.
@@ -575,15 +582,15 @@ function renderStats(){
  svg.setAttribute("viewBox","0 0 480 350");
  svg.setAttribute("class","stat-radar");
  svg.setAttribute("role","group");
- svg.setAttribute("aria-labelledby","stat-radar-title stat-radar-description");
+ svg.setAttribute("aria-label",mystery?"Unrevealed class strengths":(pathData().stats?pathData().name:cap(active))+" class strengths");
+ svg.setAttribute("aria-describedby","stat-radar-description");
  function node(tag,attrs={},parent=svg,text){
   const el=document.createElementNS(ns,tag);
   Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,String(v)));
   if(text!==undefined)el.textContent=text;
   parent.append(el);return el;
  }
- node("title",{id:"stat-radar-title"},svg,mystery?"Unrevealed class strengths":(pathData().stats?pathData().name:cap(active))+" class strengths");
- node("desc",{id:"stat-radar-description"},svg,mystery?"All five strength ratings are undisclosed. No values are displayed.":statLabels.map((s,i)=>s+": "+values[i]+" out of 5").join("; "));
+ node("desc",{id:"stat-radar-description"},svg,(mystery?"All five strength ratings are undisclosed. No values are displayed. ": "")+statLabels.map((s,i)=>s+(mystery?"":": "+values[i]+" out of 5")+". "+statDescriptions[i]).join(" "));
  const cx=240,cy=170,r=105;
  const point=(i,d)=>{const a=-Math.PI/2+i*2*Math.PI/5;return [cx+Math.cos(a)*d,cy+Math.sin(a)*d]};
  const polygon=(distances)=>distances.map((d,i)=>point(i,d).map(n=>n.toFixed(2)).join(",")).join(" ");
@@ -602,10 +609,12 @@ function renderStats(){
   const labels=[{x:240,y:16,a:"middle"},{x:390,y:133,a:"start"},{x:336,y:311,a:"start"},{x:144,y:311,a:"end"},{x:90,y:133,a:"end"}];
   for(let i=0;i<5;i++){
    const [x,y]=point(i,129),l=labels[i];
-   const group=node("g",{class:"unrevealed-radar-node",transform:"translate("+x+" "+y+")","aria-hidden":"true"});
+   const category=node("g",{class:"radar-category"});
+   node("title",{},category,statDescriptions[i]);
+   const group=node("g",{class:"unrevealed-radar-node",transform:"translate("+x+" "+y+")","aria-hidden":"true"},category);
    node("circle",{r:18,fill:"#252938",stroke:"currentColor","stroke-width":1},group);
    node("text",{x:0,y:1,"text-anchor":"middle","dominant-baseline":"middle",class:"unrevealed-radar-question"},group,"?");
-   node("text",{x:l.x,y:l.y,"text-anchor":l.a,fill:"#bdc2d4",class:"radar-label"},svg,statLabels[i]);
+   node("text",{x:l.x,y:l.y,"text-anchor":l.a,fill:"#bdc2d4",class:"radar-label"},category,statLabels[i]);
   }
   const seal=node("g",{class:"unrevealed-radar-seal","aria-hidden":"true"});
   node("circle",{cx,cy,r:34,fill:"#171c2b",stroke:"#b8bed8","stroke-dasharray":"3 6","stroke-opacity":".6"},seal);
@@ -618,7 +627,9 @@ function renderStats(){
  const labelPositions=[{x:240,y:16,a:"middle"},{x:390,y:133,a:"start"},{x:336,y:311,a:"start"},{x:144,y:311,a:"end"},{x:90,y:133,a:"end"}];
  for(let i=0;i<5;i++){
   const [ix,iy]=point(i,129),color=colors[i];
-  const group=node("g",{transform:"translate("+ix.toFixed(2)+" "+iy.toFixed(2)+")","aria-hidden":"true"});
+  const category=node("g",{class:"radar-category"});
+  node("title",{},category,statDescriptions[i]);
+  const group=node("g",{transform:"translate("+ix.toFixed(2)+" "+iy.toFixed(2)+")","aria-hidden":"true"},category);
   node("circle",{r:17,fill:"#172238","fill-opacity":".48",stroke:color,"stroke-width":1.5},group);
   node("path",{d:glyphs[i],transform:"translate(-10 -10) scale(.83)",stroke:color,fill:"none","stroke-width":2.1,"stroke-linecap":"round","stroke-linejoin":"round"},group);
   const icon=node("image",{href:"../Icon"+statLabels[i]+".png",x:-21,y:-21,width:42,height:42,preserveAspectRatio:"xMidYMid meet"},group);
@@ -634,7 +645,7 @@ function renderStats(){
   icon.addEventListener("load",()=>{for(const child of group.children)if(child!==icon)child.setAttribute("visibility","hidden")});
   icon.addEventListener("error",()=>icon.remove());
   const l=labelPositions[i];
-  node("text",{x:l.x,y:l.y,"text-anchor":l.a,fill:color,class:"radar-label"},svg,statLabels[i]);
+  node("text",{x:l.x,y:l.y,"text-anchor":l.a,fill:color,class:"radar-label"},category,statLabels[i]);
  }
  const markers=[];
  for(let i=0;i<5;i++){

@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-fallensaintabilities1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-stattooltips1";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -205,6 +205,7 @@
 .radar-spoke{stroke:var(--class-highlight);stroke-opacity:.28;stroke-width:.8}
 .radar-shape{filter:drop-shadow(0 0 7px color-mix(in srgb,var(--class-highlight) 32%,transparent))}
 .radar-label{font-family:'Cinzel',Georgia,serif;font-size:12px;font-weight:600;letter-spacing:.015em}
+.radar-category{cursor:help}
 .radar-marker{cursor:help;outline:none;touch-action:manipulation}
 .radar-marker-dot{transition:stroke-width .15s;pointer-events:none}
 .radar-marker.is-revealed .radar-marker-dot,.radar-marker:focus-visible .radar-marker-dot{stroke-width:2.5}
