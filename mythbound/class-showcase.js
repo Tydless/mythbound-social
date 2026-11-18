@@ -43,12 +43,28 @@ const isUnrevealed=()=>active==="saint"&&activePath===3;
 // Each entry may provide name, description, icon, skills (same format as DATA), and signatureMoves.
 const SPECIALIZATIONS={
  saint:{
-  1:{name:"Archsaint",type:"TRUE PATH",artwork:{male:"../ArchsaintMalePortrait.png",female:"../ArchsaintFemalePortrait.png"},description:"Embrace the Saint's sacred calling. Master greater blessings, restorative miracles and divine protection, sheltering the entire party through the power of holy light.",skills:[],signatureMoves:[]},
+  1:{name:"Archsaint",type:"TRUE PATH",artwork:{male:"../ArchsaintMalePortrait.png",female:"../ArchsaintFemalePortrait.png"},
+   stats:[4,2,5,4,3],difficulty:4,play:"RANGED · OFFENSIVE SUPPORT / AERIAL CASTER",roles:[["ranged","Ranged"],["healer","Offensive support / aerial healer"]],
+   overviewType:"SUPPORT · AERIAL CASTER",overviewDescription:"Chosen by the heavens, Archsaints wield holy magic without a staff, taking flight to strike enemies, heal allies and restore the fallen.",
+   description:"Having been chosen by the heavens, Archsaints transcend mortal spellcasting. Channel divine power through your own body, manifest celestial weapons and perform restorative miracles. Magical attack strengthens both damage and healing, at the cost of the Saint's defensive resilience.",
+   skills:[
+    ["➶","Heaven's Arbiter","Ranged · Piercing","28 m","220% MAG damage","10 sec","Manifest a celestial bow and fire an arrow of concentrated divine energy that pierces enemies in its path."],
+    ["✷","Divine Radiance","Area control · Blind","8 m radius","100% MAG damage + 3 sec blind","18 sec","Release an overwhelming burst of heavenly light, damaging nearby enemies and temporarily blinding them."],
+    ["✧","Grace of Heaven","Healing · Single target","26 m","Heal 220% MAG","8 sec","Bestow divine grace upon an injured party member. Healing scales with your magical attack rather than Wisdom."],
+    ["✥","Heaven's Mercy","Resurrection · Signature","12 m radius","Revive allies · 80–20% HP (1–5 allies)","120 sec","Resurrect defeated party members within range. Every revived ally receives the same HP percentage, which decreases as more allies share the miracle. Choose your position carefully."]
+   ],
+   mechanics:[
+    {icon:"✦",name:"Divine Projection",type:"BASIC ATTACK · WEAPONLESS CASTING",description:"Cast magic directly through your hands. Launch blasts of concentrated holy energy without a staff; basic attacks scale with MAG. Celestial weapons are manifestations of magic, not equipped weapons."},
+    {icon:"✧",name:"Celestial Power",type:"SCALING · OFFENSIVE SUPPORT",description:"Invest in magical attack (MAG) to strengthen both offensive spells and healing. Unlike the defensive base Saint, Archsaints sacrifice durability for power and mobility."},
+    {icon:"⌁",name:"Heavenly Wings",type:"INHERENT ABILITY · FLIGHT",description:"Fly freely to evade ground-bound melee and certain hazards, but remain exposed to flying enemies and anti-air attacks. Injuries reduce flight speed and maximum altitude.",table:{headers:["Remaining HP","Flight speed","Max. altitude"],rows:[["76–100%","100%","100%"],["51–75%","85%","80%"],["26–50%","65%","50%"],["1–25%","40%","Near ground"]]}},
+    {icon:"✥",name:"A Shared Miracle",type:"HEAVEN'S MERCY · RESURRECTION",description:"Divine energy is divided among all defeated party members revived in a single cast. Concentrate the miracle on one ally or save a larger group at reduced health. Positioning and follow-up healing are essential.",table:{headers:["Allies revived","HP per ally"],rows:[["1","80%"],["2","60%"],["3","40%"],["4","25%"],["5","20%"]]},note:"Illustrative scaling for up to five revived allies; larger groups are not yet balanced."}
+   ],signatureMoves:[]},
   2:{name:"Fallen Saint",type:"CORRUPTED PATH",artwork:{male:"../FallenSaintMalePortrait.png",female:"../FallenSaintFemalePortrait.png"},description:"Twist sacred power into forbidden magic. Siphon life, bestow cursed blessings and sacrifice your own vitality to unleash devastating attacks.",skills:[],signatureMoves:[]},
   3:{name:"Coming soon",type:"UNREVEALED PATH",artwork:{male:"../ComingSoonSaintMalePortrait.png",female:"../ComingSoonSaintFemalePortrait.png"},description:"A new path awaits those who dare to question their sacred calling. More will be revealed in a future chronicle.",skills:[],signatureMoves:[]}
  }
 };
 const pathData=()=>activePath===0?{name:cap(active),description:"Master the foundations of your class.",skills:DATA[active].skills,signatureMoves:[]}:SPECIALIZATIONS[active]?.[activePath]||{name:"Specialization "+activePath,description:"This advanced path has yet to be revealed.",skills:[],signatureMoves:[]};
+const pathCombatData=()=>{const base=DATA[active],path=pathData();return {...base,stats:path.stats||base.stats,difficulty:path.difficulty??base.difficulty,play:path.play||base.play,roles:path.roles||CLASS_ROLES[active]}};
 
 /* A fixed gender greeting plus three independent, cyclic voice previews.
    Assets: ../VoiceSaintMaleSwitch.mp3, ../VoiceFallenSaintFemaleSwitch.mp3, etc.
@@ -538,7 +554,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")radarDismiss?.()});
 function renderStats(){
  radarDismiss=null;
  const mystery=isUnrevealed();
- const values=mystery?null:DATA[active].stats, ns="http://www.w3.org/2000/svg";
+ const values=mystery?null:pathCombatData().stats, ns="http://www.w3.org/2000/svg";
  const colors=["#ee958b","#87b8f3","#9ed9a8","#f1c985","#c3a6f1"];
  const svg=document.createElementNS(ns,"svg");
  svg.setAttribute("viewBox","0 0 480 350");
@@ -551,7 +567,7 @@ function renderStats(){
   if(text!==undefined)el.textContent=text;
   parent.append(el);return el;
  }
- node("title",{id:"stat-radar-title"},svg,mystery?"Unrevealed class strengths":cap(active)+" class strengths");
+ node("title",{id:"stat-radar-title"},svg,mystery?"Unrevealed class strengths":(pathData().stats?pathData().name:cap(active))+" class strengths");
  node("desc",{id:"stat-radar-description"},svg,mystery?"All five strength ratings are undisclosed. No values are displayed.":statLabels.map((s,i)=>s+": "+values[i]+" out of 5").join("; "));
  const cx=240,cy=170,r=105;
  const point=(i,d)=>{const a=-Math.PI/2+i*2*Math.PI/5;return [cx+Math.cos(a)*d,cy+Math.sin(a)*d]};
@@ -677,18 +693,50 @@ function renderSkills(){
  skillDetail();
 }
 function renderPathPresentation(){
- const host=$("class-details"),mystery=isUnrevealed(),wasMystery=host.dataset.unrevealed==="true";
+ const host=$("class-details"),mystery=isUnrevealed(),path=pathData(),wasSpecial=host.dataset.unrevealed==="true"||host.dataset.customPathHeader==="true";
  if(mystery)host.dataset.unrevealed="true";else delete host.dataset.unrevealed;
  host.style.setProperty("--class-highlight",mystery?"#b8bed8":DATA[active].color);
- $("class-codex-path-label").textContent=mystery?"UNREVEALED PATH":"BASIC PATH";
+ $("class-codex-path-label").textContent=mystery?"UNREVEALED PATH":path.overviewType?path.type:"BASIC PATH";
  $("path-inspect-label").textContent=mystery?"UNDISCLOSED":"SELECT TO INSPECT";
  if(mystery){
   const emblem=$("class-emblem");emblem.classList.remove("class-art-host","has-class-art");emblem.textContent="?";
   $("class-name").textContent="Coming soon";
   $("class-type").textContent="UNREVEALED SPECIALIZATION";
   $("class-description").textContent="Not every path has been written in the chronicles. What lies beyond this one remains a mystery.";
- }else if(wasMystery&&typeof selectClass==="function")selectClass(active);
- renderClassMeta(DATA[active]);renderStats();
+ }else if(path.overviewType){
+  if(wasSpecial&&typeof selectClass==="function")selectClass(active);
+  host.dataset.customPathHeader="true";
+  $("class-name").textContent=path.name;
+  $("class-type").textContent=path.overviewType;
+  $("class-description").textContent=path.overviewDescription;
+ }else if(wasSpecial&&typeof selectClass==="function")selectClass(active);
+ if(!path.overviewType)delete host.dataset.customPathHeader;
+ renderClassMeta(pathCombatData());renderStats();
+}
+function renderMechanics(path){
+ const section=$("path-mechanics"),grid=$("path-mechanics-grid");if(!section||!grid)return;
+ grid.replaceChildren();
+ const entries=isUnrevealed()?[]:path.mechanics||[];
+ section.hidden=!entries.length;
+ for(const m of entries){
+  const card=document.createElement("article");card.className="path-mechanic-card";
+  const top=document.createElement("div");top.className="path-mechanic-head";
+  const symbol=document.createElement("span");symbol.className="path-mechanic-symbol";symbol.textContent=m.icon;symbol.setAttribute("aria-hidden","true");
+  const titles=document.createElement("div"),type=document.createElement("span"),name=document.createElement("h4");
+  type.className="eyebrow";type.textContent=m.type;name.textContent=m.name;titles.append(type,name);top.append(symbol,titles);
+  const copy=document.createElement("p");copy.textContent=m.description;card.append(top,copy);
+  if(m.table){
+   const table=document.createElement("table");table.className="path-mechanic-table";table.setAttribute("aria-label",m.name+" — proposed scaling");
+   const header=document.createElement("thead"),tr=document.createElement("tr");
+   for(const value of m.table.headers){const th=document.createElement("th");th.scope="col";th.textContent=value;tr.append(th)}
+   header.append(tr);table.append(header);
+   const body=document.createElement("tbody");
+   for(const row of m.table.rows){const tr=document.createElement("tr");row.forEach((value,i)=>{const cell=document.createElement(i===0?"th":"td");if(i===0)cell.scope="row";cell.textContent=value;tr.append(cell)});body.append(tr)}
+   table.append(body);card.append(table);
+  }
+  if(m.note){const note=document.createElement("p");note.className="path-mechanic-note";note.textContent=m.note;card.append(note)}
+  grid.append(card);
+ }
 }
 function renderPath(){
  renderPathPresentation();
@@ -712,6 +760,7 @@ function renderPath(){
  if(desc)desc.textContent=path.description;
  if(label)label.textContent=activePath===0?"BASE PATH":path.type||"ADVANCED PATH";
  if(core)core.textContent=isUnrevealed()?"Unrevealed abilities":activePath===0?"Core abilities":"Specialization abilities";
+ renderMechanics(path);
  if(sig){
   sig.replaceChildren();
   if(isUnrevealed()){
@@ -813,7 +862,7 @@ function renderClassMeta(d){
   const unknown=document.createElement("span");unknown.className="unrevealed-difficulty";unknown.textContent="???";difficulty.append(label,unknown);return;
  }
  combat.setAttribute("aria-label","Combat roles");
- for(const [key,label] of CLASS_ROLES[active]){
+ for(const [key,label] of d.roles||CLASS_ROLES[active]){
   const icon=document.createElement("button");icon.type="button";icon.className="class-role-icon";icon.dataset.tooltip=label;icon.setAttribute("aria-label",label);icon.setAttribute("aria-expanded","false");icon.style.padding="0";icon.addEventListener("click",()=>{const open=!icon.classList.contains("is-tooltip-open");closeRoleTooltips();if(open){icon.classList.add("is-tooltip-open");icon.setAttribute("aria-expanded","true")}});
   icon.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+ROLE_ICONS[key]+'</svg>';combat.append(icon);
  }

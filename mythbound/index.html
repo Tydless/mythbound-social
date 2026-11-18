@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-saintteaser1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-archsaintabilities1";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -623,6 +623,26 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 @media(max-width:760px){.class-showcase[data-environment="saint"] .class-meta-icons{min-height:34px}}
 @media(max-width:650px){.class-showcase[data-environment="saint"] .showcase-heading{min-height:70px}.class-showcase[data-unrevealed="true"] .showcase-seal{margin-inline:3px;font-size:38px}}
 </style>
+<style>
+/* Shared specialization mechanics: below the existing ability and artwork layout. */
+.path-mechanics[hidden]{display:none!important}
+.path-mechanics{margin-top:30px;padding-top:16px;border-top:1px solid color-mix(in srgb,var(--class-highlight) 30%,transparent)}
+.path-mechanics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:stretch}
+.path-mechanic-card{min-width:0;padding:clamp(14px,2vw,22px);border:1px solid color-mix(in srgb,var(--class-highlight) 28%,#384458);border-radius:8px;background:linear-gradient(140deg,color-mix(in srgb,#202b40 94%,var(--class-highlight) 6%),#162033ba)}
+.path-mechanic-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.path-mechanic-symbol{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:50%;border:1px solid color-mix(in srgb,var(--class-highlight) 60%,transparent);color:var(--class-highlight);font-size:27px;background:#172235;box-shadow:inset 0 0 14px color-mix(in srgb,var(--class-highlight) 12%,transparent)}
+.path-mechanic-head h4{font:600 clamp(16px,1.6vw,20px) 'Cinzel',Georgia,serif;color:var(--class-highlight);margin:4px 0 0;line-height:1.3}
+.path-mechanic-head .eyebrow{font-size:9px;letter-spacing:.075em;color:#c1c9d8;overflow-wrap:anywhere}
+.path-mechanic-card p{font-size:13px;line-height:1.7;color:#c5cfdd;margin:0 0 12px}
+.path-mechanic-card p:last-child{margin-bottom:0}
+.path-mechanic-table{width:100%;border-collapse:collapse;margin-top:15px;font-size:12px;text-align:left;line-height:1.45;font-variant-numeric:tabular-nums}
+.path-mechanic-table th,.path-mechanic-table td{padding:8px 6px;border-bottom:1px solid #98a3b326;vertical-align:middle}
+.path-mechanic-table thead th{font-size:10px;letter-spacing:.04em;font-weight:600;color:var(--class-highlight)}
+.path-mechanic-table tbody th{font-weight:500;color:#c3cddd}
+.path-mechanic-table td{color:#e3d3b5}
+.path-mechanic-note,.path-mechanic-card .path-mechanic-note{font-size:11px;color:#acb9cc;font-style:italic;margin-top:12px;line-height:1.6}
+@media(max-width:760px){.path-mechanics-grid{grid-template-columns:1fr}.path-mechanics{margin-top:24px}.path-mechanics .showcase-section-title{flex-wrap:wrap;gap:5px}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -837,6 +857,11 @@ body.mythbound-guest .mb-header-friends{display:none!important}
               <div id="class-skills" class="skill-row" role="group" aria-label="Selected path skills"></div>
               <div id="skill-detail" class="skill-detail" aria-live="polite" aria-atomic="true"></div>
             </div><div class="path-signature-panel"><div class="showcase-section-title"><h3>Ability showcase</h3></div><div id="path-signatures"></div></div></div>
+            <section id="path-mechanics" class="path-mechanics" aria-labelledby="path-mechanics-title" hidden>
+              <div class="showcase-section-title"><h3 id="path-mechanics-title">Core mechanics</h3><span>INHERENT TRAITS &amp; COMBAT RULES</span></div>
+              <div id="path-mechanics-grid" class="path-mechanics-grid"></div>
+              <p class="path-mechanic-note">All numerical values are preliminary design estimates.</p>
+            </section>
           </section>
           <p class="concept-disclaimer">Preview values and skill effects are illustrative game-design concepts, not finalized balance numbers. Male and female base avatars have the exact same class abilities and stats.</p>
         </section>
