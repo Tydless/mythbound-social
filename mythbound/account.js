@@ -48,14 +48,17 @@
       const nickname=document.createElement("span");nickname.className="mb-account-name";nickname.textContent=profile.nickname;
       label.replaceChildren(nickname);
     }
-    account.setAttribute("aria-label","Edit profile for "+profile.nickname+" (online)");
+    account.setAttribute("aria-label","Open profile for "+profile.nickname+" (online)");
+    if(byId("own-profile-name"))byId("own-profile-name").textContent=profile.nickname;
+    byId("own-profile-avatar")?.replaceChildren(portrait(avatar));
+    if(byId("own-profile-portrait-label"))byId("own-profile-portrait-label").textContent=avatar.label;
     const rail=byId("rail-player-name"), railAvatar=byId("rail-player-avatar");
     if(rail)rail.textContent=profile.nickname;
     if(railAvatar)railAvatar.replaceChildren(portrait(avatar));
   }
   function renderSession(){
     document.body.classList.toggle("mythbound-guest",!signedIn);
-    for(const node of [document.querySelector(".social-rail"),byId("header-whisper"),byId("floating-whisper")]){
+    for(const node of [byId("header-friends"),byId("header-whisper"),byId("floating-whisper")]){
       if(node)node.hidden=!signedIn;
     }
     headerLogout.hidden=!signedIn;
@@ -75,7 +78,7 @@
     const panel=byId("overlay");if(panel)panel.hidden=true;
     byId("sheet-content")?.replaceChildren();
     document.body.classList.remove("sheet-open");
-    renderSession();hide();account.focus({preventScroll:true});
+    renderSession();hide();if(location.hash==="#profile"&&typeof navigate==="function")navigate("home",true);account.focus({preventScroll:true});
   }
   function choose(id){
     if(!getAvatar(id))return;
@@ -101,7 +104,7 @@
   }
   function show(isEdit=false){
     editing=isEdit;
-    title.textContent=isEdit?"Your profile":"Welcome back!";
+    title.textContent=isEdit?"Edit profile":"Welcome back!";
     sub.textContent=isEdit?"Give your profile a fresh look.":"We added a new feature: Choose your avatar-based profile picture!";
     submit.textContent=isEdit?"Save changes":"Log In";
     cancel.hidden=!(isEdit||guest);logout.hidden=!isEdit;
@@ -130,13 +133,17 @@
     try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));sessionStorage.setItem(SESSION_KEY,"1")}catch{}
     renderSession();hide();
     if(!editing&&!returningFromGuest&&typeof navigate==="function")navigate("home",true);
-    account.focus({preventScroll:true});
+    (editing&&location.hash==="#profile"?byId("own-edit-profile"):account)?.focus({preventScroll:true});
   });
-  account.addEventListener("click",()=>show(signedIn));
-  cancel.addEventListener("click",()=>{hide();account.focus({preventScroll:true})});
+  account.addEventListener("click",()=>{if(signedIn)navigate("profile");else show(false)});
+  byId("own-edit-profile")?.addEventListener("click",()=>{if(signedIn)show(true)});
+  byId("own-profile-friends")?.addEventListener("click",()=>window.MythboundSocial?.openFriends());
+  byId("own-profile-inbox")?.addEventListener("click",()=>window.MythboundSocial?.openInbox());
+  cancel.addEventListener("click",()=>{hide();(editing&&location.hash==="#profile"?byId("own-edit-profile"):account)?.focus({preventScroll:true})});
   logout.addEventListener("click",signOut);
   headerLogout.addEventListener("click",signOut);
   renderSession();
+  if(!signedIn&&location.hash==="#profile")navigate("home",true);
   if(signedIn||guest)hide();else show(false);
 
   // Fighter plays the female Saint. Keep this independent from the visitor's choice.

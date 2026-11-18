@@ -17,8 +17,8 @@ const whisperButton=document.getElementById("floating-whisper");
 const headerWhisper=document.getElementById("header-whisper");
 let previousFocus=null;
 function navigate(page,replace=false){
-  const valid=["home","discover","news","classes"];
-  if(!valid.includes(page))page="home";
+  const valid=["home","discover","news","classes","profile"];
+  if(!valid.includes(page)||(page==="profile"&&window.MythboundAccount?.isSignedIn()===false))page="home";
   pages.forEach(p=>{const active=p.id==="page-"+page;p.hidden=!active;p.classList.toggle("is-visible",active)});
   navButtons.forEach(b=>{const active=b.dataset.page===page;b.classList.toggle("is-active",active);if(active)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
   if(replace)history.replaceState(null,"","#"+page);else if(location.hash!=="#"+page)history.pushState(null,"","#"+page);
@@ -74,6 +74,7 @@ function openWhisper(){if(window.MythboundAccount?.isSignedIn()===false)return;o
 document.getElementById("fighter-friend").addEventListener("click",openProfile);
 document.getElementById("rail-whisper").addEventListener("click",openWhisper);
 headerWhisper.addEventListener("click",()=>window.MythboundSocial?.openInbox());
+document.getElementById("header-friends")?.addEventListener("click",()=>window.MythboundSocial?.openFriends());
 whisperButton.addEventListener("click",()=>window.MythboundSocial?.openInbox());
 // Own account is handled by account.js; Fighter retains his separate profile.
 // The fictional launcher responds to the current roleplay session, not real installation or account data.

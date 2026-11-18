@@ -459,6 +459,55 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
 @media(max-width:760px){.mw-shell{padding-bottom:48px}.mw-hero{min-height:290px;padding:48px 16px 66px}.mw-jump{margin:-22px auto 32px}.mw-jump button{font-size:10px;padding:10px 8px}.mw-section{margin-bottom:37px;scroll-margin-top:90px}.mw-section-head{display:block}.mw-section-head p{margin-top:6px;text-align:left;max-width:none}.mw-region-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mw-region-copy{padding:12px}.mw-region-copy h3{font-size:17px}.mw-features{gap:10px}.mw-atlas-bottom{align-items:flex-start;flex-direction:column}.mw-atlas-top,.mw-atlas-bottom{padding:10px 12px}}
 @media(max-width:460px){.mw-region-grid,.mw-features{grid-template-columns:1fr}.mw-region{display:grid;grid-template-columns:110px minmax(0,1fr)}.mw-region-art{height:auto;min-height:114px}.mw-region-art:after{width:75px;height:75px}.mw-region-art svg{width:48px;height:48px}.mw-map-corner{font-size:8px}.mw-hero:after{inset:10px}}
 </style>
+<style>
+/* Social shortcuts replace the persistent sidebar. Keep the legacy nodes for existing message/presence hooks. */
+body .site-layout{display:block;max-width:1920px}
+body .site-layout>.social-rail{display:none!important}
+.mb-header-friends{position:relative;display:grid;place-items:center;width:35px;height:40px;flex:none;border:0;background:none;color:var(--gold);padding:0;border-radius:5px}
+.mb-header-friends:hover{background:#d6bf8b12;color:#ffe8b6}
+.mb-friends-indicator{position:absolute;top:6px;right:4px;border:2px solid #141e30;background:#78c6a1;width:8px;height:8px;border-radius:50%}
+body.mythbound-guest .mb-header-friends{display:none!important}
+@media(max-width:760px){.site-header .mb-header-friends{display:none!important}}
+/* Dedicated player profile — no fictional password or avatar chooser until Edit is selected. */
+.mb-player-page{max-width:1440px;margin:auto;padding:clamp(16px,4vw,60px) clamp(16px,4vw,60px) 60px}
+.mb-player-cover{position:relative;isolation:isolate;overflow:hidden;min-height:250px;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(20px,4vw,46px);border:1px solid #c8a8766b;border-radius:12px;background:#162336 url('../mythbound-home-watercolor.jpg') center 38%/cover no-repeat}
+.mb-player-cover:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#121e30ef,#152338a6 48%,#192d484d),linear-gradient(0deg,#101a2bd9,transparent 70%)}
+.mb-player-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:36px}
+.mb-player-back{color:#e2d1b4;background:transparent;border:0;font-size:12px;padding:0}
+.mb-player-back:hover{text-decoration:underline}
+.mb-player-identity{display:flex;align-items:center;gap:clamp(14px,3vw,28px)}
+.mb-own-avatar{position:relative;display:block;flex:none;width:clamp(74px,12vw,122px);aspect-ratio:1}
+.mb-own-avatar>.mb-avatar-art{width:100%;height:100%}
+.mb-own-avatar[data-presence]:after{content:"";position:absolute;width:12px;height:12px;bottom:8%;right:8%;border:3px solid #23334b;border-radius:50%;background:#75d9a1}
+.mb-player-nameblock{flex:1;min-width:0}
+.mb-player-nameblock h1{font:600 clamp(25px,4vw,48px)/1.2 'Cinzel',Georgia,serif;color:#fff0d6;margin:5px 0 7px;overflow-wrap:anywhere}
+.mb-player-nameblock p{display:flex;flex-wrap:wrap;align-items:center;gap:14px;color:#dadfee;margin:0;font-size:13px}
+.mb-player-online{display:inline-flex;align-items:center;gap:6px;color:#a7ddb9}
+.mb-player-online>span{width:6px;height:6px;border-radius:50%;background:#81d39e}
+.mb-player-level{color:#e9d0a1}
+.mb-edit-profile{flex:none;white-space:nowrap;align-self:flex-end;font-size:12px}
+.mb-player-body{padding:32px 0 0}
+.mb-player-section-heading h2{font:600 clamp(22px,3vw,32px) 'Cinzel',Georgia,serif;color:#f3dbb3;margin:5px 0 18px}
+.mb-player-content{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:20px}
+.mb-character-stage{position:relative;min-height:350px;display:flex;flex-direction:column;border:1px solid #c6ab7944;border-radius:8px;overflow:hidden;background:radial-gradient(ellipse at center,#3b4b624d,transparent 70%),linear-gradient(125deg,#1f2b40,#151e30)}
+.mb-character-stage-top{display:flex;justify-content:space-between;gap:8px;padding:15px 18px;border-bottom:1px solid #c6ab7929;font-size:11px;color:#c5cbd7}
+.mb-character-stage-top span:last-child{color:#c9b48e;text-align:right}
+.mb-character-placeholder{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:38px 20px;text-align:center;color:#c6d0df}
+.mb-character-placeholder svg{width:95px;height:95px;color:#d2b68399;margin-bottom:18px}
+.mb-character-placeholder h3{font:500 22px 'Cinzel',Georgia,serif;color:#e6d4b1;margin:0 0 8px}
+.mb-character-placeholder p{font-size:13px;margin:0}
+.mb-player-info{display:flex;flex-direction:column;gap:16px}
+.mb-player-card{padding:20px;border:1px solid #c6ab7933;border-radius:8px;background:#202b3d90}
+.mb-player-card h3{font:600 17px 'Cinzel',Georgia,serif;color:#e9d2ac;margin:0 0 13px}
+.mb-player-card dl{margin:0}
+.mb-player-card dl>div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #a9b5c51f;font-size:12px}
+.mb-player-card dt{color:#aebdd0}
+.mb-player-card dd{margin:0;color:#e7e3dc;text-align:right}
+.mb-social-links button{display:flex;width:100%;justify-content:space-between;align-items:center;gap:12px;text-align:left;padding:10px 3px;background:none;border:0;border-top:1px solid #a9b5c51f;color:#e7d3b5;font-size:13px}
+.mb-social-links button:hover{background:#d9ba8510}
+.mb-social-links small{display:block;color:#aebed0;font-size:11px;margin-top:2px}
+@media(max-width:760px){.mb-player-content{grid-template-columns:1fr}.mb-player-cover{min-height:220px}.mb-player-top{margin-bottom:24px}.mb-player-identity{flex-wrap:wrap}.mb-edit-profile{margin-left:0}.mb-character-stage{min-height:290px}.mb-player-body{padding-top:24px}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -494,6 +543,7 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
     </nav>
     <div class="header-actions">
       
+      <button type="button" id="header-friends" class="mb-header-friends" aria-label="Open friends list · 2 online" title="Friends · 2 online" hidden><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="3"/><path d="M2.5 20v-2a6.5 6.5 0 0 1 13 0v2M16 4.5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3.5 4.7V20"/></svg><span class="mb-friends-indicator" aria-hidden="true"></span></button>
       <button type="button" id="header-whisper" class="notification-button" aria-label="Open unread whisper"><span aria-hidden="true">✉</span><span class="notification-count">1</span></button>
       <button type="button" id="account-button" class="account-chip"><span class="account-sigil">T</span><span class="account-label">Traveler</span></button>
       <button type="button" id="download-button" class="download-button">Download <span aria-hidden="true">↗</span></button>
@@ -645,10 +695,34 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
         </section>
       </section>
 
+      <section id="page-profile" class="page mb-player-page" aria-labelledby="own-profile-name" hidden>
+        <div class="mb-player-cover">
+          <div class="mb-player-top"><button type="button" data-go="home" class="mb-player-back">‹ Back to Mythbound</button><span class="eyebrow">PLAYER PROFILE</span></div>
+          <div class="mb-player-identity">
+            <span class="mb-own-avatar" id="own-profile-avatar" data-presence="online" role="img" aria-label="Online"></span>
+            <div class="mb-player-nameblock"><span class="eyebrow">YOUR ADVENTURE</span><h1 id="own-profile-name">Traveler</h1><p><span class="mb-player-online"><span></span>Online</span><span class="mb-player-level">Lv. 50</span></p></div>
+            <button type="button" class="outline-action mb-edit-profile" id="own-edit-profile">Edit profile <span aria-hidden="true">✎</span></button>
+          </div>
+        </div>
+        <div class="mb-player-body">
+          <div class="mb-player-section-heading"><div><span class="eyebrow">YOUR JOURNEY</span><h2>Character overview</h2></div></div>
+          <div class="mb-player-content">
+            <section class="mb-character-stage" aria-labelledby="mb-character-title">
+              <div class="mb-character-stage-top"><span>Character preview</span><span>3D viewer · Coming soon</span></div>
+              <div class="mb-character-placeholder"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><circle cx="50" cy="50" r="38"/><circle cx="50" cy="50" r="30" stroke-dasharray="1 5"/><path d="M50 7v86M7 50h86M50 20l7 23 23 7-23 7-7 23-7-23-23-7 23-7z"/></svg><h3 id="mb-character-title">Your character</h3><p>Character models have yet to be revealed.</p></div>
+            </section>
+            <div class="mb-player-info">
+              <section class="mb-player-card"><h3>Adventurer details</h3><dl><div><dt>Player level</dt><dd>50</dd></div><div><dt>Profile portrait</dt><dd id="own-profile-portrait-label">—</dd></div><div><dt>Character class</dt><dd>Not yet revealed</dd></div></dl></section>
+              <section class="mb-player-card"><h3>Social</h3><div class="mb-social-links"><button id="own-profile-friends" type="button"><span>Friends<small>2 of 3 online</small></span><span aria-hidden="true">›</span></button><button id="own-profile-inbox" type="button"><span>Inbox<small>Whispers &amp; party chat</small></span><span aria-hidden="true">›</span></button></div></section>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <footer class="site-footer"><div class="footer-brand logo-host wordmark-host"><img class="official-mythbound-logo" src="../Mythbound_Wordmark.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback">MYTHBOUND ✧ ONLINE</span></div><p>Mythbound is a fictional game created for an interactive story experience. There are no real downloads, purchases, game accounts or online players.</p></footer>
     </main>
 
-    <aside class="social-rail" aria-label="Game social sidebar">
+    <aside class="social-rail" aria-label="Game social sidebar" hidden>
       <div class="rail-header"><span class="eyebrow">YOUR ADVENTURE</span><div class="rail-player-heading"><span class="rail-player-avatar" id="rail-player-avatar" data-presence="online" title="Online" role="img" aria-label="Online"></span><div><strong id="rail-player-name">Traveler</strong><small>Lv. 50</small></div></div></div>
       <section class="rail-panel" aria-labelledby="friends-title"><div class="rail-title"><h2 id="friends-title">Friends</h2><button type="button" id="all-friends" class="mb-mini-action" aria-label="Open all friends">2 / 3</button></div>
         <button type="button" class="friend-row" id="fighter-friend"><span class="friend-avatar saint-avatar" data-presence="online" title="Online" role="img" aria-label="Online">✥</span><span class="friend-meta"><strong>Fighter</strong><small>Saint · Lv. 84</small><span class="screen-reader-only">Online</span></span><span class="friend-chevron">›</span></button>
