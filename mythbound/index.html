@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-archsaintmale1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-specialtransforms4";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -576,6 +576,29 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 .class-showcase .saint-portrait-stage .unrevealed-portrait-reveal{animation:unrevealed-appear 1s ease-out both}
 @keyframes unrevealed-appear{from{opacity:0;filter:blur(6px) drop-shadow(0 18px 22px #08122265)}to{opacity:1;filter:blur(0) drop-shadow(0 18px 22px #08122265)}}
 @media(prefers-reduced-motion:reduce){.unrevealed-radar-seal,.class-showcase .saint-portrait-stage .unrevealed-portrait-reveal{animation:none}}
+</style>
+<style>
+.class-showcase .saint-portrait-stage .portrait-special-effect{position:absolute;inset:0;overflow:hidden;z-index:3;pointer-events:none;isolation:isolate;mask-image:radial-gradient(ellipse at center,#000 60%,transparent 100%)}
+.portrait-special-effect span{position:absolute;display:block;pointer-events:none}
+.heavenly-glow{inset:-8% -15%;background:radial-gradient(ellipse at 50% 8%,#fff8dcbb,transparent 49%),radial-gradient(ellipse at 50% 48%,#d5efff55,transparent 61%),radial-gradient(ellipse at 45% 55%,#ffe0ef44,transparent 62%);animation:mb-heaven-glow 2.4s ease-in-out both;mix-blend-mode:screen}
+.heavenly-ray{top:-9%;left:50%;height:118%;width:var(--ray-width);transform-origin:50% 0;background:linear-gradient(180deg,#fff7ddbb,#d9efff75 36%,#f9e9ff22 78%,transparent);clip-path:polygon(44% 0,56% 0,100% 100%,0 100%);filter:blur(3px);mix-blend-mode:screen;animation:mb-heaven-ray 2.2s var(--delay) ease-in-out both}
+.heavenly-ring{left:50%;top:24%;width:36%;height:10%;border:1px solid #fff2c7;border-radius:50%;box-shadow:0 0 17px #e5efff88,inset 0 0 12px #fff2b366;animation:mb-heaven-ring 1.7s .15s ease-out both}
+.heavenly-feather,.heavenly-spark{left:var(--x);top:var(--y);width:var(--size);height:calc(var(--size)*1.8);background:#fff9e7;box-shadow:0 0 8px #e5efff;animation:mb-heaven-particle 1.85s var(--delay) ease-in-out both}
+.heavenly-feather{border-radius:100% 10% 100% 15%;background:linear-gradient(100deg,#e4f4ff,#fff9e8 50%,#bcd8ef)}
+.heavenly-spark{clip-path:polygon(50% 0,65% 40%,100% 50%,65% 60%,50% 100%,35% 60%,0 50%,35% 40%)}
+@keyframes mb-heaven-glow{0%,100%{opacity:0}38%{opacity:1}70%{opacity:.65}}
+@keyframes mb-heaven-ray{0%{opacity:0;transform:translateX(-50%) rotate(var(--angle)) scaleY(.3)}40%{opacity:.65}100%{opacity:0;transform:translateX(-50%) rotate(var(--angle)) scaleY(1)}}
+@keyframes mb-heaven-ring{0%{opacity:0;transform:translate(-50%,-50%) scale(.45)}38%{opacity:.8}100%{opacity:0;transform:translate(-50%,-50%) scale(1.65)}}
+@keyframes mb-heaven-particle{0%{opacity:0;transform:translate(0,-15px) rotate(0deg)}30%{opacity:.9}100%{opacity:0;transform:translate(var(--drift),290px) rotate(var(--turn))}}
+.mystery-veil{inset:-10%;background:radial-gradient(ellipse at center,#111522ee 0%,#1c233bd9 38%,#22273b75 62%,transparent 78%);animation:mb-mystery-veil 2.25s ease-in-out both}
+.mystery-cloud{left:var(--x);top:var(--y);width:75%;height:29%;border-radius:50%;background:radial-gradient(ellipse,#8390b16b 0%,#4a526c77 35%,#20263c4f 52%,transparent 73%);filter:blur(13px);animation:mb-mystery-cloud 1.85s var(--delay) ease-in-out both}
+.mystery-seam{left:-12%;top:78%;width:124%;height:20%;background:radial-gradient(ellipse,#c6cee555,transparent 68%);filter:blur(9px);animation:mb-mystery-seam 1.65s .35s ease-in-out both}
+.mystery-mote{left:var(--x);top:var(--y);width:var(--size);height:var(--size);border-radius:50%;background:#c7d3ef;box-shadow:0 0 9px #aebddc;animation:mb-mystery-mote 1.5s var(--delay) ease-out both}
+@keyframes mb-mystery-veil{0%,100%{opacity:0}32%,47%{opacity:1}75%{opacity:.55}}
+@keyframes mb-mystery-cloud{0%{opacity:0;transform:translate(-50%,0) scale(.7)}35%{opacity:.85}100%{opacity:0;transform:translate(calc(-50% + var(--drift)),-42px) scale(1.35)}}
+@keyframes mb-mystery-seam{0%{opacity:0;transform:translateY(10%)}44%{opacity:.75}100%{opacity:0;transform:translateY(-380%)}}
+@keyframes mb-mystery-mote{0%{opacity:0;transform:translate(0,0)}42%{opacity:.65}100%{opacity:0;transform:translate(var(--drift),-55px)}}
+@media(prefers-reduced-motion:reduce){.portrait-special-effect{display:none!important}}
 </style>
 </head>
 <body class="mythbound-login-open">

@@ -154,6 +154,76 @@ function prepareTransformationAudio(){
 function stopTransformationAudio(){
  if(transformAudioSource){try{transformAudioSource.stop()}catch{}transformAudioSource=null}
 }
+
+// Original choir-like and mysterious sound effects.
+function specialSound(ac,kind){
+ const heaven=kind==="archsaint",duration=heaven?3.1:2.7,rate=ac.sampleRate,b=ac.createBuffer(1,Math.ceil(rate*duration),rate),data=b.getChannelData(0),tau=2*Math.PI;
+ const clamp=x=>Math.max(0,Math.min(1,x)),smooth=x=>{x=clamp(x);return x*x*(3-2*x)};
+ if(heaven){
+  for(const [f,g,delay] of [[146.832,.06,0],[220,.075,.05],[293.665,.075,.12],[369.994,.06,.22],[440,.055,.32],[587.33,.035,.43]]){
+   const weights=Array.from({length:8},(_,i)=>{const k=i+1,hz=f*k;return (k===1?.8:0)+(.6*Math.exp(-Math.pow((hz-720)/310,2))+.27*Math.exp(-Math.pow((hz-1250)/380,2)))/Math.sqrt(k)});
+   const sum=weights.reduce((a,b)=>a+b,0);
+   for(const detune of [-.003,.001,.004]){
+    const phase=Math.random()*tau;
+    for(let i=Math.floor(delay*rate);i<data.length;i++){
+     const t=i/rate,env=smooth((t-delay)/.52)*(1-smooth((t-1.25)/(duration-1.25)));
+     const a=tau*f*(1+detune)*(t-delay)+phase+.18*Math.sin(tau*4.4*t+phase);
+     let v=0;for(let k=0;k<weights.length;k++)v+=weights[k]*Math.sin((k+1)*a+k*.43);
+     data[i]+=g*env*v/(3*sum);
+    }
+   }
+  }
+  for(let i=0;i<data.length;i++){const t=i/rate-.7;if(t>0)data[i]+=.025*smooth(t/.2)*Math.exp(-1.8*t)*(Math.sin(tau*880*t)+.24*Math.sin(tau*1760*t))}
+ }else{
+  let low=0,mid=0,fast=0;
+  for(let i=0;i<data.length;i++){
+   const t=i/rate,n=Math.random()*2-1;low+=.004*(n-low);mid+=.035*(n-mid);fast+=.15*(n-fast);
+   const env=smooth(t/.82)*(1-smooth((t-1.1)/(duration-1.1)));
+   data[i]=env*(.075*Math.sin(tau*73.416*t+.8*Math.sin(t*1.2))+.028*Math.sin(tau*110*t)+.48*(mid-low)+.08*(fast-mid))+.02*smooth((t-.5)/.6)*(1-smooth((t-1.2)/1.3))*Math.sin(tau*146.83*t);
+  }
+ }
+ const dry=data.slice();
+ for(const [delay,g] of [[.047,.18],[.103,.14],[.181,.10],[.263,.07],[.361,.04]]){const off=Math.round(delay*rate);for(let i=off;i<data.length;i++)data[i]+=dry[i-off]*g}
+ let peak=0;for(let i=0;i<data.length;i++){const tail=clamp((data.length-1-i)/(rate*.25));data[i]*=tail*tail;peak=Math.max(peak,Math.abs(data[i]))}
+ if(peak>.4)for(let i=0;i<data.length;i++)data[i]*=.4/peak;
+ return b;
+}
+function playSpecialSound(kind){
+ if(transformationMuted()||document.hidden||classPage.hidden)return;
+ const ac=transformAudioContext;if(!ac||ac.state==="closed")return;
+ stopTransformationAudio();
+ try{const buffer=transformBuffers[kind]||(transformBuffers[kind]=specialSound(ac,kind));
+ const sound=ac.createBufferSource(),gain=ac.createGain();sound.buffer=buffer;gain.gain.value=kind==="archsaint"?.72:.66;
+ sound.connect(gain);gain.connect(ac.destination);transformAudioSource=sound;
+ sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound)transformAudioSource=null};sound.start()}catch{}
+}
+function revealSpecialPath(stage,oldImage,picture,kind){
+ const heaven=kind==="archsaint",duration=heaven?2400:2250;
+ const finish=()=>{oldImage?.remove();stage.querySelector(".portrait-special-effect")?.remove();stage.classList.remove("portrait-revealing");picture.classList.remove("portrait-incoming");picture.style.removeProperty("opacity");picture.style.removeProperty("filter")};
+ const layer=document.createElement("div");layer.className="portrait-special-effect "+(heaven?"heavenly-effect":"mystery-effect");layer.setAttribute("aria-hidden","true");
+ const add=(cls,vars={})=>{const e=document.createElement("span");e.className=cls;for(const [k,v] of Object.entries(vars))e.style.setProperty(k,v);layer.append(e)};
+ if(heaven){
+  add("heavenly-glow");add("heavenly-ring");
+  for(let i=0;i<7;i++)add("heavenly-ray",{"--angle":(-31+i*10.3)+"deg","--ray-width":(9+i%3*4)+"%","--delay":i*.025+"s"});
+  for(let i=0;i<32;i++)add(i%4===0?"heavenly-feather":"heavenly-spark",{"--x":(8+Math.random()*84)+"%","--y":(Math.random()*53)+"%","--drift":(-65+Math.random()*130)+"px","--turn":(-120+Math.random()*240)+"deg","--delay":Math.random()*.48+"s","--size":(i%4===0?6+Math.random()*8:2+Math.random()*4)+"px"});
+ }else{
+  add("mystery-veil");add("mystery-seam");
+  for(let i=0;i<9;i++)add("mystery-cloud",{"--x":(10+Math.random()*66)+"%","--y":(4+i*10)+"%","--drift":(i%2?1:-1)*(70+Math.random()*90)+"px","--delay":i*.04+"s"});
+  for(let i=0;i<22;i++)add("mystery-mote",{"--x":(10+Math.random()*80)+"%","--y":(10+Math.random()*80)+"%","--drift":(-50+Math.random()*100)+"px","--delay":Math.random()*.65+"s","--size":(1+Math.random()*3)+"px"});
+ }
+ stage.append(layer);stage.classList.add("portrait-revealing");picture.style.opacity="0";
+ let start=null;const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
+ function frame(now){
+  if(!stage.isConnected)return;
+  if(start===null)start=now;
+  const p=Math.min(1,(now-start)/duration),a=smooth((p-.32)/.43);
+  if(oldImage)oldImage.style.opacity=String(1-smooth((p-.09)/.38));
+  picture.style.opacity=String(a);picture.style.filter="blur("+((heaven?4:8)*(1-a)).toFixed(2)+"px) drop-shadow(0 18px 22px #08122265)";
+  if(p<1)requestAnimationFrame(frame);else finish();
+ }
+ requestAnimationFrame(frame);
+}
+
 function playTransformationAudio(fallen){
  if(transformationMuted()||document.hidden)return;
  const ac=transformAudioContext;if(!ac||ac.state==="closed")return;
@@ -382,6 +452,7 @@ function renderPreview(allowTransformation=false){
  stopTransformationAudio();
  const previous=preview.querySelector(".saint-portrait-stage .portrait-incoming")||preview.querySelector(".saint-portrait-stage .saint-portrait");
  const oldImage=previous?.complete&&previous.naturalWidth?previous.cloneNode(false):null;
+ if(oldImage){oldImage.removeAttribute("style");oldImage.classList.remove("portrait-incoming","portrait-previous","unrevealed-portrait-reveal")}
  preview.replaceChildren();
  preview.classList.remove("has-saint-art");
  preview.style.setProperty("--preview-accent",isUnrevealed()?"#b8bed8":DATA[active].color);
@@ -400,11 +471,11 @@ function renderPreview(allowTransformation=false){
   const source=artwork||(gender==="female"?"../FemaleSaint.png":"../MaleSaint.png");
   // Only a change between the holy and corrupted paths triggers a transformation.
   // Gender changes and ordinary class selection are instantaneous.
-  const animate=allowTransformation&&!isUnrevealed()&&oldImage&&!oldImage.classList.contains("unrevealed-portrait")&&oldImage.classList.contains("fallen-saint-portrait")!==isFallen&&oldImage.src!==new URL(source,document.baseURI).href&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const special=activePath===1?"archsaint":isUnrevealed()?"mystery":null;
+  const animate=allowTransformation&&(!!special||!!oldImage)&&(!oldImage||oldImage.src!==new URL(source,document.baseURI).href)&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if(animate){
    prepareTransformationAudio();
-   oldImage.setAttribute("aria-hidden","true");oldImage.alt="";
-   oldImage.classList.remove("portrait-incoming");oldImage.classList.add("portrait-previous");stage.append(oldImage);
+   if(oldImage){oldImage.setAttribute("aria-hidden","true");oldImage.alt="";oldImage.classList.remove("portrait-incoming");oldImage.classList.add("portrait-previous");stage.append(oldImage)}
    picture.classList.add("portrait-incoming");
    stage.style.setProperty("--reveal-core",isFallen?"#ffbaa0":"#fff5cf");
    stage.style.setProperty("--reveal-glow",isFallen?"#e74338":"#efc16a");
@@ -414,11 +485,9 @@ function renderPreview(allowTransformation=false){
   picture.addEventListener("load",()=>{
    if(!picture.isConnected)return;
    preview.classList.add("has-saint-art");
-   if(isUnrevealed()&&allowTransformation&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches)picture.classList.add("unrevealed-portrait-reveal");
    if(animate){
-    playTransformationAudio(isFallen);
-    if(isFallen)burnPortrait(stage,oldImage,picture,true);
-    else revealSaint(stage,oldImage,picture);
+    if(special){playSpecialSound(special);revealSpecialPath(stage,oldImage,picture,special)}
+    else{playTransformationAudio(isFallen);if(isFallen)burnPortrait(stage,oldImage,picture,true);else revealSaint(stage,oldImage,picture)}
    }
    if(note)note.textContent=artworkName+" · illustrated class artwork";
   });
