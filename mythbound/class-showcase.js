@@ -64,19 +64,18 @@ const controls=document.createElement("div");controls.className="class-preview-c
 const genderSwitch=document.querySelector(".gender-switch");
 genderSwitch.before(controls);controls.append(genderSwitch,voiceButton);
 document.querySelector(".preview-toolbar").after(voiceStatus);
-const teaserNote=document.createElement("span");teaserNote.className="unrevealed-voice-note";teaserNote.textContent="Teaser voice line · Not yet revealed";teaserNote.hidden=true;controls.before(teaserNote);
+const teaserNote=document.createElement("span");teaserNote.className="unrevealed-voice-note";teaserNote.textContent="Teaser voice line · Available";teaserNote.hidden=true;controls.before(teaserNote);
 const cap=s=>s[0].toUpperCase()+s.slice(1);
-const voiceClass=()=>active==="saint"&&activePath===1?"Archsaint":active==="saint"&&activePath===2?"FallenSaint":cap(active);
-const voiceClassName=()=>voiceClass()==="FallenSaint"?"Fallen Saint":voiceClass();
-// Both Archsaint voices are available. The unrevealed specialization is still pending.
-const voiceUnavailable=()=>isUnrevealed();
+const voiceClass=()=>isUnrevealed()?"ComingSoonSaint":active==="saint"&&activePath===1?"Archsaint":active==="saint"&&activePath===2?"FallenSaint":cap(active);
+const voiceClassName=()=>isUnrevealed()?"Coming Soon":voiceClass()==="FallenSaint"?"Fallen Saint":voiceClass();
+// The unrevealed path has one teaser per avatar, not the normal three-line cycle.
 const voiceKey=()=>voiceClass()+":"+gender;
 const nextVoice=()=>voiceNext[voiceKey()]||1;
 function updateVoiceButton(){
  const mystery=isUnrevealed();
- const label=mystery?"Teaser voice line — not yet available":"Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
- voiceButton.disabled=voiceUnavailable();
- teaserNote.textContent="Teaser voice line · Not yet revealed";
+ const label=mystery?"Play "+gender+" teaser voice line":"Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
+ voiceButton.disabled=false;
+ teaserNote.textContent="Teaser voice line · Available";
  teaserNote.hidden=!mystery;
  voiceButton.title=label;voiceButton.setAttribute("aria-label",label);
  voiceButton.classList.toggle("is-speaking",!!voicePlaying);
@@ -93,7 +92,8 @@ function stopVoice(clearStatus=true){
  updateVoiceButton();
 }
 function playVoice(kind){
- if(voiceUnavailable()){stopVoice();return}
+ // All preview requests on the mystery path resolve to its sole approved teaser.
+ if(isUnrevealed())kind="Teaser";
  document.dispatchEvent(new Event("mythbound:class-voice-start"));
  stopVoice();
  const filename="Voice"+voiceClass()+cap(gender)+kind+".mp3";
@@ -109,7 +109,7 @@ function playVoice(kind){
  try{const result=audio.play();if(result&&typeof result.catch==="function")result.catch(fail)}catch{fail()}
 }
 voiceButton.addEventListener("click",()=>{
- if(voiceUnavailable())return;
+ if(isUnrevealed()){playVoice("Teaser");return}
  const key=voiceKey(),line=nextVoice();
  voiceNext[key]=line%3+1;playVoice(String(line));
 });
@@ -734,8 +734,9 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
  activePath=next;chosen=0;renderPath();
  if(changed){
   renderPreview(true);updateVoiceButton();
-  // Greet on entry to either voiced specialization, or on return to base Saint.
-  if(active==="saint"&&(activePath===1||activePath===2||((previousPath===1||previousPath===2)&&activePath===0)))playVoice("Switch");
+  // Mystery entry uses its teaser; the other paths retain their switch greetings.
+  if(isUnrevealed())playVoice("Teaser");
+  else if(active==="saint"&&(activePath===1||activePath===2||((previousPath===1||previousPath===2||previousPath===3)&&activePath===0)))playVoice("Switch");
  }
 }));
 const atmosphere=document.querySelector(".class-atmosphere");
