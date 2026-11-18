@@ -3,7 +3,17 @@
   "use strict";
   const $=id=>document.getElementById(id);
   const content=$("sheet-content");
-  const readKey="mythbound-fighter-whisper-seen-v1";
+  const legacyKey="mythbound-fighter-whisper-seen-v1",readKey="mythbound-read-message-ids-v2";
+  // Future story messages need a unique stable ID and a conversation thread.
+  const incoming=[{id:"fighter-raid-invite-1",thread:"fighter",text:"Yo, I've got time. You in for a raid?",time:"JUST NOW"}];
+  function loadRead(){
+    try{const raw=localStorage.getItem(readKey);if(raw!==null){const parsed=JSON.parse(raw);if(Array.isArray(parsed))return new Set(parsed.filter(x=>typeof x==="string"))}
+    if(localStorage.getItem(legacyKey)==="true")return new Set(["fighter-raid-invite-1"])}catch{}
+    return new Set();
+  }
+  let readIds=loadRead();
+  function unreadCount(thread){return incoming.filter(m=>(!thread||m.thread===thread)&&!readIds.has(m.id)).length}
+  const unreadLabel=n=>n+" unread message"+(n===1?"":"s");
   const people={
     fighter:{name:"Fighter",file:"ProfileSaintFemale.png",glyph:"✥",info:"Saint · Lv. 84",status:"Online",online:true},
     chaotic:{name:"Chaotic Buddy",file:"ProfileAnimar.png",glyph:"◈",info:"Animar · Lv. 118",status:"Online",online:true},
@@ -16,8 +26,6 @@
     {name:"LunarBlade",file:"ProfileStrider.png",preview:"Do you still have that spare material?",date:"1 week ago"},
     {name:"Rook_07",preview:"Hey, are you in a guild yet?",date:"2 weeks ago"}
   ];
-  let seen=false;
-  try{seen=localStorage.getItem(readKey)==="true"}catch{}
   const make=(tag,cls,value)=>{
     const el=document.createElement(tag);if(cls)el.className=cls;if(value!==undefined)el.textContent=value;return el;
   };
@@ -36,20 +44,38 @@
     }
     return wrap;
   }
-  function markSeen(){
+  function markSeen(thread="fighter"){
     if(window.MythboundAccount?.isSignedIn()===false)return;
-    seen=true;try{localStorage.setItem(readKey,"true")}catch{}syncUnread();
+    for(const id of loadRead())readIds.add(id);
+    for(const m of incoming)if(m.thread===thread)readIds.add(m.id);
+    try{localStorage.setItem(readKey,JSON.stringify([...readIds]))}catch{}
+    syncUnread();
   }
+  function badge(node,n){if(node){node.hidden=n===0;node.textContent=n>99?"99+":String(n);node.title=unreadLabel(n)}}
   function syncUnread(){
-    const badge=$("header-whisper")?.querySelector(".notification-count");
-    if(badge){badge.hidden=seen;badge.textContent="1"}
-    const dot=$("rail-whisper")?.querySelector(".unread-dot");if(dot)dot.hidden=seen;
-    const mini=document.querySelector(".whispers-panel .mini-count");if(mini)mini.textContent=seen?"":"1 new";
-    const float=$("floating-whisper");if(float){
-      float.querySelector("span:last-child").textContent=seen?"Inbox":"1 new whisper";
-      float.setAttribute("aria-label",seen?"Open inbox":"Open inbox, one unread whisper");
+    const n=unreadCount(),f=unreadCount("fighter"),label=n?"Open inbox, "+unreadLabel(n):"Open inbox";
+    badge($("header-whisper")?.querySelector(".notification-count"),n);
+    for(const id of ["mobile-inbox-count","mobile-menu-unread","own-profile-inbox-count"])badge($(id),n);
+    const dot=$("rail-whisper")?.querySelector(".unread-dot");if(dot)dot.hidden=f===0;
+    const mini=document.querySelector(".whispers-panel .mini-count");if(mini)mini.textContent=n?n+" new":"";
+    const float=$("floating-whisper");if(float){float.querySelector("span:last-child").textContent=n?n+" new message"+(n===1?"":"s"):"Inbox";float.setAttribute("aria-label",label)}
+    for(const id of ["header-whisper","mobile-inbox","own-profile-inbox"])$(id)?.setAttribute("aria-label",label);
+    const sub=$("mb-inbox-unread-summary");if(sub)sub.textContent=n?unreadLabel(n)+" · Whispers & party conversations":"All caught up · Whispers & party conversations";
+    document.querySelectorAll("[data-mb-inbox-thread]").forEach(row=>{
+      const count=unreadCount(row.dataset.mbInboxThread);row.classList.toggle("mb-is-unread",count>0);badge(row.querySelector(".mb-thread-count"),count);
+      row.setAttribute("aria-label",(row.querySelector(".mb-inbox-top strong")?.textContent||"Conversation")+(count?", "+unreadLabel(count):", read"));
+      if(row.dataset.mbInboxThread==="fighter"){const date=row.querySelector(".mb-inbox-date");if(date)date.textContent=count?"Just now":"Today"}
+    });
+    document.querySelectorAll(".mb-inbox-tab-count").forEach(el=>badge(el,n));
+    document.dispatchEvent(new CustomEvent("mythbound:unread",{detail:{count:n}}));
+  }
+  function renderFighterMessages(){
+    const log=content.querySelector(".conversation");if(!log)return;log.replaceChildren();let marked=false;
+    for(const m of incoming.filter(m=>m.thread==="fighter")){
+      const unread=!readIds.has(m.id);
+      if(unread&&!marked){log.append(make("p","mb-new-message-divider","New messages"));marked=true}
+      log.append(make("p","timestamp",unread?m.time:"TODAY"),make("div","received-message"+(unread?" mb-unread-message":""),m.text));
     }
-    $("header-whisper")?.setAttribute("aria-label",seen?"Open inbox":"Open inbox, one unread whisper");
   }
   function heading(title,sub){
     const head=make("div","mb-social-heading");
@@ -83,36 +109,36 @@
     top.append(make("strong","",p.name),make("small","mb-inbox-date",p.date));
     words.append(top,make("small","mb-message-preview",p.preview));
     row.append(options.pinned?groupAvatar():avatar(p),words);
-    if(options.unread)row.append(make("span","unread-dot"));
+    if(options.thread){row.dataset.mbInboxThread=options.thread;const n=unreadCount(options.thread),b=make("span","mb-unread-badge mb-thread-count");row.classList.toggle("mb-is-unread",n>0);badge(b,n);row.append(b)}
     if(options.locked)row.title="Archived conversation · preview only";
     return row;
   }
   function openInbox(){
     if(window.MythboundAccount?.isSignedIn()===false)return;
-    const head=heading("Inbox","Whispers & party conversations");
+    const head=heading("Inbox","Whispers & party conversations");head.querySelector("p").id="mb-inbox-unread-summary";
     const tabs=make("div","mb-inbox-tabs");
-    const chat=make("button","is-active","Messages");chat.type="button";chat.setAttribute("aria-pressed","true");
+    const chat=make("button","is-active","Messages");chat.type="button";chat.setAttribute("aria-pressed","true");chat.append(make("span","mb-unread-badge mb-inbox-tab-count"));
     const friends=make("button","","Friends · 3");friends.type="button";friends.setAttribute("aria-pressed","false");friends.addEventListener("click",openFriends);
     tabs.append(chat,friends);
     const list=make("div","mb-inbox-list");
     list.append(make("div","mb-inbox-label","PINNED · PARTY CHAT"));
-    list.append(inboxRow({name:"The Usual Suspects",preview:"Chaotic Buddy: THE LOOT WAS MINE FIRST",date:"Yesterday"},{pinned:true,onClick:openGroup}));
+    list.append(inboxRow({name:"The Usual Suspects",preview:"Chaotic Buddy: THE LOOT WAS MINE FIRST",date:"Yesterday"},{pinned:true,thread:"party",onClick:openGroup}));
     list.append(make("div","mb-inbox-label","WHISPERS"));
-    list.append(inboxRow({...people.fighter,preview:"Yo, I've got time. You in for a raid?",date:seen?"Today":"Just now"},{unread:!seen,onClick:openWhisper}));
+    const latest=incoming.filter(m=>m.thread==="fighter").slice(-1)[0];list.append(inboxRow({...people.fighter,preview:latest?.text||"",date:unreadCount("fighter")?"Just now":"Today"},{thread:"fighter",onClick:openWhisper}));
     oldChats.forEach(p=>list.append(inboxRow(p,{locked:true})));
     list.append(make("p","mb-social-note","Older conversation previews are archived."));
-    display([head,tabs,list],"MYTHBOUND · SOCIAL");
+    display([head,tabs,list],"MYTHBOUND · SOCIAL");syncUnread();
   }
   function openFriends(){
     if(window.MythboundAccount?.isSignedIn()===false)return;
     const head=heading("Friends","2 online · 3 friends");
     const tabs=make("div","mb-inbox-tabs");
-    const chat=make("button","","Messages");chat.type="button";chat.setAttribute("aria-pressed","false");chat.addEventListener("click",openInbox);
+    const chat=make("button","","Messages");chat.type="button";chat.setAttribute("aria-pressed","false");chat.append(make("span","mb-unread-badge mb-inbox-tab-count"));chat.addEventListener("click",openInbox);
     const friends=make("button","is-active","Friends · 3");friends.type="button";friends.setAttribute("aria-pressed","true");
     tabs.append(chat,friends);
     const list=make("div","mb-inbox-list");
     for(const id of ["fighter","chaotic","responsible"])list.append(friendRow(id));
-    display([head,tabs,list],"MYTHBOUND · SOCIAL");
+    display([head,tabs,list],"MYTHBOUND · SOCIAL");syncUnread();
   }
   function openFriend(id){
     if(window.MythboundAccount?.isSignedIn()===false)return;
@@ -157,12 +183,12 @@
     msg("fighter","23:09","Skill issue.");
     msg("chaotic","23:10","THE LOOT WAS MINE FIRST");
     const footer=make("div","mb-group-footer","Conversation history · Group replies are not available in this preview.");
-    display([back(),head,log,footer],"MYTHBOUND · PARTY CHAT");
+    display([back(),head,log,footer],"MYTHBOUND · PARTY CHAT");markSeen("party");
     // Start with the latest messages; older ones remain accessible by scrolling.
     log.scrollTop=log.scrollHeight;
   }
   // Entry points for existing site controls; the original Fighter reply redirect stays intact.
-  window.MythboundSocial={openInbox,openFriends,openFriend,markSeen,syncUnread};
+  window.MythboundSocial={openInbox,openFriends,openFriend,markSeen,syncUnread,unreadCount,renderFighterMessages};
   $("chaotic-friend")?.addEventListener("click",()=>openFriend("chaotic"));
   $("responsible-friend")?.addEventListener("click",()=>openFriend("responsible"));
   $("all-friends")?.addEventListener("click",openFriends);
@@ -172,5 +198,5 @@
     if(node){node.replaceChildren(avatar(people[id]));node.removeAttribute("aria-hidden")}
   }
   syncUnread();
-  window.addEventListener("storage",e=>{if(e.key===readKey){seen=e.newValue==="true";syncUnread()}});
+  window.addEventListener("storage",e=>{if(e.key===readKey||e.key===legacyKey||e.key===null){readIds=loadRead();syncUnread()}});
 })();

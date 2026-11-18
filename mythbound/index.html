@@ -6,12 +6,14 @@
   <meta name="theme-color" content="#11152a">
   <meta name="description" content="Explore Mythbound: a fictional MMORPG companion website and interactive story experience.">
   <title>Mythbound — Every legend leaves a trace</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="account.css">
-  <script defer src="app.js"></script>
-  <script defer src="class-showcase.js"></script>
-  <script defer src="account.js"></script>
-  <script defer src="social.js"></script>
+  <script>
+  // Manual refresh changes both the document URL and core asset URLs.
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261118-unread1";
+    for(const f of ["styles.css","account.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
+    for(const f of ["app.js","class-showcase.js","account.js","social.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
+  })();
+  </script>
+  <noscript><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="account.css"></noscript>
 <style>
 .logo-host .official-mythbound-logo{display:none;object-fit:contain;width:100%;height:auto}
 .logo-host.logo-ready .official-mythbound-logo{display:block}
@@ -508,6 +510,26 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 .mb-social-links small{display:block;color:#aebed0;font-size:11px;margin-top:2px}
 @media(max-width:760px){.mb-player-content{grid-template-columns:1fr}.mb-player-cover{min-height:220px}.mb-player-top{margin-bottom:24px}.mb-player-identity{flex-wrap:wrap}.mb-edit-profile{margin-left:0}.mb-character-stage{min-height:290px}.mb-player-body{padding-top:24px}}
 </style>
+<style>
+.mb-refresh-button{display:grid;place-items:center;width:35px;height:38px;flex:none;padding:0;color:var(--gold);background:transparent;border:0;border-radius:5px}
+.mb-refresh-button:hover{background:#d6bf8b12;color:#ffe8b6}
+.mb-refresh-button.is-refreshing svg{animation:mb-refresh-spin .9s linear infinite}
+@keyframes mb-refresh-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.mb-refresh-button.is-refreshing svg{animation:none}}
+.mb-unread-badge,.site-header .notification-count,.site-header .mobile-inbox-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#e5c18b;color:#182235;font:800 10px/1 'DM Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.site-header .notification-count{top:1px;right:-1px;box-shadow:0 0 0 2px #172033}
+.mb-inbox-tabs .mb-unread-badge{margin-left:7px;vertical-align:middle}
+.mb-inbox-tabs .is-active .mb-unread-badge{background:#26344a;color:#f4dfb5}
+.mb-inbox-row.mb-is-unread{background:linear-gradient(90deg,#d4ae681c,#d4ae6806);box-shadow:inset 2px 0 #d6b47a}
+.mb-inbox-row.mb-is-unread .mb-inbox-top strong{color:#ffdfa9;font-weight:800}
+.mb-inbox-row.mb-is-unread .mb-message-preview{color:#ebe6de;font-weight:600}
+.mb-inbox-row.mb-is-unread:hover{background:#d4ae6826}
+.mb-thread-count{flex:none}.mb-profile-inbox-end{display:flex;align-items:center;gap:9px}
+.mb-new-message-divider{display:flex;align-items:center;gap:9px;color:#efcb8d;font:700 10px/1.4 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase;margin:12px 0}
+.mb-new-message-divider:before,.mb-new-message-divider:after{content:"";height:1px;background:#d6b47a66;flex:1}
+.mb-unread-message{border-color:#d6b47a70!important}
+@media(max-width:760px){.site-header .mb-refresh-button{width:34px;height:36px}.site-header .mobile-menu-unread{top:-4px;right:-5px;width:auto;height:16px;min-width:16px;padding:0 4px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#e5c18b;color:#142034;font:800 9px/1 'DM Sans',sans-serif;box-shadow:0 0 0 2px #141e30}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -537,17 +559,19 @@ body.mythbound-guest .mb-header-friends{display:none!important}
       <button type="button" data-page="discover" class="nav-item">The World</button>
       <button type="button" data-page="news" class="nav-item">News</button>
       <button type="button" data-page="classes" class="nav-item">Classes</button>
-      <button type="button" id="mobile-inbox" class="nav-item mobile-menu-item mobile-social-item">Inbox <span id="mobile-inbox-count" class="mobile-inbox-count" hidden>1</span></button>
+      <button type="button" id="mobile-inbox" class="nav-item mobile-menu-item mobile-social-item">Inbox <span id="mobile-inbox-count" class="mobile-inbox-count" hidden>0</span></button>
       <button type="button" id="mobile-friends" class="nav-item mobile-menu-item mobile-social-item">Friends</button>
+      <button type="button" id="mobile-refresh" class="nav-item mobile-menu-item"><span>Check for updates</span><span aria-hidden="true">↻</span></button>
       <button type="button" id="mobile-logout" class="nav-item mobile-menu-item mobile-social-item">Log out</button>
     </nav>
     <div class="header-actions">
       
       <button type="button" id="header-friends" class="mb-header-friends" aria-label="Open friends list · 2 online" title="Friends · 2 online" hidden><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="3"/><path d="M2.5 20v-2a6.5 6.5 0 0 1 13 0v2M16 4.5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3.5 4.7V20"/></svg><span class="mb-friends-indicator" aria-hidden="true"></span></button>
-      <button type="button" id="header-whisper" class="notification-button" aria-label="Open unread whisper"><span aria-hidden="true">✉</span><span class="notification-count">1</span></button>
+      <button type="button" id="header-whisper" class="notification-button" aria-label="Open unread whisper"><span aria-hidden="true">✉</span><span class="notification-count" hidden>0</span></button>
+      <button type="button" id="mb-refresh" class="mb-refresh-button" title="Check for updates" aria-label="Check for updates — refresh Mythbound"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.1 6M20 4v7h-7"/></svg></button>
       <button type="button" id="account-button" class="account-chip"><span class="account-sigil">T</span><span class="account-label">Traveler</span></button>
       <button type="button" id="download-button" class="download-button">Download <span aria-hidden="true">↗</span></button>
-      <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Open navigation menu" aria-controls="primary-navigation" aria-expanded="false"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span id="mobile-menu-unread" class="mobile-menu-unread" hidden></span></button>
+      <button type="button" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Open navigation menu" aria-controls="primary-navigation" aria-expanded="false"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span id="mobile-menu-unread" class="mobile-menu-unread" hidden>0</span></button>
     </div>
   </header>
 
@@ -713,7 +737,7 @@ body.mythbound-guest .mb-header-friends{display:none!important}
             </section>
             <div class="mb-player-info">
               <section class="mb-player-card"><h3>Adventurer details</h3><dl><div><dt>Player level</dt><dd>50</dd></div><div><dt>Profile portrait</dt><dd id="own-profile-portrait-label">—</dd></div><div><dt>Character class</dt><dd>Not yet revealed</dd></div></dl></section>
-              <section class="mb-player-card"><h3>Social</h3><div class="mb-social-links"><button id="own-profile-friends" type="button"><span>Friends<small>2 of 3 online</small></span><span aria-hidden="true">›</span></button><button id="own-profile-inbox" type="button"><span>Inbox<small>Whispers &amp; party chat</small></span><span aria-hidden="true">›</span></button></div></section>
+              <section class="mb-player-card"><h3>Social</h3><div class="mb-social-links"><button id="own-profile-friends" type="button"><span>Friends<small>2 of 3 online</small></span><span aria-hidden="true">›</span></button><button id="own-profile-inbox" type="button"><span>Inbox<small>Whispers &amp; party chat</small></span><span class="mb-profile-inbox-end"><span class="mb-unread-badge" id="own-profile-inbox-count" hidden>0</span><span aria-hidden="true">›</span></span></button></div></section>
             </div>
           </div>
         </div>
@@ -777,7 +801,7 @@ body.mythbound-guest .mb-header-friends{display:none!important}
   open=open&&mobile.matches;
   header.classList.toggle("mobile-nav-open",open);
   toggle.setAttribute("aria-expanded",String(open));
-  toggle.setAttribute("aria-label",open?"Close navigation menu":"Open navigation menu");
+  updateMenuLabel();
   if(focus)toggle.focus({preventScroll:true});
  }
  toggle.addEventListener("click",()=>setOpen(!isOpen()));
@@ -789,9 +813,12 @@ body.mythbound-guest .mb-header-friends{display:none!important}
  document.getElementById("mobile-friends").addEventListener("click",()=>{setOpen(false,true);window.MythboundSocial?.openFriends()});
  document.getElementById("mobile-logout").addEventListener("click",()=>{setOpen(false,true);header.querySelector(".mb-session-action")?.click()});
  document.getElementById("mobile-download").addEventListener("click",()=>document.getElementById("download-button").click());
- const badge=document.querySelector("#header-whisper .notification-count");
- const syncBadge=()=>{const unread=!!badge&&!badge.hidden;document.getElementById("mobile-menu-unread").hidden=!unread;document.getElementById("mobile-inbox-count").hidden=!unread};
- if(badge){new MutationObserver(syncBadge).observe(badge,{attributes:true,attributeFilter:["hidden"]});syncBadge()}
+ function updateMenuLabel(){
+  const n=window.MythboundSocial?.unreadCount()||0;
+  toggle.setAttribute("aria-label",(isOpen()?"Close navigation menu":"Open navigation menu")+(n&&window.MythboundAccount?.isSignedIn()?", "+n+" unread message"+(n===1?"":"s"):""));
+ }
+ document.addEventListener("mythbound:unread",updateMenuLabel);
+ document.getElementById("mobile-refresh").addEventListener("click",()=>{setOpen(false);document.getElementById("mb-refresh").click()});
  new MutationObserver(()=>{if(document.body.classList.contains("mythbound-login-open"))setOpen(false)}).observe(document.body,{attributes:true,attributeFilter:["class"]});
 })();
 </script>

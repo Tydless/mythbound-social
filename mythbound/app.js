@@ -70,7 +70,7 @@ function openPanel(templateId){
   if(templateId==="whisper-template"){document.getElementById("reply-form").addEventListener("submit",handleReply)}
 }
 function openProfile(){openPanel("profile-template")}
-function openWhisper(){if(window.MythboundAccount?.isSignedIn()===false)return;openPanel("whisper-template");window.MythboundSocial?.markSeen()}
+function openWhisper(){if(window.MythboundAccount?.isSignedIn()===false)return;openPanel("whisper-template");window.MythboundSocial?.renderFighterMessages();window.MythboundSocial?.markSeen("fighter")}
 document.getElementById("fighter-friend").addEventListener("click",openProfile);
 document.getElementById("rail-whisper").addEventListener("click",openWhisper);
 headerWhisper.addEventListener("click",()=>window.MythboundSocial?.openInbox());
@@ -266,4 +266,14 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
   if(button.dataset.class)play("select");
  },true);
  window.addEventListener("pagehide",()=>{if(ctx&&ctx.state==="running")ctx.suspend().catch(()=>{})});
+})();
+
+/* Updates: reload current route with a new cache key; session and read IDs stay in storage. */
+(function(){
+ const refresh=document.getElementById("mb-refresh"),mobile=document.getElementById("mobile-refresh");if(!refresh)return;let pending=false;
+ refresh.addEventListener("click",()=>{
+  if(pending)return;pending=true;refresh.disabled=true;if(mobile)mobile.disabled=true;refresh.classList.add("is-refreshing");refresh.setAttribute("aria-label","Checking for updates");refresh.title="Checking for updates";
+  const url=new URL(location.href);url.searchParams.set("_mbupdate",String(Date.now()));location.replace(url.href);
+ });
+ window.addEventListener("pageshow",()=>{pending=false;refresh.disabled=false;if(mobile)mobile.disabled=false;refresh.classList.remove("is-refreshing");refresh.setAttribute("aria-label","Check for updates — refresh Mythbound");refresh.title="Check for updates"});
 })();
