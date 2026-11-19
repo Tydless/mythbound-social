@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-mobile-portrait-fx1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-mobile-portrait-fx2";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -825,15 +825,39 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 .class-showcase.mobile-portrait-fx .portrait-burn-canvas,
 .class-showcase.mobile-portrait-fx .portrait-special-effect{display:none!important}
 .class-showcase.mobile-portrait-fx .scene-mist{filter:none}
-.portrait-mobile-effect{position:absolute;inset:0;overflow:hidden;z-index:3;pointer-events:none;--particle:#fff3cf;--particle-glow:#f5d89a}
-.portrait-mobile-effect.mobile-effect-archsaint{--particle:#fff9ed;--particle-glow:#e3d7ff}
-.portrait-mobile-effect.mobile-effect-fallen{--particle:#ff9a97;--particle-glow:#e34b56}
-.portrait-mobile-effect.mobile-effect-mystery{--particle:#d4d9f2;--particle-glow:#9ba7d3}
-.mobile-reveal-particle{position:absolute;left:var(--px);top:var(--py);width:var(--size);height:var(--size);border-radius:50%;background:var(--particle);box-shadow:0 0 5px 1px var(--particle-glow);opacity:0;animation:mb-mobile-reveal 1.15s var(--delay) ease-out both}
-.mobile-effect-archsaint .mobile-reveal-particle:nth-child(3n){border-radius:85% 10% 85% 10%;height:calc(var(--size)*1.8)}
+.class-showcase.mobile-portrait-fx .saint-portrait-stage.mobile-portrait-dissolve .portrait-incoming{
+ animation:mb-mobile-portrait-in var(--reveal-duration,2400ms) ease-in-out both;
+}
+.class-showcase.mobile-portrait-fx .saint-portrait-stage.mobile-portrait-dissolve .portrait-previous{
+ animation:mb-mobile-portrait-out var(--reveal-duration,2400ms) ease-in-out both;
+}
+@keyframes mb-mobile-portrait-in{0%,12%{opacity:0}68%,100%{opacity:1}}
+@keyframes mb-mobile-portrait-out{0%,32%{opacity:1}78%,100%{opacity:0}}
+.portrait-mobile-effect{position:absolute;inset:0;overflow:hidden;z-index:3;pointer-events:none;--particle:#fff3cf;--particle-glow:#f5d89a;--aura:#ffda8b66}
+.portrait-mobile-effect.mobile-effect-archsaint{--particle:#fff9ed;--particle-glow:#e3d7ff;--aura:#fff4cb77}
+.portrait-mobile-effect.mobile-effect-fallen{--particle:#ff9a97;--particle-glow:#e34b56;--aura:#e3313e88}
+.portrait-mobile-effect.mobile-effect-mystery{--particle:#d4d9f2;--particle-glow:#9ba7d3;--aura:#8995c166}
+.portrait-mobile-effect span{position:absolute;display:block;pointer-events:none}
+.mobile-reveal-aura{inset:4%;background:radial-gradient(ellipse at center,var(--aura) 0%,transparent 68%);opacity:0;animation:mb-mobile-aura var(--reveal-duration) ease-in-out both}
+@keyframes mb-mobile-aura{0%,100%{opacity:0;transform:scale(.7)}35%{opacity:.9;transform:scale(1.12)}70%{opacity:.35;transform:scale(1)}}
+.mobile-heaven-halo,.mobile-base-ring{left:50%;top:27%;width:52%;height:12%;border:2px solid #fff1bd;border-radius:50%;box-shadow:0 0 12px #ffe4b4;animation:mb-mobile-ring 1.8s .12s ease-out both}
+.mobile-base-ring{top:50%;width:45%;height:37%;border-color:#ffe2a7}
+@keyframes mb-mobile-ring{0%{opacity:0;transform:translate(-50%,-50%) scale(.35)}40%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(1.5)}}
+.mobile-heaven-ray{top:2%;left:50%;width:12%;height:76%;transform-origin:50% 0;background:linear-gradient(180deg,#fff4cb55,#fff6e020 50%,transparent 95%);border-radius:50%;animation:mb-mobile-ray 2.1s var(--delay) ease-in-out both}
+@keyframes mb-mobile-ray{0%{opacity:0;transform:translateX(-50%) rotate(var(--angle)) scaleY(.2)}40%{opacity:.85}100%{opacity:0;transform:translateX(-50%) rotate(var(--angle)) scaleY(1)}}
+.mobile-fire-tongue{left:var(--px);bottom:2%;width:27%;height:64%;background:radial-gradient(ellipse at 50% 85%,#ffd38b75 0%,#e5414777 23%,#a71b2d33 44%,transparent 70%);animation:mb-mobile-fire 2s var(--delay) ease-out both}
+@keyframes mb-mobile-fire{0%{opacity:0;transform:translate(-50%,22%) scale(.5)}35%{opacity:.9}100%{opacity:0;transform:translate(-50%,-35%) scale(1.25)}}
+.mobile-mist-wisp{left:10%;top:var(--py);width:80%;height:22%;background:radial-gradient(ellipse,#b3bbd166 0%,#737e9a44 35%,transparent 72%);animation:mb-mobile-mist 2s var(--delay) ease-in-out both}
+@keyframes mb-mobile-mist{0%{opacity:0;transform:translateX(0) scale(.8)}38%{opacity:.85}100%{opacity:0;transform:translateX(var(--dx)) scale(1.2)}}
+.mobile-reveal-particle{left:var(--px);top:var(--py);width:var(--size);height:var(--size);border-radius:50%;background:var(--particle);box-shadow:0 0 7px 1px var(--particle-glow);opacity:0;animation:mb-mobile-reveal 1.5s var(--delay) ease-out both}
+.mobile-effect-archsaint .mobile-reveal-particle:nth-child(3n){border-radius:85% 10% 85% 10%;height:calc(var(--size)*2.3)}
 .mobile-effect-fallen .mobile-reveal-particle:nth-child(3n){border-radius:80% 15% 80% 15%;height:calc(var(--size)*1.5)}
-@keyframes mb-mobile-reveal{0%{opacity:0;transform:translate(0,0)}24%{opacity:.85}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
-@media(prefers-reduced-motion:reduce){.portrait-mobile-effect{display:none!important}}
+@keyframes mb-mobile-reveal{0%{opacity:0;transform:translate(0,0) scale(.5)}24%{opacity:.95;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.55)}}
+@media(prefers-reduced-motion:reduce){
+ .portrait-mobile-effect{display:none!important}
+ .class-showcase.mobile-portrait-fx .saint-portrait-stage.mobile-portrait-dissolve .portrait-incoming{animation:none!important;opacity:1}
+ .class-showcase.mobile-portrait-fx .saint-portrait-stage.mobile-portrait-dissolve .portrait-previous{animation:none!important;opacity:0}
+}
 @media(max-width:760px){
  #page-classes{overflow-x:hidden;overflow-x:clip;min-width:0;max-width:100%}
  .class-showcase .showcase-columns,.class-showcase .path-ability-layout{grid-template-columns:minmax(0,1fr)}

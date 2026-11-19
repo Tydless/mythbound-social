@@ -514,30 +514,53 @@ function useMobilePortraitEffects(){
   (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 }
 function revealMobilePath(stage,oldImage,picture,kind){
- // The new artwork has loaded. Never obscure it with a full-size animated layer.
- oldImage?.remove();
- picture.classList.remove("portrait-incoming");
- picture.style.removeProperty("opacity");
- picture.style.removeProperty("filter");
- stage.classList.remove("portrait-revealing","portrait-crossfade");
+ // Keep the old image in place until the already-loaded new one dissolves in.
+ // Use ordinary opacity animations and transparent gradients, not filters,
+ // blend modes, masks, or large white flash surfaces.
+ const duration=kind==="archsaint"?2400:kind==="mystery"?2250:kind==="fallen"?2400:1850;
  const layer=document.createElement("div");
  layer.className="portrait-mobile-effect mobile-effect-"+kind;
  layer.setAttribute("aria-hidden","true");
- const amount=kind==="fallen"?12:10;
+ layer.style.setProperty("--reveal-duration",duration+"ms");
+ stage.style.setProperty("--reveal-duration",duration+"ms");
+ function add(cls,vars={}){
+  const item=document.createElement("span");item.className=cls;
+  for(const [k,v] of Object.entries(vars))item.style.setProperty(k,v);
+  layer.append(item);return item;
+ }
+ add("mobile-reveal-aura");
+ if(kind==="archsaint"){
+  add("mobile-heaven-halo");
+  for(let i=0;i<5;i++)add("mobile-heaven-ray",{"--angle":(-26+i*13)+"deg","--delay":i*.045+"s"});
+ }else if(kind==="fallen"){
+  for(let i=0;i<5;i++)add("mobile-fire-tongue",{"--px":(8+i*21)+"%","--delay":i*.09+"s"});
+ }else if(kind==="mystery"){
+  for(let i=0;i<3;i++)add("mobile-mist-wisp",{"--py":(25+i*24)+"%","--delay":i*.12+"s","--dx":(i%2?55:-55)+"px"});
+ }else add("mobile-base-ring");
+ const amount=kind==="fallen"?25:20;
  for(let i=0;i<amount;i++){
-  const particle=document.createElement("span");
-  particle.className="mobile-reveal-particle";
-  const x=10+(i*37.13)%80,y=12+(i*23.71)%72;
-  particle.style.setProperty("--px",x+"%");
-  particle.style.setProperty("--py",y+"%");
-  particle.style.setProperty("--dx",((i%5)-2)*9+"px");
-  particle.style.setProperty("--dy",(kind==="archsaint"?48:-36)-(i%3)*7+"px");
-  particle.style.setProperty("--delay",(i%5)*.055+"s");
-  particle.style.setProperty("--size",(4+i%3*2)+"px");
-  layer.append(particle);
+  add("mobile-reveal-particle",{
+   "--px":(8+(i*37.13)%84)+"%",
+   "--py":(kind==="archsaint"?5+(i*23.71)%56:kind==="fallen"?45+(i*23.71)%48:15+(i*23.71)%70)+"%",
+   "--dx":((i%7)-3)*16+"px",
+   "--dy":((kind==="archsaint"?95:-95)-(i%4)*12)+"px",
+   "--delay":((i%9)*.075)+"s",
+   "--size":(5+i%4*2)+"px"
+  });
  }
  stage.append(layer);
- setTimeout(()=>layer.remove(),1500);
+ picture.style.removeProperty("opacity");
+ picture.style.removeProperty("filter");
+ stage.classList.remove("portrait-revealing","portrait-crossfade");
+ if(oldImage)stage.classList.add("mobile-portrait-dissolve");
+ else picture.classList.remove("portrait-incoming");
+ // Clean up even if iOS delays animationend or the visitor switches again.
+ setTimeout(()=>{
+  oldImage?.remove();layer.remove();
+  picture.classList.remove("portrait-incoming");
+  stage.classList.remove("mobile-portrait-dissolve");
+  stage.style.removeProperty("--reveal-duration");
+ },duration+100);
 }
 function renderPreview(allowTransformation=false){
  // Real artwork for both Saint appearances, with the old concept silhouette
