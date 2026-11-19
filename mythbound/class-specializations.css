@@ -217,7 +217,7 @@
 /* Path category identity is scoped to the abilities panel; landscapes and portrait geometry are untouched. */
 .path-overview[data-path-theme]{--path-tone:#dac6a1;--path-wash:#b59a6422}
 .path-overview[data-path-theme="base"]{--path-tone:var(--class-highlight);--path-wash:color-mix(in srgb,var(--class-highlight) 14%,transparent)}
-.path-overview[data-path-theme="true"]{--path-tone:#ffdf80;--path-wash:#e7b73724}
+.path-overview[data-path-theme="true"]{--path-tone:#ffe9a6;--path-wash:#ffce4e24}
 .path-overview[data-path-theme="corrupted"]{--path-tone:#e9a0ab;--path-wash:#9e334d31}
 .path-overview[data-path-theme="twisted"]{--path-tone:#c4afe9;--path-wash:#7954ad30}
 .path-overview[data-path-theme="fable"]{--path-tone:#b4d8aa;--path-wash:#578e6a30}
@@ -283,7 +283,7 @@
 }
 /* Deliberately richer, darker heading swatches instead of a gray tint.
    Only titles use these values; small copy and ultimate trim are unchanged. */
-.class-showcase .path-overview[data-path-theme="true"]{--title-tone:#f2bd35}
+.class-showcase .path-overview[data-path-theme="true"]{--title-tone:#ffce4e}
 .class-showcase .path-overview[data-path-theme="corrupted"]{--title-tone:#d87589}
 .class-showcase .path-overview[data-path-theme="twisted"]{--title-tone:#a38ad5}
 .class-showcase .path-overview[data-path-theme="fable"]{--title-tone:#82b879}

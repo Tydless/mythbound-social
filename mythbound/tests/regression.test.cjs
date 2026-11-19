@@ -239,8 +239,8 @@ test("Marked ability headings and category icon share the saturated title color"
  const block=style.slice(style.indexOf("/* Target the headings explicitly"),style.indexOf("/* The smaller caption"));
  for(const selector of [".subclass-intro h3",".path-category-icon",".path-ability-layout .showcase-section-title h3",".skill-detail .ability-detail-heading h4",".ability-group-head h4"])assert.ok(block.includes(selector));
  assert.match(block,/\{color:var\(--title-tone\)\}/);
- assert.match(style,/\[data-path-theme="true"\]\{--path-tone:#ffdf80/);
- assert.match(style,/\[data-path-theme="true"\]\{--title-tone:#f2bd35\}/);
+ assert.match(style,/\[data-path-theme="true"\]\{--path-tone:#ffe9a6/);
+ assert.match(style,/\[data-path-theme="true"\]\{--title-tone:#ffce4e\}/);
  assert.match(style,/\.ability-video-caption strong\{color:var\(--path-tone\)\}/);
  const details=style.slice(style.indexOf("/* The selected path owns"),style.indexOf("/* Typographic hierarchy:"));
  assert.doesNotMatch(details,/\.ability-detail-heading h4|\.showcase-section-title h3/);
