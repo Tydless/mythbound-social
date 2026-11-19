@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="../MythboundMascot.png">
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-news-autoplay2";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-news-sliding1";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -760,9 +760,15 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 .featured-news-controls .featured-news-dots{padding-inline:46px}
 .featured-news-pause{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#d4b986;font-size:13px;width:30px;height:30px;line-height:1;padding:0;opacity:.8}
 .featured-news-pause:hover,.featured-news-pause:focus-visible{opacity:1;color:#ffe4b0}
-.featured-news-enter .featured-news-art,.featured-news-enter .featured-news-caption{animation:mb-featured-news-enter .85s ease-out both}
-@keyframes mb-featured-news-enter{from{opacity:.28}to{opacity:1}}
-@media(prefers-reduced-motion:reduce){.featured-news-enter .featured-news-art,.featured-news-enter .featured-news-caption{animation:none}}
+.featured-news-card{position:relative;isolation:isolate}
+.featured-news-slide{width:100%;min-width:0;background:#1c2a42}
+.featured-news-slide.is-outgoing{position:absolute;inset:0;pointer-events:none;z-index:1;animation:mb-news-out .8s cubic-bezier(.45,0,.25,1) both}
+.featured-news-slide.is-incoming{position:relative;z-index:2;animation:mb-news-in .8s cubic-bezier(.45,0,.25,1) both}
+.featured-news-card{--news-in-x:100%;--news-out-x:-100%}
+.featured-news-card.is-sliding-back{--news-in-x:-100%;--news-out-x:100%}
+@keyframes mb-news-in{from{transform:translateX(var(--news-in-x))}to{transform:translateX(0)}}
+@keyframes mb-news-out{from{transform:translateX(0)}to{transform:translateX(var(--news-out-x))}}
+@media(prefers-reduced-motion:reduce){.featured-news-slide.is-incoming,.featured-news-slide.is-outgoing{animation:none}}
 </style>
 </head>
 <body class="mythbound-login-open">
@@ -826,7 +832,7 @@ body.mythbound-guest .mb-header-friends{display:none!important}
         </div>
         <section class="home-news hub-section" aria-labelledby="home-news-title">
  <div class="hub-heading"><span class="eyebrow">LETTERS FROM THE THRESHOLD</span><h2 id="home-news-title">Latest news</h2><p>Discover what is happening beyond the gates.</p></div>
- <div class="home-news-layout"><div class="featured-news"><button type="button" id="featured-news-open" class="featured-news-card"><div id="featured-news-art" class="featured-news-art"><span>✥</span></div><div class="featured-news-caption"><span class="eyebrow" id="featured-news-category">COSMETICS</span><strong id="featured-news-title">Saint wardrobe spotlight</strong><span class="featured-news-arrow" aria-hidden="true"><svg class="mb-diagonal-arrow" viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5 4h7v7"/></svg></span></div></button><div class="featured-news-controls"><div class="featured-news-dots" id="featured-news-dots" role="group" aria-label="Select featured news"></div><button type="button" class="featured-news-pause" id="featured-news-pause" aria-label="Pause automatic news rotation" title="Pause automatic news rotation">Ⅱ</button></div></div>
+ <div class="home-news-layout"><div class="featured-news"><button type="button" id="featured-news-open" class="featured-news-card"><div class="featured-news-slide" id="featured-news-slide"><div id="featured-news-art" class="featured-news-art"><span>✥</span></div><div class="featured-news-caption"><span class="eyebrow" id="featured-news-category">COSMETICS</span><strong id="featured-news-title">Saint wardrobe spotlight</strong><span class="featured-news-arrow" aria-hidden="true"><svg class="mb-diagonal-arrow" viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5 4h7v7"/></svg></span></div></div></button><div class="featured-news-controls"><div class="featured-news-dots" id="featured-news-dots" role="group" aria-label="Select featured news"></div><button type="button" class="featured-news-pause" id="featured-news-pause" aria-label="Pause automatic news rotation" title="Pause automatic news rotation">Ⅱ</button></div></div>
  <div class="home-news-list"><div class="home-news-list-title">Latest dispatches</div><button class="home-news-row" type="button" data-news-open="wardrobe"><span><small>COSMETICS</small><strong>Saint wardrobe spotlight</strong></span><time>Nov 17, 2026</time></button><button class="home-news-row" type="button" data-news-open="patch"><span><small>PATCH NOTES</small><strong>Update 1.4.2 — The companion situation</strong></span><time>Nov 15, 2026</time></button><button class="home-news-row" type="button" data-news-open="avatars"><span><small>ANNOUNCEMENT</small><strong>New feature: class profile pictures</strong></span><time>Nov 13, 2026</time></button><button class="home-news-row" type="button" data-news-open="contest"><span><small>COMMUNITY</small><strong>Design the Legend — community spotlight</strong></span><time>Nov 10, 2026</time></button><button class="home-news-row" type="button" data-news-open="devlog"><span><small>DEVELOPER DIARY</small><strong>Letters from the Threshold — developer diary</strong></span><time>Nov 7, 2026</time></button><button type="button" data-go="news" class="outline-action news-more">View all news →</button></div></div>
  </section><section class="hub-section community-hub" aria-labelledby="community-title"><div class="hub-heading"><span class="eyebrow">BEYOND THE GAME</span><h2 id="community-title">Join the community</h2><p>Keep up with fellow adventurers, wherever your journey takes you.</p></div><div class="community-links">
  <a href="../" class="community-link"><span class="community-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></span><span><strong>Afterhour</strong><small>Share your adventure</small></span><span class="community-arrow" aria-hidden="true">›</span></a>
@@ -1089,25 +1095,45 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 <script>
 document.addEventListener("DOMContentLoaded",()=>{
  const items=[{"id":"wardrobe","title":"Saint wardrobe spotlight","category":"COSMETICS","image":"../BannerSaint.png","symbol":"✥"},{"id":"patch","title":"Update 1.4.2 — The companion situation","category":"PATCH NOTES","image":"../mythbound-home-watercolor.jpg","symbol":"✧"},{"id":"avatars","title":"New feature: class profile pictures","category":"ANNOUNCEMENT","image":null,"symbol":"✦"},{"id":"contest","title":"Design the Legend — community spotlight","category":"COMMUNITY","image":null,"symbol":"❃"}];
- let index=0,timer=0;
- const art=document.getElementById("featured-news-art"),dots=document.getElementById("featured-news-dots"),card=document.getElementById("featured-news-open"),pause=document.getElementById("featured-news-pause"),home=document.getElementById("page-home");
+ let index=0,timer=0,slideTimer=0,outgoing=null;
+ const art=document.getElementById("featured-news-art"),dots=document.getElementById("featured-news-dots"),card=document.getElementById("featured-news-open"),pause=document.getElementById("featured-news-pause"),home=document.getElementById("page-home"),slide=document.getElementById("featured-news-slide");
  const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
  let paused=false;
  const interval=7000;
  function canRotate(){return !paused&&!document.hidden&&!home.hidden}
  function schedule(){
   clearTimeout(timer);timer=0;
-  if(canRotate())timer=setTimeout(()=>{timer=0;if(canRotate())showFeatured((index+1)%items.length,true);schedule()},interval);
+  if(canRotate())timer=setTimeout(()=>{timer=0;if(canRotate())showFeatured((index+1)%items.length,true,1);schedule()},interval);
  }
- function showFeatured(i,animate=false){
+ function finishSlide(){
+  clearTimeout(slideTimer);slideTimer=0;
+  if(outgoing){outgoing.remove();outgoing=null}
+  slide.classList.remove("is-incoming");
+  card.classList.remove("is-sliding-back");
+ }
+ function showFeatured(i,animate=false,direction=i>index?1:-1){
   if(i===index&&animate)return;
+  finishSlide();
+  const moving=animate&&!reduced.matches;
+  if(moving){
+   // Preserve the old artwork and caption until the new page has slid into place.
+   outgoing=slide.cloneNode(true);
+   outgoing.removeAttribute("id");
+   outgoing.querySelectorAll("[id]").forEach(n=>n.removeAttribute("id"));
+   outgoing.setAttribute("aria-hidden","true");
+   outgoing.classList.add("is-outgoing");
+   card.classList.toggle("is-sliding-back",direction<0);
+   card.append(outgoing);
+  }
   index=i;const a=items[i];art.replaceChildren();
   if(a.image){const im=new Image();im.alt="";im.onerror=()=>{if(im.parentNode!==art)return;im.remove();art.textContent=a.symbol};art.append(im);im.src=a.image}else{art.textContent=a.symbol}
   document.getElementById("featured-news-title").textContent=a.title;
   document.getElementById("featured-news-category").textContent=a.category;
   dots.querySelectorAll("button").forEach((b,j)=>{b.setAttribute("aria-pressed",String(i===j));b.classList.toggle("is-active",i===j)});
-  card.classList.remove("featured-news-enter");
-  if(animate&&!reduced.matches){void card.offsetWidth;card.classList.add("featured-news-enter")}
+  if(moving){
+   void slide.offsetWidth;slide.classList.add("is-incoming");
+   slideTimer=setTimeout(finishSlide,820);
+  }
  }
  function updatePause(){
   const label=paused?"Resume automatic news rotation":"Pause automatic news rotation";
