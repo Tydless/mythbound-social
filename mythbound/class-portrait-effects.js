@@ -174,31 +174,44 @@ function useMobilePortraitEffects(){
   /iPad|iPhone|iPod/.test(navigator.userAgent)||
   (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 }
-function revealMobilePath(stage,oldImage,picture,kind){
+function revealMobilePath(stage,oldImage,picture,kind,rich=false){
  // Keep the old image in place until the already-loaded new one dissolves in.
  // Use ordinary opacity animations and transparent gradients, not filters,
  // blend modes, masks, or large white flash surfaces.
  const duration=kind==="archsaint"?2400:kind==="mystery"?2250:kind==="fallen"?2400:1850;
  const layer=document.createElement("div");
- layer.className="portrait-mobile-effect mobile-effect-"+kind;
+ layer.className="portrait-mobile-effect mobile-effect-"+kind+(rich?" portrait-rich-effect":"");
  layer.setAttribute("aria-hidden","true");
  layer.style.setProperty("--reveal-duration",duration+"ms");
  stage.style.setProperty("--reveal-duration",duration+"ms");
- function add(cls,vars={}){
+ function add(cls,vars={},parent=layer){
   const item=document.createElement("span");item.className=cls;
   for(const [k,v] of Object.entries(vars))item.style.setProperty(k,v);
-  layer.append(item);return item;
+  parent.append(item);return item;
  }
  add("mobile-reveal-aura");
  if(kind==="archsaint"){
   add("mobile-heaven-halo");
-  for(let i=0;i<5;i++)add("mobile-heaven-ray",{"--angle":(-26+i*13)+"deg","--delay":i*.045+"s"});
+  const rays=rich?9:5;
+  for(let i=0;i<rays;i++)add("mobile-heaven-ray",{"--angle":(rich?-32+i*64/(rays-1):-26+i*13)+"deg","--delay":i*.045+"s"});
+  if(rich)for(let i=0;i<20;i++)add("rich-feather",{"--px":(8+(i*37.13)%84)+"%","--py":(3+(i*17.51)%38)+"%","--dx":((i%7)-3)*23+"px","--delay":(i%10)*.085+"s","--tilt":(-60+(i*23)%120)+"deg","--size":(9+i%5*3)+"px"});
  }else if(kind==="fallen"){
-  for(let i=0;i<5;i++)add("mobile-fire-tongue",{"--px":(8+i*21)+"%","--delay":i*.09+"s"});
+  if(rich){
+   // Only the decorative front moves. Neither image is resampled or masked.
+   const front=add("rich-burn-front");
+   add("rich-burn-smoke",{},front);add("rich-burn-glow",{},front);
+   add("rich-burn-rim",{},front);add("rich-burn-core",{},front);
+   for(let i=0;i<17;i++)add("rich-burn-tongue",{"--px":(i*6.25)+"%","--size":(27+(i*19)%48)+"%","--lean":(-18+(i*11)%36)+"deg","--delay":(i%5)*-.09+"s","--flame-time":(.35+(i%7)*.07)+"s"},front);
+   for(let i=0;i<55;i++)add("rich-burn-spark",{"--px":(5+(i*37.13)%90)+"%","--py":(42+(i*13.37)%28)+"%","--dx":((i%9)-4)*12+"px","--dy":(-32-(i*19)%110)+"px","--size":(2+i%4*1.2)+"px","--delay":.1+(i%15)*.105+"s","--ember-color":["#ffe8ba","#ffac83","#f45e72","#d97cdf","#c9a5ff"][i%5]},front);
+  }else for(let i=0;i<5;i++)add("mobile-fire-tongue",{"--px":(8+i*21)+"%","--delay":i*.09+"s"});
  }else if(kind==="mystery"){
   for(let i=0;i<3;i++)add("mobile-mist-wisp",{"--py":(25+i*24)+"%","--delay":i*.12+"s","--dx":(i%2?55:-55)+"px"});
- }else add("mobile-base-ring");
- const amount=kind==="fallen"?25:20;
+  if(rich)for(let i=0;i<4;i++)add("mobile-mist-wisp",{"--py":(12+i*23)+"%","--delay":(.18+i*.11)+"s","--dx":(i%2?85:-85)+"px"});
+ }else{
+  add("mobile-base-ring");
+  if(rich){const front=add("rich-divine-front");for(let i=0;i<26;i++)add("rich-divine-star",{"--px":(7+(i*37.13)%86)+"%","--size":(3+i%4*2)+"px","--delay":(i%13)*.085+"s","--dx":((i%7)-3)*7+"px"},front)}
+ }
+ const amount=rich?(kind==="fallen"?30:36):(kind==="fallen"?25:20);
  for(let i=0;i<amount;i++){
   add("mobile-reveal-particle",{
    "--px":(8+(i*37.13)%84)+"%",

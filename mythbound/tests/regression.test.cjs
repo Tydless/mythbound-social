@@ -116,3 +116,31 @@ test("Desktop and mobile default to the same safe portrait renderer; diagnostics
  assert.match(style,/\.saint-portrait-stage\.safe-portrait-fx\.mobile-portrait-dissolve \.portrait-incoming/);
  assert.match(style,/\.saint-portrait-stage\.safe-portrait-fx \.saint-portrait\{filter:none!important/);
 });
+
+
+test("Rich desktop transformations keep original portraits and remove only decorative layers",()=>{
+ let timer;
+ const win={matchMedia:()=>({matches:false})},nav={userAgent:"Desktop",platform:"Win32",maxTouchPoints:0};
+ new Function("window","navigator","document","setTimeout",read("class-portrait-effects.js"))(win,nav,{createElement:tag=>{assert.ok(tag==="span"||tag==="div");return node()}},(fn,ms)=>{timer={fn,ms}});
+ const fx=win.MythboundPortraitEffects;
+ for(const [kind,element] of [["base","rich-divine-front"],["archsaint","rich-feather"],["fallen","rich-burn-front"],["mystery","mobile-mist-wisp"]]){
+  const stage=node(),old=node(),pic=node();
+  stage.append(old);stage.append(pic);
+  fx.revealMobilePath(stage,old,pic,kind,true);
+  const layer=stage.children[2];
+  assert.match(layer.className,/portrait-rich-effect/);
+  assert.ok(layer.children.some(n=>n.className===element));
+  assert.deepEqual(old.props,{});assert.deepEqual(pic.props,{});
+  if(kind==="fallen"){
+   const front=layer.children.find(n=>n.className==="rich-burn-front");
+   assert.equal(front.children.filter(n=>n.className==="rich-burn-spark").length,55);
+  }
+  timer.fn();assert.deepEqual(stage.children,[pic]);assert.equal(stage.classList.contains("mobile-portrait-dissolve"),false);
+ }
+ const stage=node(),old=node(),pic=node();
+ stage.append(old);stage.append(pic);
+ fx.revealMobilePath(stage,old,pic,"fallen");
+ assert.doesNotMatch(stage.children[2].className,/portrait-rich-effect/);
+ assert.ok(stage.children[2].children.some(n=>n.className==="mobile-fire-tongue"));timer.fn();
+ assert.deepEqual(stage.children,[pic]);
+});

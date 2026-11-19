@@ -50,3 +50,70 @@
  .class-showcase .ability-group-icons{min-width:0;flex-wrap:wrap}
  .class-showcase .preview-toolbar{min-width:0}
 }
+
+/* Desktop embellishments. All motion lives inside the existing absolute,
+   clipped effect layer; the approved portrait geometry and opacity keyframes
+   above are untouched. No image canvas, filters, masks or transforms. */
+.portrait-rich-effect.mobile-effect-fallen .mobile-reveal-aura{--aura:#9e294b44}
+.portrait-rich-effect .rich-burn-front{
+ position:absolute;left:-3%;right:-3%;height:29%;top:100%;
+ animation:mb-rich-burn-rise var(--reveal-duration) linear both;
+}
+@keyframes mb-rich-burn-rise{
+ 0%{top:100%;opacity:0}8%{opacity:1}82%{opacity:1}
+ 100%{top:-31%;opacity:0}
+}
+.rich-burn-front .rich-burn-smoke{
+ inset:-42% -2% -32%;opacity:.7;
+ background:radial-gradient(ellipse at 26% 60%,#42183188 0%,transparent 56%),radial-gradient(ellipse at 73% 56%,#4c256b77,transparent 59%),radial-gradient(ellipse at 50% 67%,#7e263c80,transparent 67%);
+}
+.rich-burn-front .rich-burn-glow{
+ inset:-7% -2% -12%;
+ background:radial-gradient(ellipse at 22% 60%,#ef5e655c,transparent 55%),radial-gradient(ellipse at 76% 58%,#c055b75c,transparent 57%),linear-gradient(0deg,transparent 3%,#9d316538 23%,#ff824f63 45%,#7c22393d 65%,transparent 100%);
+}
+.rich-burn-front .rich-burn-rim,.rich-burn-front .rich-burn-core{
+ left:0;right:0;top:35%;height:31%;
+ clip-path:polygon(0% 41%,4% 25%,8% 45%,13% 12%,18% 35%,24% 24%,29% 56%,34% 20%,39% 32%,43% 8%,49% 45%,54% 25%,59% 50%,64% 14%,69% 35%,74% 19%,80% 55%,85% 28%,90% 39%,95% 17%,100% 34%,100% 78%,95% 87%,90% 61%,85% 78%,80% 69%,74% 100%,69% 74%,64% 86%,59% 61%,54% 81%,49% 74%,43% 66%,39% 96%,34% 76%,29% 88%,24% 70%,18% 82%,13% 61%,8% 88%,4% 65%,0% 76%);
+ background:linear-gradient(98deg,#ba477e,#e34c58 18%,#ffab70 31%,#f45f70 48%,#f38ca7 65%,#9651bf 82%,#f47d82);
+ opacity:.87;animation:mb-rich-ember-flicker .39s ease-in-out infinite alternate;
+}
+.rich-burn-front .rich-burn-core{
+ top:45%;height:11%;opacity:.86;
+ background:linear-gradient(95deg,#ffb58b,#fff0c1 30%,#ffc09d 53%,#ffe0db 69%,#e9a8ff 88%,#fff0c4);
+}
+@keyframes mb-rich-ember-flicker{from{opacity:.65;transform:scaleY(.85)}to{opacity:1;transform:scaleY(1.08)}}
+.rich-burn-front .rich-burn-tongue{
+ left:var(--px);bottom:40%;width:15%;height:var(--size);transform-origin:50% 96%;
+ background:radial-gradient(ellipse at 50% 88%,#ffdd9c95 0%,#ed5e5b9c 21%,#a2366a8c 43%,#6b286151 53%,transparent 70%);
+ clip-path:polygon(10% 100%,19% 68%,36% 48%,33% 32%,58% 0%,53% 36%,75% 20%,65% 58%,87% 78%,93% 100%);
+ animation:mb-rich-tongue var(--flame-time) var(--delay) ease-in-out infinite alternate;
+}
+@keyframes mb-rich-tongue{from{opacity:.48;transform:translateX(-50%) skewX(var(--lean)) scaleY(.68)}to{opacity:.96;transform:translateX(-50%) skewX(var(--lean)) scaleY(1.15)}}
+.rich-burn-front .rich-burn-spark{
+ left:var(--px);top:var(--py);width:var(--size);height:var(--size);border-radius:45%;color:var(--ember-color);
+ background:currentColor;box-shadow:0 0 7px 1px currentColor;opacity:0;
+ animation:mb-rich-spark .65s var(--delay) ease-out 2;
+}
+@keyframes mb-rich-spark{0%{opacity:0;transform:translate(0,0) scale(.6)}20%{opacity:.95}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(90deg) scale(.15)}}
+.portrait-rich-effect .rich-feather{
+ left:var(--px);top:var(--py);width:var(--size);height:calc(var(--size)*2.5);opacity:0;
+ border-radius:90% 12% 82% 15%;background:linear-gradient(135deg,#fff9e9,#e5d8fc90 55%,#fff9e900);
+ box-shadow:0 0 8px #f3e9ff55;
+ animation:mb-rich-feather 1.65s var(--delay) ease-in-out both;
+}
+@keyframes mb-rich-feather{
+ 0%{opacity:0;transform:translate(0,-12px) rotate(var(--tilt))}
+ 23%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),130px) rotate(calc(var(--tilt) + 70deg))}
+}
+.portrait-rich-effect .rich-divine-front{
+ left:0;right:0;height:24%;top:100%;
+ background:radial-gradient(ellipse at 50% 50%,#ffe9b443,transparent 68%);
+ animation:mb-rich-divine-rise 1.5s ease-in-out both;
+}
+@keyframes mb-rich-divine-rise{0%{top:100%;opacity:0}18%{opacity:1}82%{opacity:1}100%{top:-25%;opacity:0}}
+.rich-divine-front .rich-divine-star{
+ left:var(--px);top:50%;width:var(--size);height:var(--size);background:#ffedb8;opacity:0;
+ clip-path:polygon(50% 0%,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0% 50%,40% 40%);
+ animation:mb-rich-divine-star .65s var(--delay) ease-out both;
+}
+@keyframes mb-rich-divine-star{0%{opacity:0;transform:scale(.3)}30%{opacity:1;transform:scale(1.5)}100%{opacity:0;transform:translate(var(--dx),-35px) scale(.4)}}

@@ -90,7 +90,7 @@ function renderPreview(allowTransformation=false){
    if(animate){
     if(safePortraitFx){
      if(special)playSpecialSound(special);else playTransformationAudio(isFallen);
-     revealMobilePath(stage,oldImage,picture,special||(isFallen?"fallen":"base"));
+     revealMobilePath(stage,oldImage,picture,special||(isFallen?"fallen":"base"),!mobile&&fxMode!=="simple");
     }else if(special){playSpecialSound(special);revealSpecialPath(stage,oldImage,picture,special)}
     else{playTransformationAudio(isFallen);if(isFallen)burnPortrait(stage,oldImage,picture,true);else revealSaint(stage,oldImage,picture)}
    }
