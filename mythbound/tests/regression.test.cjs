@@ -208,7 +208,7 @@ test("Base class accent inherits the selected class without a CSS custom propert
 test("Deeper title accents and ultimate-only emphasis preserve the small-text palette",()=>{
  const style=read("class-specializations.css"),code=read("class-showcase.js");
  const rules=style.slice(style.indexOf("/* Typographic hierarchy:"));
- assert.match(rules,/--title-tone:color-mix\(in srgb,var\(--path-tone\) 82%,#252333\)/);
+ assert.match(rules,/--title-tone:color-mix\(in srgb,var\(--path-tone\) 66%,#252333\)/);
  assert.match(rules,/--ultimate-tone:color-mix\(in srgb,var\(--path-tone\) 78%,#fff3d8\)/);
  for(const selector of [".showcase-section-title h3",".ability-group-head h4",".ability-detail-heading h4",".ability-mechanic h4"])assert.ok(rules.includes(selector));
  assert.doesNotMatch(rules,/\.skill-data span|\.skill-data strong|\.ability-category-label|\.ability-detail-type/);
@@ -216,4 +216,19 @@ test("Deeper title accents and ultimate-only emphasis preserve the small-text pa
  assert.match(rules,/\.skill-detail\[data-ability-group="ultimate"\] \.ability-art\{\s*border:2px solid var\(--ultimate-tone\)/);
  assert.match(code,/if\(entry\)detail\.dataset\.abilityGroup=entry\.group;else delete detail\.dataset\.abilityGroup/);
  assert.match(code,/skills\.hidden=true;detail\.replaceChildren\(\);delete detail\.dataset\.abilityGroup/);
+});
+
+
+test("Titles use visibly deeper dedicated class and path swatches",()=>{
+ const css=read("class-specializations.css"),data={};new Function("window",read("class-data.js"))(data);
+ const luminance=hex=>{const v=hex.slice(1).match(/../g).map(x=>parseInt(x,16)/255).map(x=>x<=.04045?x/12.92:Math.pow((x+.055)/1.055,2.4));return .2126*v[0]+.7152*v[1]+.0722*v[2]};
+ for(const theme of ["true","corrupted","twisted","fable","mythical","unrevealed"]){
+  const light=css.match(new RegExp('\\.path-overview\\[data-path-theme="'+theme+'"\\]\\{--path-tone:(#[0-9a-f]{6})'))[1];
+  const dark=css.match(new RegExp('\\.path-overview\\[data-path-theme="'+theme+'"\\]\\{--title-tone:(#[0-9a-f]{6})'))[1];
+  assert.ok(luminance(dark)<luminance(light)*.81,theme);
+ }
+ for(const [kind,entry] of Object.entries(data.MythboundCodexData.DATA)){
+  const dark=css.match(new RegExp('\\[data-skill-theme="'+kind+'"\\] \\.path-overview\\[data-path-theme="base"\\]\\{--title-tone:(#[0-9a-f]{6})'))[1];
+  assert.ok(luminance(dark)<luminance(entry.color)*.81,kind);
+ }
 });

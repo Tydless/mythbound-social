@@ -285,9 +285,23 @@
    shade of the same class/path accent for headings. Ultimates have their own
    brighter ornamental trim and stronger type, without a competing palette. */
 .class-showcase .path-overview[data-path-theme]{
- --title-tone:color-mix(in srgb,var(--path-tone) 82%,#252333);
+ --title-tone:color-mix(in srgb,var(--path-tone) 66%,#252333);
  --ultimate-tone:color-mix(in srgb,var(--path-tone) 78%,#fff3d8);
 }
+/* Deliberately richer, darker heading swatches instead of a gray tint.
+   Only titles use these values; small copy and ultimate trim are unchanged. */
+.class-showcase .path-overview[data-path-theme="true"]{--title-tone:#d2a757}
+.class-showcase .path-overview[data-path-theme="corrupted"]{--title-tone:#d87589}
+.class-showcase .path-overview[data-path-theme="twisted"]{--title-tone:#a38ad5}
+.class-showcase .path-overview[data-path-theme="fable"]{--title-tone:#82b879}
+.class-showcase .path-overview[data-path-theme="mythical"]{--title-tone:#6eafd5}
+.class-showcase .path-overview[data-path-theme="unrevealed"]{--title-tone:#929dc2}
+.class-showcase[data-skill-theme="saint"] .path-overview[data-path-theme="base"]{--title-tone:#d1a05f}
+.class-showcase[data-skill-theme="elemis"] .path-overview[data-path-theme="base"]{--title-tone:#8faee0}
+.class-showcase[data-skill-theme="breaker"] .path-overview[data-path-theme="base"]{--title-tone:#c57858}
+.class-showcase[data-skill-theme="strider"] .path-overview[data-path-theme="base"]{--title-tone:#a287d0}
+.class-showcase[data-skill-theme="herder"] .path-overview[data-path-theme="base"]{--title-tone:#a0b86a}
+.class-showcase[data-skill-theme="animar"] .path-overview[data-path-theme="base"]{--title-tone:#60aa96}
 .class-showcase .path-overview[data-path-theme] :is(
  .subclass-intro h3,.path-advancement h4,
  .showcase-section-title h3,.ability-group-head h4,
