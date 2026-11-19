@@ -63,7 +63,10 @@ function renderPreview(allowTransformation=false){
   picture.className="saint-portrait"+(isFallen?" fallen-saint-portrait":"")+(isUnrevealed()?" unrevealed-portrait":"");
   const stage=document.createElement("div");stage.className="saint-portrait-stage";
   picture.alt=cap(gender)+" "+artworkName+" class illustration in an ornate floral frame";
-  const source=artwork||(gender==="female"?"../FemaleSaint.png":"../MaleSaint.png");
+  const sourceURL=new URL(artwork||(gender==="female"?"../FemaleSaint.png":"../MaleSaint.png"),document.baseURI);
+  // Refresh every portrait together while retaining the Fallen Saint asset revision.
+  sourceURL.searchParams.set("portraitRev","20261119-aligned2");
+  const source=sourceURL.href;
   // Only a change between the holy and corrupted paths triggers a transformation.
   // Gender changes and ordinary class selection are instantaneous.
   const special=activePath===1?"archsaint":isUnrevealed()?"mystery":null;

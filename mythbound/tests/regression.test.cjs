@@ -87,3 +87,22 @@ test("Path identities use shared categories without revealing the mystery path",
   assert.equal(panel.dataset.pathTheme,key);assert.match(icon.innerHTML,/<svg/);
  }
 });
+
+
+test("All Saint portrait requests share a fresh revision and explicit centering",()=>{
+ const code=read("class-showcase.js"),style=read("class-portrait.css");
+ assert.match(code,/sourceURL\.searchParams\.set\("portraitRev","20261119-aligned2"\)/);
+ assert.match(style,/object-position:50% 50%/);
+ assert.match(style,/justify-self:center;min-width:0/);
+});
+
+test("Heavenly Realm recording trim follows the SFX mixer even without Web Audio",()=>{
+ let latest,handler,level=1;
+ const page={hidden:false},doc={hidden:false,body:{classList:{contains:()=>false}},getElementById:()=>page,addEventListener:(n,f)=>{if(n==="mythbound:sfx-change")handler=f}};
+ const win={MythboundSFX:{volume:()=>level,enabled:()=>true},addEventListener(){}};
+ class Audio{constructor(src){this.src=src;latest=this}addEventListener(){}play(){return Promise.resolve()}pause(){}removeAttribute(){}load(){}}
+ new Function("window","document","Audio","MutationObserver",read("world-region-audio.js"))(win,doc,Audio,class{observe(){}});
+ win.MythboundRegionAudio.play("heavenly");assert.equal(latest.volume,.65);
+ level=.4;handler();assert.ok(Math.abs(latest.volume-.26)<.0001);
+ win.MythboundRegionAudio.stop();
+});

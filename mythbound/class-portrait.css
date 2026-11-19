@@ -31,10 +31,10 @@
 
 /* Shared portrait stage: all Saint paths use the same centered artwork coordinates. */
 .class-showcase .class-preview .saint-portrait-stage{
- position:relative;width:min(100%,600px);aspect-ratio:1145/1406;flex:none;
+ position:relative;width:min(100%,600px);aspect-ratio:1145/1406;flex:none;justify-self:center;min-width:0;
 }
 .class-showcase .class-preview .saint-portrait-stage .saint-portrait{
- position:absolute;display:block;inset:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;
+ position:absolute;display:block;inset:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;object-position:50% 50%;
 }
 @media(max-width:760px){
  .class-showcase .class-preview .saint-portrait-stage{width:min(100%,464.189189px)}

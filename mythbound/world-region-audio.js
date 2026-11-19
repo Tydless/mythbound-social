@@ -2,6 +2,8 @@
 (()=>{"use strict";
 const page=document.getElementById("page-discover");if(!page)return;
 const recordings={heavenly:"../HeavenlyRealmIntro.mp3"};
+// Per-recording trim; keep the global SFX mixer and other regions unchanged.
+const recordingGain={heavenly:.65};
 const notes={greatfields:[1760,2200,1480],fable:[523,659,784,988],wondrous:[784,1175,1047,1568,2093],bloodmoon:[65,98,58],heavenly:[131,196,262,330,392,523],dunes:[196,294,195]};
 let ctx,current,adjust,epoch=0;
 const level=()=>window.MythboundSFX?.volume()??1;
@@ -26,10 +28,10 @@ setTimeout(()=>{if(ticket===epoch)stop()},3700);
 function play(id){if(!Object.prototype.hasOwnProperty.call(notes,id))return;stop();if(!enabled())return;const ticket=epoch;window.MythboundAudio?.duck("region",.45);
 try{const C=window.AudioContext||window.webkitAudioContext;if(C){ctx=ctx||new C();if(ctx.state==="suspended")ctx.resume().catch(()=>{})}}catch{}
 if(!recordings[id]){synth(id,ticket);return}
-const audio=new Audio(recordings[id]);audio.volume=level();let gain=null,source=null;
- // The recording peaks at about -10 dBFS, so 2.5x gain remains below clipping.
- try{if(ctx){gain=ctx.createGain();gain.gain.value=2.5*level();source=ctx.createMediaElementSource(audio);source.connect(gain);gain.connect(ctx.destination);audio.volume=1;}}catch{gain=null;source=null}
- adjust=()=>{if(gain)gain.gain.value=2.5*level();else audio.volume=level()};
+const audio=new Audio(recordings[id]),trim=recordingGain[id]??1;
+ const cueLevel=()=>trim*level();audio.volume=Math.min(1,cueLevel());let gain=null,source=null;
+ try{if(ctx){gain=ctx.createGain();gain.gain.value=cueLevel();source=ctx.createMediaElementSource(audio);source.connect(gain);gain.connect(ctx.destination);audio.volume=1;}}catch{gain=null;source=null}
+ adjust=()=>{if(gain)gain.gain.value=cueLevel();else audio.volume=Math.min(1,cueLevel())};
  let failed=false;
  const dispose=()=>{audio.pause();audio.removeAttribute("src");audio.load();try{source?.disconnect();gain?.disconnect()}catch{}};
  current=dispose;
