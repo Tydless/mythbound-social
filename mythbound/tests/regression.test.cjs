@@ -178,7 +178,7 @@ test("Desktop restores original Base, Archsaint and mystery decorations without 
 });
 
 
-test("All five path categories drive the ability inspector accent without changing the base class",()=>{
+test("All five path categories and the base class drive the ability inspector accent",()=>{
  const style=read("class-specializations.css");
  for(const theme of ["true","corrupted","twisted","fable","mythical","unrevealed"]){
   assert.ok(style.includes('.path-overview[data-path-theme="'+theme+'"]{--path-tone:'));
@@ -189,4 +189,17 @@ test("All five path categories drive the ability inspector accent without changi
  }
  assert.match(style,/\.ability-tile\.is-current\{\s*border-color:var\(--path-tone\)/);
  assert.match(style,/\.ability-group-ultimate \.ability-art\{\s*border-color:var\(--path-tone\)/);
+});
+
+
+test("Base class accent inherits the selected class without a CSS custom property cycle",()=>{
+ const style=read("class-specializations.css"),code=read("class-showcase.js");
+ assert.match(style,/\.path-overview\[data-path-theme="base"\]\{--path-tone:var\(--class-highlight\)/);
+ assert.match(code,/host\.style\.setProperty\("--class-highlight",mystery\?"#b8bed8":DATA\[active\]\.color\)/);
+ const shared=style.slice(style.indexOf("/* The selected path owns"));
+ assert.equal((shared.match(/:not\(\[data-path-theme="base"\]\)/g)||[]).length,1);
+ assert.match(shared,/\.path-overview\[data-path-theme\] :is\(/);
+ assert.match(shared,/\.path-overview\[data-path-theme\] \.ability-art\{\s*--ability-ink:var\(--path-tone\)/);
+ const win={};new Function("window",read("class-data.js"))(win);
+ for(const name of ["saint","strider","herder","animar","breaker","elemis"])assert.match(win.MythboundCodexData.DATA[name].color,/^#[0-9a-f]{6}$/i);
 });
