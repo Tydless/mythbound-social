@@ -349,3 +349,14 @@ test("Atlas region selection keeps all panels and location tabs mounted",()=>{
  assert.ok(style.includes("grid-area:1/1;visibility:hidden"));
  assert.ok(style.includes(".is-current{visibility:visible"));
 });
+
+test("Atlas preview and sound are exclusive to map pins; directory scrolls and location tabs are neutral",()=>{
+ const code=read("world-atlas.js"),style=read("world-atlas.css");
+ assert.ok(!html.includes('id="mw-region-detail"'));
+ assert.ok(!code.includes('$("mw-region-detail")'));
+ assert.ok(code.includes('pin.addEventListener("click",()=>openPreview(r.id,pin,{sound:true}))'));
+ assert.ok(code.includes('button.addEventListener("click",()=>{closePreview();choose(r.id,{scroll:true})})'));
+ assert.ok(!code.includes("openPreview(path.dataset.terrain"));
+ assert.ok(style.includes(".mw-location-tab{color:#c2cddd;border-color:#7c8a9b55}"));
+ assert.ok(style.includes('.mw-location-tab:hover,#page-discover .mw-location-tab.is-active{color:var(--region-accent)'));
+});

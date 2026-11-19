@@ -4,8 +4,8 @@
 const world=document.getElementById("page-discover");
 if(!world)return;
 const $=id=>document.getElementById(id);
-const markers=$("mw-map-markers"),directory=$("mw-region-directory"),detail=$("mw-region-detail"),location=$("mw-location-region");
-if(!markers||!directory||!detail||!location)return;
+const markers=$("mw-map-markers"),directory=$("mw-region-directory"),location=$("mw-location-region");
+if(!markers||!directory||!location)return;
 const regions=[
  {id:"greatfields",name:"The GreatFields",type:"Starting region",color:"#c4d59a",symbol:"✦",x:47,y:50,description:"Your journey begins in the GreatFields. The game's starting area and the shared setting for the six base class backgrounds.",note:"Starting point confirmed. Individual settlements and landmarks are yet to be revealed.",status:"STARTING AREA",icon:"M2 19h20M3 15q4-6 8 0t10 0M5 10l3-4 3 4m5 0V5m-3 3h6"},
  {id:"fable",name:"The Fable Woods",type:"Woodland region",color:"#a5d4a8",symbol:"◇",x:24,y:35,description:"A woodland shaped by the spirit of fables, where stories and strange creatures may cross an adventurer's path.",note:"Local inhabitants, settlements and encounters have not yet been detailed.",status:"REGION",icon:"M12 3 5 13h4l-5 6h16l-5-6h4L12 3Zm0 16v3"},
@@ -107,7 +107,6 @@ function choose(id,{scroll=false,sound=false}={}){
   const on=b.dataset.atlasRegion===id;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",String(on))
  });
  world.querySelectorAll("[data-terrain]").forEach(p=>p.classList.toggle("is-active",p.dataset.terrain===id));
- detail.style.setProperty("--region-accent",r.color);
  location.style.setProperty("--region-accent",r.color);
  for(const entry of world.querySelectorAll("[data-region-panel]")){
   const on=entry.dataset.regionPanel===id;
@@ -127,8 +126,6 @@ function choose(id,{scroll=false,sound=false}={}){
 // Stack every region's content in the same grid cell. The tallest entry reserves
 // space at the current screen width; switching only visibility cannot cause reflow.
 function initStableDetails(){
- const symbols=make("div","mw-detail-symbol-stack mw-region-stack");
- const copies=make("div","mw-detail-copy-stack mw-region-stack");
  const headings=make("div","mw-location-stack mw-region-stack");
  function panel(node,r){
   node.dataset.regionPanel=r.id;
@@ -138,16 +135,11 @@ function initStableDetails(){
  }
  const tabs=make("div","mw-location-tabs");tabs.setAttribute("role","group");tabs.setAttribute("aria-label","Filter by region");
  for(const r of regions){
-  const art=panel(make("div","mw-detail-symbol"),r);art.append(emblem(r));symbols.append(art);
-  const copy=panel(make("div","mw-detail-copy"),r);
-  copy.append(make("span","mw-kicker",r.type),make("h3","",r.name),make("p","",r.description),make("p","mw-region-note",r.note));copies.append(copy);
   const heading=panel(make("div","mw-location-current"),r);
   heading.append(make("span","mw-kicker","Exploring"),make("h3","",r.name),make("p","",r.note));headings.append(heading);
   const btn=make("button","mw-location-tab",r.name);btn.type="button";btn.dataset.atlasRegion=r.id;btn.style.setProperty("--region-accent",r.color);btn.setAttribute("aria-pressed","false");
   btn.addEventListener("click",()=>{closePreview();choose(r.id)});tabs.append(btn);
  }
- const guide=make("button","outline-action mw-detail-guide","View location guide");guide.type="button";guide.addEventListener("click",()=>moveTo($("mw-locations")));
- detail.replaceChildren(symbols,copies,guide);
  location.replaceChildren(tabs,headings);
 }
 initStableDetails();
@@ -160,9 +152,9 @@ for(const r of regions){
  const card=make("article","mw-region mw-region-entry");card.style.setProperty("--region-accent",r.color);
  const art=make("div","mw-region-art");art.append(emblem(r));
  const content=make("div","mw-region-copy");
- const button=make("button","mw-region-open","Explore region");button.type="button";button.dataset.atlasRegion=r.id;button.setAttribute("aria-label","Explore "+r.name);button.setAttribute("aria-pressed","false");button.setAttribute("aria-haspopup","dialog");button.setAttribute("aria-expanded","false");button.setAttribute("aria-controls","mw-region-preview");button.addEventListener("click",()=>openPreview(r.id,button));
+ const button=make("button","mw-region-open","Explore region");button.type="button";button.dataset.atlasRegion=r.id;button.setAttribute("aria-label","Explore "+r.name);button.setAttribute("aria-pressed","false");button.addEventListener("click",()=>{closePreview();choose(r.id,{scroll:true})});
  content.append(make("span","mw-kicker",r.type),make("h3","",r.name),make("p","",r.description),button);card.append(art,content);directory.append(card);
 }
-world.querySelectorAll("[data-terrain]").forEach(path=>path.addEventListener("click",()=>openPreview(path.dataset.terrain,path,{sound:true})));
+// Only map marker buttons open the preview and play the regional cue.
 choose(selected);
 })();

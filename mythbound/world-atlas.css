@@ -3,8 +3,7 @@
 #page-discover .mw-interactive-map::before{display:none}
 #page-discover .mw-interactive-map::after{inset:9px;z-index:3}
 .mw-terrain,.mw-map-markers{position:absolute;inset:0;width:100%;height:100%}
-.mw-terrain [data-terrain]{cursor:pointer;transition:filter .2s,stroke .2s;stroke-width:2;vector-effect:non-scaling-stroke}
-.mw-terrain [data-terrain]:hover{filter:brightness(1.12)}
+.mw-terrain [data-terrain]{cursor:default;transition:filter .2s,stroke .2s;stroke-width:2;vector-effect:non-scaling-stroke}
 .mw-terrain [data-terrain].is-active{filter:brightness(1.2);stroke:#f0dfae;stroke-width:3}
 .mw-map-markers{pointer-events:none;z-index:2}
 #page-discover .mw-interactive-map .mw-map-corner{z-index:3;pointer-events:none;text-shadow:0 1px 4px #17232d}
@@ -16,14 +15,9 @@
 .mw-map-pin:hover .mw-pin-symbol,.mw-map-pin.is-active .mw-pin-symbol{background:var(--region-accent);color:#1a2736;box-shadow:0 0 15px var(--region-accent)}
 .mw-map-pin.is-active .mw-pin-label{border-color:var(--region-accent);color:var(--region-accent)}
 .mw-map-pin:focus-visible{outline:2px solid #fff4d9;outline-offset:3px;border-radius:4px}
-.mw-region-detail{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px;align-items:center;padding:clamp(18px,3vw,30px);border-top:1px solid var(--atlas-line);background:radial-gradient(ellipse at left,color-mix(in srgb,var(--region-accent) 13%,transparent),transparent 55%),#192537}
-.mw-detail-symbol{display:grid;place-items:center;width:76px;height:76px;border:1px solid var(--region-accent);border-radius:50%;color:var(--region-accent);background:#172232;box-shadow:0 0 22px color-mix(in srgb,var(--region-accent) 14%,transparent)}
-.mw-detail-symbol svg{width:42px;height:42px}
-.mw-detail-copy .mw-kicker,.mw-region-entry .mw-kicker,.mw-location-current .mw-kicker{color:var(--region-accent)}
-.mw-detail-copy h3,.mw-location-current h3{margin:3px 0 8px;font:600 clamp(21px,2.4vw,30px)/1.2 'Cinzel',Georgia,serif;color:#f0e1c9}
-.mw-detail-copy p,.mw-location-current p{margin:0;color:#c2cddd;font-size:13px;line-height:1.6}
-.mw-detail-copy .mw-region-note{margin-top:7px;font-size:12px;color:#9faec1}
-.mw-detail-guide{white-space:nowrap}
+.mw-region-entry .mw-kicker,.mw-location-current .mw-kicker{color:var(--region-accent)}
+.mw-location-current h3{margin:3px 0 8px;font:600 clamp(21px,2.4vw,30px)/1.2 'Cinzel',Georgia,serif;color:#f0e1c9}
+.mw-location-current p{margin:0;color:#c2cddd;font-size:13px;line-height:1.6}
 #page-discover .mw-region-entry{display:flex;flex-direction:column;transition:border-color .2s,box-shadow .2s}
 #page-discover .mw-region-entry:has(.mw-region-open.is-active){border-color:var(--region-accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--region-accent) 20%,transparent)}
 #page-discover .mw-region-entry .mw-region-art{background:radial-gradient(ellipse at 50% 65%,color-mix(in srgb,var(--region-accent) 25%,transparent),transparent 64%),linear-gradient(145deg,color-mix(in srgb,#233349 74%,var(--region-accent) 26%),#182638)}
@@ -40,9 +34,6 @@
 .mw-location-current h3{font-size:21px}
 @media(max-width:760px){
  #page-discover .mw-interactive-map{aspect-ratio:1.24;min-height:295px}
- .mw-region-detail{grid-template-columns:44px minmax(0,1fr);gap:12px;padding:15px}
- .mw-detail-symbol{width:44px;height:44px}.mw-detail-symbol svg{width:27px;height:27px}
- .mw-detail-guide{grid-column:2;justify-self:start}
  .mw-pin-label{font-size:10px;padding:3px 4px}
  .mw-map-pin{max-width:26%}
 }
@@ -77,8 +68,9 @@
 @media(max-width:480px){#mw-region-preview{width:min(300px,calc(100vw - 20px))}.mw-preview-body{padding:13px 15px}.mw-preview-landscape{aspect-ratio:16/7}.mw-preview-meta{gap:7px}.mw-preview-dots{gap:5px}.mw-preview-dots span{width:8px;height:8px}}
 
 /* The active selection changes the detail panel, never another button's hue. */
-#page-discover .mw-location-tab{color:var(--region-accent);border-color:color-mix(in srgb,var(--region-accent) 40%,transparent)}
-#page-discover .mw-location-tab:hover,#page-discover .mw-location-tab:focus-visible,#page-discover .mw-location-tab.is-active{color:var(--region-accent);border-color:var(--region-accent);background:color-mix(in srgb,var(--region-accent) 13%,#192638)}
+#page-discover .mw-location-tab{color:#c2cddd;border-color:#7c8a9b55}
+#page-discover .mw-location-tab:hover,#page-discover .mw-location-tab.is-active{color:var(--region-accent);border-color:var(--region-accent);background:color-mix(in srgb,var(--region-accent) 13%,#192638)}
+#page-discover .mw-location-tab:focus-visible{outline:1px solid #e5d9bf;outline-offset:2px}
 #mw-region-preview{--atlas-gold:#dfbf86;--atlas-line:#c7a66b42;box-shadow:0 10px 35px #050a1480}
 
 /* Reserve the largest region's actual text height at every viewport width.
@@ -86,9 +78,6 @@
 #page-discover .mw-region-stack{display:grid;min-width:0}
 #page-discover .mw-region-stack>[data-region-panel]{grid-area:1/1;visibility:hidden;pointer-events:none;min-width:0}
 #page-discover .mw-region-stack>[data-region-panel].is-current{visibility:visible;pointer-events:auto}
-#page-discover .mw-detail-symbol-stack{align-self:center;justify-self:start}
-#page-discover .mw-detail-copy-stack{align-self:center}
-#page-discover .mw-detail-copy-stack .mw-detail-copy{align-self:start}
 #page-discover .mw-location-stack .mw-location-current{align-self:stretch}
 #page-discover .mw-location-tabs .mw-location-tab{box-sizing:border-box;min-height:32px;line-height:1.4;border-width:1px;font-size:11px;font-weight:400;transform:none}
 #page-discover .mw-location-tabs .mw-location-tab:hover,#page-discover .mw-location-tabs .mw-location-tab:focus-visible,#page-discover .mw-location-tabs .mw-location-tab.is-active{border-width:1px;font-weight:400;transform:none}
