@@ -174,11 +174,39 @@ function useMobilePortraitEffects(){
   /iPad|iPhone|iPod/.test(navigator.userAgent)||
   (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 }
+// The burn boundary is shared by both stationary artwork wrappers and the fire.
+// Only wrapper visibility changes; the original images keep their full dimensions.
+function startBurnSweep(stage,oldImage,picture,duration){
+ const oldLayer=document.createElement("div"),newLayer=document.createElement("div");
+ oldLayer.className="rich-burn-portrait-layer rich-burn-old";
+ newLayer.className="rich-burn-portrait-layer rich-burn-new";
+ oldLayer.setAttribute("aria-hidden","true");
+ oldLayer.append(oldImage);newLayer.append(picture);
+ stage.append(oldLayer);stage.append(newLayer);
+ stage.style.setProperty("--burn-edge","104%");
+ stage.classList.add("rich-burn-sweep");
+ let start=null,finished=false;
+ function frame(now){
+  if(finished||stage.isConnected===false)return;
+  if(start===null)start=now;
+  const p=Math.min(1,Math.max(0,(now-start)/duration));
+  stage.style.setProperty("--burn-edge", (104-108*p).toFixed(4)+"%");
+  if(p<1)requestAnimationFrame(frame);
+ }
+ requestAnimationFrame(frame);
+ return ()=>{
+  finished=true;
+  stage.append(picture);newLayer.remove();oldLayer.remove();
+  stage.classList.remove("rich-burn-sweep");
+  stage.style.removeProperty("--burn-edge");
+ };
+}
 function revealMobilePath(stage,oldImage,picture,kind,rich=false){
  // Keep the old image in place until the already-loaded new one dissolves in.
- // Use ordinary opacity animations and transparent gradients, not filters,
- // blend modes, masks, or large white flash surfaces.
+ // Mobile retains its ordinary opacity animations. Rich Fallen Saint instead
+ // clips two stationary wrappers along a single synchronized ember boundary.
  const duration=kind==="archsaint"?2400:kind==="mystery"?2250:kind==="fallen"?2400:1850;
+ const burnSweep=rich&&kind==="fallen"&&!!oldImage&&typeof requestAnimationFrame==="function"&&(!window.CSS||window.CSS.supports("clip-path","polygon(0 0, 100% 0, 100% 100%)"));
  const layer=document.createElement("div");
  layer.className="portrait-mobile-effect mobile-effect-"+kind+(rich?" portrait-rich-effect":"");
  layer.setAttribute("aria-hidden","true");
@@ -197,7 +225,7 @@ function revealMobilePath(stage,oldImage,picture,kind,rich=false){
   if(rich)for(let i=0;i<20;i++)add("rich-feather",{"--px":(8+(i*37.13)%84)+"%","--py":(3+(i*17.51)%38)+"%","--dx":((i%7)-3)*23+"px","--delay":(i%10)*.085+"s","--tilt":(-60+(i*23)%120)+"deg","--size":(9+i%5*3)+"px"});
  }else if(kind==="fallen"){
   if(rich){
-   // Only the decorative front moves. Neither image is resampled or masked.
+   // The moving decorative front shares the stationary wrapper clipping boundary.
    const front=add("rich-burn-front");
    add("rich-burn-smoke",{},front);add("rich-burn-glow",{},front);
    add("rich-burn-rim",{},front);add("rich-burn-core",{},front);
@@ -226,10 +254,12 @@ function revealMobilePath(stage,oldImage,picture,kind,rich=false){
  picture.style.removeProperty("opacity");
  picture.style.removeProperty("filter");
  stage.classList.remove("portrait-revealing","portrait-crossfade");
- if(oldImage)stage.classList.add("mobile-portrait-dissolve");
- else picture.classList.remove("portrait-incoming");
+ const finishBurn=burnSweep?startBurnSweep(stage,oldImage,picture,duration):null;
+ if(oldImage&&!burnSweep)stage.classList.add("mobile-portrait-dissolve");
+ else if(!burnSweep)picture.classList.remove("portrait-incoming");
  // Clean up even if iOS delays animationend or the visitor switches again.
  setTimeout(()=>{
+  if(finishBurn)finishBurn();
   oldImage?.remove();layer.remove();
   picture.classList.remove("portrait-incoming");
   stage.classList.remove("mobile-portrait-dissolve");

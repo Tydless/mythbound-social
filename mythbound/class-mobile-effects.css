@@ -1,6 +1,6 @@
 
-/* Shared safe portrait composition. Animate only original image opacity and
-   independent effects; never rasterize, mask, or transform the artwork itself.
+/* Shared safe portrait composition. Animate original image opacity or clip
+   stationary wrappers; never rasterize, filter, or transform the artwork itself.
    Device-specific backdrop and layout rules stay separate. */
 .class-showcase.mobile-portrait-fx{backdrop-filter:none;-webkit-backdrop-filter:none}
 .class-showcase.mobile-portrait-fx .showcase-info,
@@ -51,9 +51,8 @@
  .class-showcase .preview-toolbar{min-width:0}
 }
 
-/* Desktop embellishments. All motion lives inside the existing absolute,
-   clipped effect layer; the approved portrait geometry and opacity keyframes
-   above are untouched. No image canvas, filters, masks or transforms. */
+/* Desktop embellishments. The approved portrait geometry stays untouched.
+   Fallen Saint uses a shared moving clipping edge on two fixed-size wrappers. */
 .portrait-rich-effect.mobile-effect-fallen .mobile-reveal-aura{--aura:#9e294b44}
 .portrait-rich-effect .rich-burn-front{
  position:absolute;left:-3%;right:-3%;height:29%;top:100%;
@@ -117,3 +116,31 @@
  animation:mb-rich-divine-star .65s var(--delay) ease-out both;
 }
 @keyframes mb-rich-divine-star{0%{opacity:0;transform:scale(.3)}30%{opacity:1;transform:scale(1.5)}100%{opacity:0;transform:translate(var(--dx),-35px) scale(.4)}}
+
+/* A complementary pair of clipped, full-size wrappers: no full-image
+   crossfade, no stretching and no canvas copy. Jagged coordinates match
+   exactly in reverse order so only one portrait is visible at each point. */
+.class-showcase .saint-portrait-stage.safe-portrait-fx.rich-burn-sweep .rich-burn-portrait-layer{
+ position:absolute;inset:0;pointer-events:none;
+}
+.class-showcase .saint-portrait-stage.safe-portrait-fx.rich-burn-sweep .portrait-incoming,
+.class-showcase .saint-portrait-stage.safe-portrait-fx.rich-burn-sweep .portrait-previous{
+ opacity:1;animation:none;
+}
+.class-showcase .safe-portrait-fx.rich-burn-sweep .rich-burn-old{
+ z-index:0;clip-path:polygon(0 0, 100% 0, 100% var(--burn-edge), 95% calc(var(--burn-edge) - 1.15%), 90% calc(var(--burn-edge) + 0.45%), 85% calc(var(--burn-edge) - 0.45%), 80% calc(var(--burn-edge) + 1.25%), 75% calc(var(--burn-edge) - 0.55%), 70% calc(var(--burn-edge) + 0.2%), 65% calc(var(--burn-edge) - 1%), 60% calc(var(--burn-edge) + 0.9%), 55% calc(var(--burn-edge) - 0.4%), 50% calc(var(--burn-edge) + 0.55%), 45% calc(var(--burn-edge) - 1.35%), 40% calc(var(--burn-edge) + 0.15%), 35% calc(var(--burn-edge) - 0.8%), 30% calc(var(--burn-edge) + 1%), 25% calc(var(--burn-edge) - 0.6%), 20% calc(var(--burn-edge) + 0.2%), 15% calc(var(--burn-edge) - 1.15%), 10% calc(var(--burn-edge) + 0.3%), 5% calc(var(--burn-edge) - 0.45%), 0% calc(var(--burn-edge) + 0.35%));
+}
+.class-showcase .safe-portrait-fx.rich-burn-sweep .rich-burn-new{
+ z-index:1;clip-path:polygon(0% calc(var(--burn-edge) + 0.35%), 5% calc(var(--burn-edge) - 0.45%), 10% calc(var(--burn-edge) + 0.3%), 15% calc(var(--burn-edge) - 1.15%), 20% calc(var(--burn-edge) + 0.2%), 25% calc(var(--burn-edge) - 0.6%), 30% calc(var(--burn-edge) + 1%), 35% calc(var(--burn-edge) - 0.8%), 40% calc(var(--burn-edge) + 0.15%), 45% calc(var(--burn-edge) - 1.35%), 50% calc(var(--burn-edge) + 0.55%), 55% calc(var(--burn-edge) - 0.4%), 60% calc(var(--burn-edge) + 0.9%), 65% calc(var(--burn-edge) - 1%), 70% calc(var(--burn-edge) + 0.2%), 75% calc(var(--burn-edge) - 0.55%), 80% calc(var(--burn-edge) + 1.25%), 85% calc(var(--burn-edge) - 0.45%), 90% calc(var(--burn-edge) + 0.45%), 95% calc(var(--burn-edge) - 1.15%), 100% var(--burn-edge), 100% 100%, 0 100%);
+}
+/* The glowing core is halfway down the 29%-tall front. Its center therefore
+   follows the same burn coordinate rather than an independent position animation. */
+.portrait-rich-effect .rich-burn-front{pointer-events:none}
+.class-showcase .safe-portrait-fx.rich-burn-sweep .rich-burn-front{
+ top:calc(var(--burn-edge) - 14.645%);animation:none;
+ opacity:1;
+}
+@media(prefers-reduced-motion:reduce){
+ .class-showcase .safe-portrait-fx.rich-burn-sweep .rich-burn-old{visibility:hidden}
+ .class-showcase .safe-portrait-fx.rich-burn-sweep .rich-burn-new{clip-path:none}
+}
