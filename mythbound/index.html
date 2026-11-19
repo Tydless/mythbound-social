@@ -10,7 +10,7 @@
   <script>
   // Decide before first paint; the intro runs once per tab session, not on internal navigation.
   (function(){
-    try{if(sessionStorage.getItem("mb-whimble-intro-v2")==="seen")return}catch{}
+    try{if(sessionStorage.getItem("mb-whimble-intro-v3")==="seen")return}catch{}
     document.documentElement.classList.add("mb-intro-active");
   })();
   </script>
@@ -29,8 +29,8 @@
   .mb-intro-game{width:35.5%;top:66%}
   #mb-studio-intro.is-ready .mb-intro-art{animation:mb-intro-pulse 2.8s ease-in-out infinite}
   @keyframes mb-intro-pulse{
-    0%,100%{transform:translate(-50%,-50%) scale(1)}
-    50%{transform:translate(-50%,-50%) scale(1.035)}
+    0%,100%{opacity:1}
+    50%{opacity:.65}
   }
   @media(max-aspect-ratio:1/1){
     .mb-intro-stage{width:100%;height:100%}
@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-whimble-intro2";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-whimble-intro3";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -841,7 +841,7 @@ body.mythbound-guest .mb-header-friends{display:none!important}
       const focusWasIntro=document.activeElement===screen;
       screen.remove();
       if(focusWasIntro&&previous&&previous!==document.body&&previous.isConnected&&!previous.closest("[hidden]"))previous.focus({preventScroll:true});
-      try{sessionStorage.setItem("mb-whimble-intro-v2","seen")}catch{}
+      try{sessionStorage.setItem("mb-whimble-intro-v3","seen")}catch{}
     }
     // Cut straight to the existing page, without a crossfade.
     function leave(){unlock()}
