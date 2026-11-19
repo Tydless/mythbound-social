@@ -16,7 +16,7 @@ function refreshIdentity(){const p=M.player();$("player").textContent=p.nickname
 function notify(t){$("notice").textContent=t;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("notice").textContent="",2400)}
 function save(){const p=body?.position||start;start={x:p.x,z:p.z};$("saved").textContent=M.save({room:current,x:start.x,z:start.z,version:2,decor:decorations})?"Progress saved":"Storage unavailable"}
 function roomLabel(){$("room-name").textContent=roomDefs[current].name;$("room-detail").textContent=roomDefs[current].detail;$("quick-travel").textContent="Open city map";$("decorate").hidden=current!=="home";$("radio-open").hidden=current!=="home"}
-function modalOpen(){return desktop.hidden===false||$("menu").open||$("memories").open||$("city").open||$("decor-dialog").open||$("radio-dialog").open}
+function modalOpen(){return desktop.hidden===false||$("menu").open||$("memories").open||$("city").open||$("decor-dialog").open||$("radio-dialog").open||$("character-lab").open}
 function interact(){if(!modalOpen()&&nearest)nearest.run()}
 function focusRoom(){keys.clear();touches.clear();if(!modalOpen())canvas.focus({preventScroll:true})}
 function launchDesktop(){LifeRadio.pause();save();keys.clear();touches.clear();desktop.hidden=false;desktopHome();refreshIdentity();log("life","computer.opened",{room:current});$("desktop-home").focus()}
@@ -70,6 +70,7 @@ function resetCamera(){if(camera){camera.alpha=-Math.PI/3;camera.beta=.96;camera
 $("settings").onclick=()=>{save();keys.clear();$("menu").showModal()};$("resume").onclick=()=>$("menu").close();
 $("quick-computer").onclick=()=>{$("menu").close();launchDesktop()};$("quick-travel").onclick=()=>{$("menu").close();openCity()};
 $("reset").onclick=()=>{resetPosition();$("menu").close()};$("camera-reset").onclick=()=>{resetCamera();$("menu").close()};$("menu").addEventListener("close",focusRoom);
+$("lab-open").onclick=()=>{$("menu").close();keys.clear();touches.clear();LifeLab.open(roomDefs[current].name)};LifeLab.onClose(focusRoom);
 function showJournal(){
  save();keys.clear();const p=M.player();$("memory-identity").textContent=p.nickname+" · "+p.id+" · "+M.all().length+" events";
  const list=$("memory-list");list.replaceChildren();
@@ -143,12 +144,29 @@ function buildRoom(){
  target("computer",2.65,.35,1.35,"Use computer",launchDesktop,1.15);
  target("door",1.68,-3.12,1.2,"Leave room · City map",openCity,.08);
  if(current==="home")target("radio",-2.65,-1.1,1.05,"Use radio",openRadio,.08);
- body=new B.TransformNode("player",scene);body.position.set(Math.max(-4.65,Math.min(4.65,start.x)),0,Math.max(-3.65,Math.min(3.65,start.z)));
- function part(name,x,y,z,w,h,d,m){const q=box(name,x,y,z,w,h,d,m);q.parent=body;shadows.addShadowCaster(q);return q}
- const torso=part("player torso",0,.7,0,.38,.48,.25,palette.shirt),head=sphere("player head",0,1.13,0,.37,.36,.35,palette.skin,body);shadows.addShadowCaster(head);
- sphere("hair",0,1.245,-.025,.39,.20,.38,palette.hair,body);
- const armL=part("left arm",-.26,.68,0,.13,.45,.15,palette.shirt),armR=part("right arm",.26,.68,0,.13,.45,.15,palette.shirt),legL=part("left leg",-.105,.25,0,.16,.45,.17,palette.pants),legR=part("right leg",.105,.25,0,.16,.45,.17,palette.pants);
- for(const m of scene.meshes){if(!m.name.startsWith("interaction")&&m!==floor&&!m.name.includes("wall"))shadows.addShadowCaster(m)}
+ // Both characters use exactly the same placeholder model geometry.
+ function makeAvatar(name,x,z,shirt=palette.shirt){
+  const root=new B.TransformNode(name,scene);root.position.set(x,0,z);
+  function part(n,x,y,z,w,h,d,m){const mesh=box(name+" "+n,x,y,z,w,h,d,m);mesh.parent=root;return mesh}
+  const torso=part("torso",0,.7,0,.38,.48,.25,shirt);
+  sphere(name+" head",0,1.13,0,.37,.36,.35,palette.skin,root);
+  sphere(name+" hair",0,1.245,-.025,.39,.20,.38,palette.hair,root);
+  const armL=part("left arm",-.26,.68,0,.13,.45,.15,shirt),armR=part("right arm",.26,.68,0,.13,.45,.15,shirt),legL=part("left leg",-.105,.25,0,.16,.45,.17,palette.pants),legR=part("right leg",.105,.25,0,.16,.45,.17,palette.pants);
+  return {root,torso,armL,armR,legL,legR};
+ }
+ const player=makeAvatar("player",Math.max(-4.65,Math.min(4.65,start.x)),Math.max(-3.65,Math.min(3.65,start.z)));
+ body=player.root;const {torso,armL,armR,legL,legR}=player;
+ if(current==="friend"){
+  const fighter=makeAvatar("Fighter",.9,.35,mat("fighter shirt","#a76b70"));
+  fighter.root.rotation.y=Math.PI;
+  obstacles.push({x:.9,z:.35,w:.55,d:.40});
+  const tag=B.MeshBuilder.CreatePlane("Fighter nameplate",{width:1.15,height:.30},scene);
+  tag.parent=fighter.root;tag.position.set(0,1.68,0);tag.billboardMode=B.Mesh.BILLBOARDMODE_ALL;tag.isPickable=false;
+  const tex=new B.DynamicTexture("Fighter label",{width:512,height:128},scene,false);tex.hasAlpha=true;
+  const ctx=tex.getContext();ctx.clearRect(0,0,512,128);ctx.fillStyle="#16232de8";ctx.fillRect(6,12,500,104);ctx.strokeStyle="#d9c098";ctx.lineWidth=4;ctx.strokeRect(6,12,500,104);ctx.font="600 58px system-ui";ctx.fillStyle="#f0dfc5";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("Fighter",256,65);tex.update();
+  const labelMat=new B.StandardMaterial("Fighter label material",scene);labelMat.diffuseTexture=tex;labelMat.emissiveTexture=tex;labelMat.disableLighting=true;labelMat.useAlphaFromDiffuseTexture=true;labelMat.backFaceCulling=false;tag.material=labelMat;
+ }
+ for(const m of scene.meshes){if(!m.name.startsWith("interaction")&&m!==floor&&!m.name.includes("wall")&&!m.name.includes("nameplate"))shadows.addShadowCaster(m)}
  function blocked(x,z){return x< -4.65||x>4.65||z< -3.65||z>3.65||obstacles.some(o=>Math.abs(x-o.x)<o.w/2+.23&&Math.abs(z-o.z)<o.d/2+.23)}
  if(blocked(body.position.x,body.position.z)){body.position.x=0;body.position.z=-1.8}
  let walk=0;
