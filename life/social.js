@@ -18,19 +18,22 @@ async function start(){
  if(session||!place||place.blocked()||document.hidden)return;
  const config=window.LifeLab.npcConfig();
  if(config.mode==="ollama"&&!config.local){status("Live AI runs only at localhost:3000/life/. Select Preview in Character Laboratory to test here.");return}
- if(config.mode==="ollama"&&!config.model){status("Select an installed model in Character Laboratory.");return}
+ if(config.mode==="ollama"&&cast.some(name=>!(config.characters[name].model||config.model))){status("Select an installed model in Character Laboratory.");return}
  const p=place,s={ctrl:new AbortController(),history:[]};session=s;log.replaceChildren();buttons(true);
  const topic=$("social-topic").value.trim();
  if(topic){s.history.push({speaker:"Player",dialogue:topic});append("Player · public",topic)}
- const world={location:p.room,time:new Date().toTimeString().slice(0,5),present:["Fighter","Chaotic","Player"],topic:topic||"Two friends are hanging out. Start a natural, casual conversation."};
+ const world={location:p.room,time:new Date().toTimeString().slice(0,5),present:["Fighter","Chaotic","Player"]};
+ const agents=window.LifeAgents.create(config,world,localStorage,window.WorldMemory.player().id);
+ if(topic)agents.hear("Player",topic);
  const label=config.mode==="ollama"?"Live AI":"Scripted preview · no LLM";
  try{
  for(let i=0;i<(config.mode==="preview"?4:limit);i++){
   if(session!==s||place!==p||p.blocked()||document.hidden)return;
-  const speaker=cast[i%2];status(label+" — "+speaker+" is "+(config.mode==="ollama"?"thinking…":"next…"));
-  const result=config.mode==="ollama"?await window.LifeLab.npcTurn(config,speaker,world,s.history,s.ctrl.signal):scripted(i,topic);
+  const speaker=cast[i%2];status(label+" — "+speaker+" is "+(config.mode==="ollama"?"thinking… ("+agents.get(speaker).model+")":"next…"));
+  const result=config.mode==="ollama"?await window.LifeLab.npcTurn(config,speaker,agents,s.ctrl.signal):scripted(i,topic);
   if(session!==s||place!==p||s.ctrl.signal.aborted||p.blocked()||document.hidden)return;
   const dialogue=result.dialogue.trim();if(!dialogue)break;
+  if(config.mode==="ollama")agents.accept(speaker,result);agents.hear(speaker,dialogue);
   s.history.push({speaker,dialogue});append(speaker,dialogue);activeSpeaker=speaker;bubble.querySelector("strong").textContent=speaker;bubble.querySelector("span").textContent=dialogue;bubble.dataset.speaker=speaker;status(label+" — "+speaker+" is speaking");
   await wait(Math.min(9500,Math.max(2800,dialogue.length*53+900)),s);if(session!==s)return;hideBubble();
  }
