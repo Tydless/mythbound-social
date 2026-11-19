@@ -3,7 +3,7 @@ const $=id=>document.getElementById(id),panel=$("npc-social"),bubble=$("social-b
 const cast=["Fighter","Chaotic"],limit=6;
 let place=null,session=null,activeSpeaker=null,skip=null;
 function status(s){$("social-status").textContent=s}
-function buttons(running){$("social-start").disabled=running;$("social-stop").disabled=!running;$("social-next").disabled=!running||!skip;$("social-topic").disabled=running}
+function buttons(running){$("social-start").disabled=running;$("social-stop").disabled=!running;$("social-next").disabled=!running||!skip;$("social-topic").disabled=running;$("social-recall").disabled=running}
 function hideBubble(){activeSpeaker=null;bubble.hidden=true}
 function stop(message="Conversation stopped."){const s=session;session=null;if(s)s.ctrl.abort();if(skip)skip();skip=null;buttons(false);hideBubble();if(place)status(message)}
 function detach(){stop();place=null;panel.hidden=true;log.replaceChildren()}
@@ -16,7 +16,7 @@ function scripted(i,topic){
 function wait(ms,s){return new Promise(resolve=>{let timer;const finish=()=>{clearTimeout(timer);s.ctrl.signal.removeEventListener("abort",finish);if(skip===finish)skip=null;if(session===s)buttons(true);resolve()};skip=finish;timer=setTimeout(finish,ms);s.ctrl.signal.addEventListener("abort",finish,{once:true});buttons(true)})}
 async function start(){
  if(session||!place||place.blocked()||document.hidden)return;
- const config=window.LifeLab.npcConfig();
+ const config={...window.LifeLab.npcConfig(),usePastMemory:$("social-recall").checked};
  if(config.mode==="ollama"&&!config.local){status("Live AI runs only at localhost:3000/life/. Select Preview in Character Laboratory to test here.");return}
  if(config.mode==="ollama"&&cast.some(name=>!(config.characters[name].model||config.model))){status("Select an installed model in Character Laboratory.");return}
  const p=place,s={ctrl:new AbortController(),history:[]};session=s;log.replaceChildren();buttons(true);
@@ -26,19 +26,24 @@ async function start(){
  const agents=window.LifeAgents.create(config,world,localStorage,window.WorldMemory.player().id);
  if(topic)agents.hear("Player",topic);
  const label=config.mode==="ollama"?"Live AI":"Scripted preview · no LLM";
+ let passes=0;const first=config.mode==="ollama"?Math.floor(Math.random()*cast.length):0;
  try{
  for(let i=0;i<(config.mode==="preview"?4:limit);i++){
   if(session!==s||place!==p||p.blocked()||document.hidden)return;
-  const speaker=cast[i%2];status(label+" — "+speaker+" is "+(config.mode==="ollama"?"thinking… ("+agents.get(speaker).model+")":"next…"));
-  const result=config.mode==="ollama"?await window.LifeLab.npcTurn(config,speaker,agents,s.ctrl.signal):scripted(i,topic);
+  const speaker=cast[(i+first)%cast.length];status(label+" — "+speaker+" is "+(config.mode==="ollama"?"thinking… ("+agents.get(speaker).model+")":"next…"));
+  let result;
+  try{result=config.mode==="ollama"?await window.LifeLab.npcTurn(config,speaker,agents,s.ctrl.signal):scripted(i,topic)}
+  catch(e){if(e.code!=="REPEAT_DIALOGUE")throw e;result={dialogue:"",emotion:agents.get(speaker).mood,action:"none"};}
   if(session!==s||place!==p||s.ctrl.signal.aborted||p.blocked()||document.hidden)return;
-  const dialogue=result.dialogue.trim();if(!dialogue)break;
+  const dialogue=result.dialogue.trim();
+  if(!dialogue){passes++;if(passes>=cast.length)break;status(label+" — "+speaker+" stays quiet; giving the other character a turn.");continue;}
+  passes=0;
   if(config.mode==="ollama")agents.accept(speaker,result);agents.hear(speaker,dialogue);
   s.history.push({speaker,dialogue});append(speaker,dialogue);activeSpeaker=speaker;bubble.querySelector("strong").textContent=speaker;bubble.querySelector("span").textContent=dialogue;bubble.dataset.speaker=speaker;status(label+" — "+speaker+" is speaking");
   await wait(Math.min(9500,Math.max(2800,dialogue.length*53+900)),s);if(session!==s)return;hideBubble();
  }
  if(session===s){session=null;buttons(false);status(label+" — conversation finished.")}
- }catch(e){if(session===s)stop(e.code==="REPEAT_DIALOGUE"?"Live AI — conversation ended to avoid repeating a line.":"Conversation failed: "+String(e.message||e).slice(0,160))}
+ }catch(e){if(session===s)stop("Conversation failed: "+String(e.message||e).slice(0,160))}
  finally{if(session===s)stop("Conversation ended.")}
 }
 function project(B){

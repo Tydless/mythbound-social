@@ -39,13 +39,13 @@ function decodeDialogue(data){
  return normalize(parsed);
 }
 function dialogueKey(text){return text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu," ").trim()}
-async function requestDialogue(model,messages,ctrl,priorDialogue=[]){
+async function requestDialogue(model,messages,ctrl,priorDialogue=[],liveNpc=false){
  const used=new Set(priorDialogue.map(dialogueKey).filter(Boolean));
  let issue="";
- for(let attempt=0;attempt<2;attempt++){
+ for(let attempt=0;attempt<(liveNpc?3:2);attempt++){
   if(ctrl.signal.aborted)throw new DOMException("Cancelled","AbortError");
-  const prompt=[{...messages[0],content:messages[0].content+"\nReturn exactly this JSON schema: "+JSON.stringify(dialogueSchema)+(attempt?"\nYour previous attempt was invalid or repeated an earlier line. Return one valid object with a new reaction, or leave dialogue empty if the exchange is over.":"")},...messages.slice(1)];
-  const r=await timedFetch(ollama+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model,messages:prompt,stream:false,think:false,format:dialogueSchema,options:{num_predict:attempt?768:384,temperature:attempt?.35:.75,repeat_penalty:1.15}}),controller:ctrl},120000);
+  const prompt=[{...messages[0],content:messages[0].content+"\nReturn exactly this JSON schema: "+JSON.stringify(dialogueSchema)+(attempt?"\nPrevious attempt rejected: "+issue+". Return a new reaction, not a paraphrase of the rejected line. Try a question, disagreement or different observation. Return valid JSON, or empty dialogue if you prefer silence.":"")},...messages.slice(1)];
+  const r=await timedFetch(ollama+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model,messages:prompt,stream:false,think:false,format:dialogueSchema,options:{num_predict:attempt?768:384,temperature:liveNpc?(attempt?.95:.85):(attempt?.35:.75),repeat_penalty:1.15,...(liveNpc?{seed:Math.floor(Math.random()*2147483647),top_p:.95}:{})}}),controller:ctrl},120000);
   if(!r.ok)throw Error("Ollama HTTP "+r.status+" — check that the selected model is installed.");
   const data=await r.json();
   if(ctrl.signal.aborted)throw new DOMException("Cancelled","AbortError");
@@ -83,7 +83,7 @@ async function npcTurn(config,speaker,agents,signal){
  const ctrl=new AbortController(),cancel=()=>ctrl.abort();if(signal.aborted)cancel();else signal.addEventListener("abort",cancel,{once:true});
  try{
  const previous=agent.inbox.filter(h=>h.speaker===speaker).map(h=>h.dialogue);
- const v=await requestDialogue(agent.model,agents.prompt(speaker),ctrl,previous);
+ const v=await requestDialogue(agent.model,agents.prompt(speaker),ctrl,previous,true);
  return {...v,dialogue:v.dialogue.slice(0,240)};
  }finally{signal.removeEventListener("abort",cancel)}
 }
