@@ -7,7 +7,7 @@ let transformAudioContext=null, transformAudioSource=null, recordedChoir=null;
 // Choir of Voices - Single Chord, bone666138, CC0. See audio-credits.md.
 const choirSource="https://raw.githubusercontent.com/baron-elmwich/tethered-game/f23cd62702aa235f9056e1ac4d096a74cf1c5237/Assets/Audio/274121__bone666138__choir-of-voices-single-chord.wav";
 const transformBuffers=Object.create(null);
-function transformationMuted(){try{return localStorage.getItem("mythbound-music-enabled")==="false"}catch{return false}}
+function transformationMuted(){return window.MythboundSFX?.enabled()===false}
 function prepareTransformationAudio(){
  if(transformationMuted())return;
  try{
@@ -162,7 +162,7 @@ function playTransformationAudio(fallen){
 }
 document.addEventListener("visibilitychange",()=>{if(document.hidden)stopTransformationAudio()});
 window.addEventListener("pagehide",stopTransformationAudio);
-$("music-toggle")?.addEventListener("click",()=>{if(transformationMuted())stopTransformationAudio()});
+document.addEventListener("mythbound:sfx-change",()=>{if(transformationMuted())stopTransformationAudio()});
 const transformVisibility=new MutationObserver(()=>{if(classPage.hidden||document.body.classList.contains("mythbound-login-open"))stopTransformationAudio()});
 transformVisibility.observe(classPage,{attributes:true,attributeFilter:["hidden"]});transformVisibility.observe(document.body,{attributes:true,attributeFilter:["class"]});
 document.addEventListener("mythbound:party-voice-start",stopTransformationAudio);

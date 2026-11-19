@@ -70,6 +70,7 @@ const voiceVisibility=new MutationObserver(()=>{
 voiceVisibility.observe(classPage,{attributes:true,attributeFilter:["hidden"]});
 voiceVisibility.observe(document.body,{attributes:true,attributeFilter:["class"]});
 document.addEventListener("mythbound:party-voice-start",()=>stopVoice());
+document.addEventListener("mythbound:sfx-change",()=>{if(window.MythboundSFX?.enabled()===false)stopVoice()});
 document.addEventListener("visibilitychange",()=>{if(document.hidden)stopVoice()});
 window.addEventListener("pagehide",()=>stopVoice());
 return {updateVoiceButton,stopVoice,playVoice};

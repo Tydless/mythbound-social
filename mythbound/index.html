@@ -45,9 +45,9 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-path-headings1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-region-audio1";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
-    for(const f of ["app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
+    for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
   </script>
   <noscript><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="account.css"><link rel="stylesheet" href="portal-layout.css"><link rel="stylesheet" href="class-codex.css"><link rel="stylesheet" href="portal-polish.css"><link rel="stylesheet" href="class-portrait.css"><link rel="stylesheet" href="portal-atlas.css"><link rel="stylesheet" href="portal-social.css"><link rel="stylesheet" href="class-specializations.css"><link rel="stylesheet" href="portal-finishing.css"><link rel="stylesheet" href="class-mobile-effects.css"></noscript>
@@ -397,6 +397,7 @@
     <div class="conversation"><p class="timestamp">JUST NOW</p><div class="received-message">Yo, I've got time. You in for a raid?</div></div>
     <form id="reply-form" class="reply-form"><label for="reply-message">Your reply</label><textarea id="reply-message" rows="2" placeholder="Write a reply…" maxlength="500"></textarea><p class="reply-hint">Continuing opens Dreamjourney in a <strong>new tab</strong>. This preview does not send messages itself.</p><button type="submit" class="solid-action wide">Send / Continue in Dreamjourney <svg class="mb-diagonal-arrow" viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5 4h7v7"/></svg></button><p id="reply-status" class="reply-status" aria-live="polite"></p></form>
   </template>
+  <button type="button" class="music-toggle floating-sfx" id="sfx-toggle" aria-label="Mute sound effects" aria-pressed="true" title="Mute sound effects"><svg class="sfx-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z M16 9a4 4 0 0 1 0 6 M18.5 6a8 8 0 0 1 0 12"/><path class="sfx-slash" d="M3 3l18 18" stroke-width="2"/></svg></button>
   <audio id="mythbound-theme" src="../mythbound-theme.mp3" preload="auto" autoplay loop aria-hidden="true"></audio>
   <span id="music-announcement" class="screen-reader-only" role="status" aria-live="polite"></span>
 

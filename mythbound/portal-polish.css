@@ -35,7 +35,7 @@
 [data-presence="online"]::after{background:var(--presence-online)}
 .profile-avatar[data-presence]::after,.mb-social-avatar.is-large[data-presence]::after,.rail-player-avatar[data-presence]::after{width:13px;height:13px;right:1px;bottom:2px}
 .mb-group-avatar [data-presence]::after,.mb-chat-row [data-presence]::after{width:8px;height:8px}
-.floating-music#music-toggle{
+.floating-music#music-toggle,.floating-sfx#sfx-toggle{
  position:fixed;right:max(20px,env(safe-area-inset-right));bottom:max(20px,calc(env(safe-area-inset-bottom) + 10px));z-index:30;
  display:grid;place-items:center;width:48px;height:48px;min-height:48px;min-width:48px;padding:0;gap:0;border-radius:50%;
  color:#f7d9a5;background:radial-gradient(circle at 35% 25%,#34445c,#152033 72%);
@@ -49,15 +49,24 @@
 body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:none!important}
 @media(max-width:760px){
 .site-header .main-nav .nav-item{font-family:'Cinzel',Georgia,serif;font-size:14px}
-.floating-music#music-toggle{right:max(14px,env(safe-area-inset-right));bottom:max(14px,calc(env(safe-area-inset-bottom) + 9px));width:44px;height:44px;min-width:44px;min-height:44px}
+.floating-music#music-toggle,.floating-sfx#sfx-toggle{right:max(14px,env(safe-area-inset-right));bottom:max(14px,calc(env(safe-area-inset-bottom) + 9px));width:44px;height:44px;min-width:44px;min-height:44px}
 .site-footer{padding-bottom:75px}
 }
 @media (min-width:761px){.site-footer{padding-bottom:55px}}
 
 
 /* Fine alignment of the floating control and desktop codex. */
-.floating-music#music-toggle{position:fixed;display:block;padding:0;box-sizing:border-box}
+.floating-music#music-toggle,.floating-sfx#sfx-toggle{position:fixed;display:block;padding:0;box-sizing:border-box}
 .floating-music#music-toggle .music-note{position:absolute;left:50%;top:50%;margin:0;transform:translate(-50%,-50%);width:24px;height:24px;display:block;overflow:visible;pointer-events:none}
 .floating-music#music-toggle .music-state{position:absolute;width:1px;height:1px;padding:0;margin:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media(min-width:761px){.class-showcase .showcase-info{transform:translateY(-28px)}}
 @media(min-width:1201px){.class-showcase .showcase-info{transform:translateY(-36px)}}
+
+/* Independent SFX toggle beside music. */
+.floating-sfx#sfx-toggle{right:calc(max(20px,env(safe-area-inset-right)) + 56px)}
+.floating-sfx .sfx-icon{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:23px;height:23px;pointer-events:none}
+.floating-sfx .sfx-slash{display:none}
+.floating-sfx[aria-pressed="false"] .sfx-slash{display:block}
+.floating-sfx[aria-pressed="false"] .sfx-icon{opacity:.65}
+body.mythbound-login-open>#sfx-toggle,body.sheet-open>#sfx-toggle{display:none!important}
+@media(max-width:760px){.floating-sfx#sfx-toggle{right:calc(max(14px,env(safe-area-inset-right)) + 52px)}}

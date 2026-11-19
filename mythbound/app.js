@@ -224,7 +224,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
  let ctx,noise,last=-Infinity;
  function play(kind){
   // Respect the existing audio preference; no surprise sounds when muted.
-  try{if(localStorage.getItem("mythbound-music-enabled")==="false")return}catch{}
+  if(window.MythboundSFX?.enabled()===false)return;
   const Audio=window.AudioContext||window.webkitAudioContext;
   if(!Audio)return;
   try{

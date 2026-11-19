@@ -22,9 +22,10 @@ function emblem(region){
  const path=document.createElementNS(svg.namespaceURI,"path");path.setAttribute("d",region.icon);svg.append(path);return svg;
 }
 function moveTo(el){el.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"})}
-function choose(id,{scroll=false}={}){
+function choose(id,{scroll=false,sound=false}={}){
  const r=find(id);if(!r)return;
  selected=id;
+ if(sound)window.MythboundRegionAudio?.play(id);
  world.querySelectorAll("[data-atlas-region]").forEach(b=>{
   const on=b.dataset.atlasRegion===id;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",String(on))
  });
@@ -40,7 +41,7 @@ function choose(id,{scroll=false}={}){
  locationHeading.append(make("span","mw-kicker","Exploring"),make("h3","",r.name),make("p","",r.note));
  const tabs=make("div","mw-location-tabs");tabs.setAttribute("role","group");tabs.setAttribute("aria-label","Filter by region");
  for(const v of regions){
-  const btn=make("button","mw-location-tab",v.name);btn.type="button";btn.dataset.atlasRegion=v.id;btn.classList.toggle("is-active",v.id===id);btn.setAttribute("aria-pressed",String(v.id===id));btn.addEventListener("click",()=>{choose(v.id);location.querySelector('[data-atlas-region="'+v.id+'"]')?.focus({preventScroll:true})});tabs.append(btn)
+  const btn=make("button","mw-location-tab",v.name);btn.type="button";btn.dataset.atlasRegion=v.id;btn.classList.toggle("is-active",v.id===id);btn.setAttribute("aria-pressed",String(v.id===id));btn.addEventListener("click",()=>{choose(v.id,{sound:true});location.querySelector('[data-atlas-region="'+v.id+'"]')?.focus({preventScroll:true})});tabs.append(btn)
  }
  location.replaceChildren(tabs,locationHeading);
  if(scroll){
@@ -58,13 +59,13 @@ for(const r of regions){
  pin.style.setProperty("--pin-x",r.x+"%");pin.style.setProperty("--pin-y",r.y+"%");pin.style.setProperty("--region-accent",r.color);
  pin.setAttribute("aria-label","Explore "+r.name);pin.setAttribute("aria-pressed","false");
  const symbol=make("span","mw-pin-symbol",r.symbol);symbol.setAttribute("aria-hidden","true");
- const label=make("span","mw-pin-label",r.name);pin.append(symbol,label);pin.addEventListener("click",()=>choose(r.id));markers.append(pin);
+ const label=make("span","mw-pin-label",r.name);pin.append(symbol,label);pin.addEventListener("click",()=>choose(r.id,{sound:true}));markers.append(pin);
  const card=make("article","mw-region mw-region-entry");card.style.setProperty("--region-accent",r.color);
  const art=make("div","mw-region-art");art.append(emblem(r));
  const content=make("div","mw-region-copy");
- const button=make("button","mw-region-open","Explore region");button.type="button";button.dataset.atlasRegion=r.id;button.setAttribute("aria-label","Explore "+r.name);button.setAttribute("aria-pressed","false");button.addEventListener("click",()=>choose(r.id,{scroll:true}));
+ const button=make("button","mw-region-open","Explore region");button.type="button";button.dataset.atlasRegion=r.id;button.setAttribute("aria-label","Explore "+r.name);button.setAttribute("aria-pressed","false");button.addEventListener("click",()=>choose(r.id,{scroll:true,sound:true}));
  content.append(make("span","mw-kicker",r.type),make("h3","",r.name),make("p","",r.description),button);card.append(art,content);directory.append(card);
 }
-world.querySelectorAll("[data-terrain]").forEach(path=>path.addEventListener("click",()=>choose(path.dataset.terrain)));
+world.querySelectorAll("[data-terrain]").forEach(path=>path.addEventListener("click",()=>choose(path.dataset.terrain,{sound:true})));
 choose(selected);
 })();

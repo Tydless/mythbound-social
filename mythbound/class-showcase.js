@@ -420,6 +420,7 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
  if(changed){
   renderPreview(true);updateVoiceButton();
   // Mystery entry uses its teaser; the other paths retain their switch greetings.
+  if(window.MythboundSFX?.enabled()===false)return;
   if(isUnrevealed())playVoice("Teaser");
   else if(active==="saint"&&(activePath===1||activePath===2||((previousPath===1||previousPath===2||previousPath===3)&&activePath===0)))playVoice("Switch");
  }
@@ -568,7 +569,7 @@ document.querySelectorAll("[data-class]").forEach(button=>{
 });
 document.querySelectorAll(".gender-option").forEach(button=>button.addEventListener("click",()=>{
  const next=button.dataset.gender;if(next===gender||!["male","female"].includes(next))return;
- gender=next;renderPreview(false);playVoice("Switch");
+ gender=next;renderPreview(false);if(window.MythboundSFX?.enabled()!==false)playVoice("Switch");else stopVoice();
 }));
 draw();updateVoiceButton();
 })();
