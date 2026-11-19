@@ -283,7 +283,7 @@ test("Uploaded region cues use their exact filenames, individual mixer trims and
  const win={MythboundSFX:{volume:()=>level,enabled:()=>true},addEventListener(){}};
  class Audio{constructor(src){this.src=src;latest=this;this.events={}}addEventListener(n,f){this.events[n]=f}play(){return Promise.resolve()}pause(){this.paused=true}removeAttribute(){}load(){}}
  new Function("window","document","Audio","MutationObserver",read("world-region-audio.js"))(win,doc,Audio,class{observe(){}});
- for(const [id,file,trim] of [["heavenly","HeavenlyRealmIntro.mp3",.65],["dunes","WildDunesIntro.mp3",.4],["wondrous","WondrousLandsIntro.mp3",1]]){
+ for(const [id,file,trim] of [["heavenly","HeavenlyRealmIntro.mp3",.65],["dunes","WildDunesIntro.mp3",.4],["wondrous","WondrousLandsIntro.mp3",1],["fable","FableWoodsIntro.mp3",1],["greatfields","GreatFieldsIntro.mp3",1]]){
   const previous=latest;level=1;win.MythboundRegionAudio.play(id);
   if(previous)assert.equal(previous.paused,true);
   assert.equal(latest.src,"../"+file);assert.equal(latest.volume,trim);
