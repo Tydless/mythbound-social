@@ -332,8 +332,8 @@ test("Home two-line headings have balanced spacing at desktop and mobile widths"
 test("Header portrait optical alignment moves the presence marker with the artwork and stays isolated",()=>{
  const s=read("portal-finishing.css");
  assert.ok(s.includes(".site-header #account-button>.account-sigil.mb-account-portrait{"));
- assert.ok(s.includes("align-self:center;margin:0;transform:translateY(-5px)"));
- assert.ok(s.includes("@media(max-width:760px){\n .site-header #account-button>.account-sigil.mb-account-portrait{transform:translateY(-4px)}"));
+ assert.ok(s.includes("align-self:center;margin:0;transform:translateY(-2.5px)"));
+ assert.ok(s.includes("@media(max-width:760px){\n .site-header #account-button>.account-sigil.mb-account-portrait{transform:translateY(-1.5px)}"));
  assert.ok(s.includes(".site-header #account-button:not(.mb-guest-login)"));
  assert.ok(s.includes("width:100%;height:100%;margin:0;"));
  assert.ok(html.includes('id="account-button" class="account-chip"'));
