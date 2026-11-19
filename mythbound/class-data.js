@@ -47,7 +47,7 @@ const statDescriptions=[
 // Each entry may provide name, description, icon, skills (same format as DATA), and signatureMoves.
 const SPECIALIZATIONS={
  saint:{
-  1:{name:"Archsaint",type:"TRUE PATH",artwork:{male:"../ArchsaintMalePortrait.png",female:"../ArchsaintFemalePortrait.png"},
+  1:{name:"Archsaint",type:"TRUE PATH",advancement:{quest:"When Heaven Answers",from:"Saint"},artwork:{male:"../ArchsaintMalePortrait.png",female:"../ArchsaintFemalePortrait.png"},
    stats:[4,2,5,4,3],difficulty:4,play:"RANGED · OFFENSIVE SUPPORT / AERIAL CASTER",roles:[["ranged","Ranged"],["healer","Offensive support / aerial healer"]],
    overviewType:"SUPPORT · AERIAL CASTER",overviewDescription:"Chosen by the heavens, Archsaints wield holy magic without a staff, taking flight to strike enemies, heal allies and restore the fallen.",
    description:"Having been chosen by the heavens, Archsaints transcend mortal spellcasting. Channel divine power through your own body, manifest celestial weapons and perform restorative miracles. Magical attack strengthens both damage and healing, at the cost of the Saint's defensive resilience.",
@@ -63,7 +63,7 @@ const SPECIALIZATIONS={
     {icon:"⌁",name:"Heavenly Wings",type:"INHERENT ABILITY · FLIGHT",description:"Fly freely to evade ground-bound melee and certain hazards, but remain exposed to flying enemies and anti-air attacks. Injuries reduce flight speed and maximum altitude.",table:{headers:["Remaining HP","Flight speed","Max. altitude"],rows:[["76–100%","100%","100%"],["51–75%","85%","80%"],["26–50%","65%","50%"],["1–25%","40%","Near ground"]]}},
     {icon:"✥",name:"A Shared Miracle",type:"HEAVEN'S MERCY · RESURRECTION",description:"Divine energy is divided among all defeated party members revived in a single cast. Concentrate the miracle on one ally or save a larger group at reduced health. Positioning and follow-up healing are essential.",table:{headers:["Allies revived","HP per ally"],rows:[["1","80%"],["2","60%"],["3","40%"],["4","25%"],["5","20%"]]},note:"Illustrative scaling for up to five revived allies; larger groups are not yet balanced."}
    ],signatureMoves:[]},
-  2:{name:"Fallen Saint",type:"CORRUPTED PATH",artwork:{male:"../FallenSaintMalePortrait.png?v=5751506f",female:"../FallenSaintFemalePortrait.png?v=23b20526"},
+  2:{name:"Fallen Saint",type:"CORRUPTED PATH",advancement:{quest:"When Heaven Remains Silent",from:"Saint"},artwork:{male:"../FallenSaintMalePortrait.png?v=5751506f",female:"../FallenSaintFemalePortrait.png?v=23b20526"},
    stats:[3,4,4,2,5],difficulty:4,play:"RANGED · BLOOD MAGIC / CONTROLLER",roles:[["ranged","Ranged"],["healer","Blood magic / control support"]],
    overviewType:"SUPPORT · BLOOD WEAVER",overviewDescription:"Forsaken by the heavens, Fallen Saints wield the Blood Moon's forbidden magic to mend allies, drain vitality and bend enemies to their will.",
    description:"Feeling betrayed by the Holy Spirit, the Fallen Saints sought answers at the Blood Moonshrine. The Blood Moon answered: in exchange for their blood and souls, its forbidden power flowed into them. Now they weave blood into dark magic, restoring companions through sacrifice and turning the life force of their enemies against them.",

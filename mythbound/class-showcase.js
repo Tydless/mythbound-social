@@ -365,6 +365,17 @@ function renderPathPresentation(){
  if(!path.overviewType)delete host.dataset.customPathHeader;
  renderClassMeta(pathCombatData());renderStats();
 }
+function renderPathAdvancement(path){
+ const panel=$("path-advancement"),copy=$("path-advancement-text");
+ if(!panel||!copy)return;
+ const info=path.advancement;
+ panel.hidden=!info||activePath===0||isUnrevealed();
+ copy.replaceChildren();
+ if(panel.hidden)return;
+ const quest=document.createElement("strong"),target=document.createElement("strong");
+ quest.textContent=info.quest;target.textContent=path.name;
+ copy.append("Complete the questline “",quest,"” to advance from "+info.from+" to ",target,".");
+}
 function renderPath(){
  renderPathPresentation();
  const path=pathData(),buttons=$("class-paths");
@@ -391,6 +402,7 @@ function renderPath(){
  const title=$("path-detail-title"),desc=$("path-description"),label=$("path-type"),core=$("path-core-title");
  if(title)title.textContent=path.name+(activePath===0?" · Base class":"");
  if(desc)desc.textContent=path.description;
+ renderPathAdvancement(path);
  if(label)label.textContent=activePath===0?"BASE PATH":path.type||"ADVANCED PATH";
  if(core)core.textContent=isUnrevealed()?"Unrevealed abilities":"Abilities & mechanics";
  renderSkills();

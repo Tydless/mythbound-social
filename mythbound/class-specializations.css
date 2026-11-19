@@ -204,3 +204,12 @@
 .class-showcase[data-scene-class="saint"][data-scene="base"] .class-foreground-motes{
  bottom:auto;height:var(--base-saint-scene-height,max(760px,58vw));
 }
+
+/* Optional class advancement hint; shared by revealed specializations. */
+.path-advancement{display:flex;align-items:center;gap:12px;margin:14px 0 22px;padding:12px 16px;border:1px solid #d4b57945;border-radius:7px;background:#17223566;min-width:0}
+.path-advancement[hidden]{display:none!important}
+.path-advancement-symbol{display:grid;place-items:center;flex:none;width:34px;height:34px;border:1px solid #d4b57980;border-radius:50%;color:var(--class-highlight);font-size:22px}
+.path-advancement h4{font:600 13px Cinzel,Georgia,serif;color:var(--class-highlight);margin:0 0 4px}
+.path-advancement p{font-size:12px;line-height:1.6;color:#c5cfdd;margin:0}
+.path-advancement strong{color:var(--class-highlight);font-weight:600}
+@media(max-width:760px){.path-advancement{padding:10px 12px;align-items:flex-start}}

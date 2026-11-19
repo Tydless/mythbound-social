@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-maintenance1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-advancement1";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -316,6 +316,7 @@
           <section class="subclass-section path-overview" aria-labelledby="path-detail-title">
             <div class="subclass-intro"><div><span class="eyebrow" id="path-type">BASE PATH</span><h3 id="path-detail-title">Saint · Base class</h3></div></div>
             <p id="path-description">Master the foundations of your class.</p>
+            <div id="path-advancement" class="path-advancement" hidden><span class="path-advancement-symbol" aria-hidden="true">✧</span><div><h4>Class advancement</h4><p id="path-advancement-text"></p></div></div>
             <div class="path-ability-layout"><div>
               <div class="showcase-section-title skills-title"><h3 id="path-core-title">Abilities &amp; mechanics</h3><span id="path-inspect-label">SELECT TO INSPECT</span></div>
               <div id="class-skills" class="ability-groups" aria-label="Selected path skills"></div>
