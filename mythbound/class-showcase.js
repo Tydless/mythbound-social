@@ -42,8 +42,8 @@ function renderPreview(allowTransformation=false){
  // as a fallback until the two image files have been uploaded to GitHub.
  stopTransformationAudio();
  const mobile=useMobilePortraitEffects();
- // Compare the same portrait renderer on either device without changing desktop layout.
- // The original desktop canvas/mask animations remain available for diagnosis.
+ // Keep the approved shared portrait geometry; choose decorative FX by device/path.
+ // The old Fallen Saint canvas renderer is available only in explicit legacy mode.
  const fxMode=new URLSearchParams(location.search).get("portraitFx");
  const safePortraitFx=mobile||fxMode!=="legacy";
  $("class-details").classList.toggle("mobile-portrait-fx",mobile);
@@ -90,7 +90,13 @@ function renderPreview(allowTransformation=false){
    if(animate){
     if(safePortraitFx){
      if(special)playSpecialSound(special);else playTransformationAudio(isFallen);
-     revealMobilePath(stage,oldImage,picture,special||(isFallen?"fallen":"base"),!mobile&&fxMode!=="simple");
+     if(mobile||fxMode==="simple"||isFallen){
+      revealMobilePath(stage,oldImage,picture,special||(isFallen?"fallen":"base"),!mobile&&fxMode!=="simple");
+     }else{
+      stage.classList.add("desktop-original-fx");
+      if(special)revealSpecialPath(stage,oldImage,picture,special);
+      else revealSaint(stage,oldImage,picture);
+     }
     }else if(special){playSpecialSound(special);revealSpecialPath(stage,oldImage,picture,special)}
     else{playTransformationAudio(isFallen);if(isFallen)burnPortrait(stage,oldImage,picture,true);else revealSaint(stage,oldImage,picture)}
    }

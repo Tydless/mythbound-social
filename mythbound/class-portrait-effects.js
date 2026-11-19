@@ -3,7 +3,7 @@
 "use strict";
 function revealSpecialPath(stage,oldImage,picture,kind){
  const heaven=kind==="archsaint",duration=heaven?2400:2250;
- const finish=()=>{oldImage?.remove();stage.querySelector(".portrait-special-effect")?.remove();stage.classList.remove("portrait-revealing");picture.classList.remove("portrait-incoming");picture.style.removeProperty("opacity");picture.style.removeProperty("filter")};
+ const finish=()=>{oldImage?.remove();stage.querySelector(".portrait-special-effect")?.remove();stage.classList.remove("portrait-revealing","desktop-original-fx");picture.classList.remove("portrait-incoming");picture.style.removeProperty("opacity");picture.style.removeProperty("filter")};
  const layer=document.createElement("div");layer.className="portrait-special-effect "+(heaven?"heavenly-effect":"mystery-effect");layer.setAttribute("aria-hidden","true");
  const add=(cls,vars={})=>{const e=document.createElement("span");e.className=cls;for(const [k,v] of Object.entries(vars))e.style.setProperty(k,v);layer.append(e)};
  if(heaven){
@@ -22,7 +22,9 @@ function revealSpecialPath(stage,oldImage,picture,kind){
   if(start===null)start=now;
   const p=Math.min(1,(now-start)/duration),a=smooth((p-.32)/.43);
   if(oldImage)oldImage.style.opacity=String(1-smooth((p-.09)/.38));
-  picture.style.opacity=String(a);picture.style.filter="blur("+((heaven?4:8)*(1-a)).toFixed(2)+"px) drop-shadow(0 18px 22px #08122265)";
+  picture.style.opacity=String(a);
+  // Keep the original light/mist composition; only legacy mode filters the image.
+  if(!stage.classList.contains("safe-portrait-fx"))picture.style.filter="blur("+((heaven?4:8)*(1-a)).toFixed(2)+"px) drop-shadow(0 18px 22px #08122265)";
   if(p<1)requestAnimationFrame(frame);else finish();
  }
  requestAnimationFrame(frame);
@@ -31,9 +33,10 @@ function revealSpecialPath(stage,oldImage,picture,kind){
 // Divine manifestation: a broad feathered gradient rising over the old image,
 // with little star-shaped glints that appear along its moving boundary.
 function revealSaint(stage,oldImage,picture){
+ let maskLayer=null,maskTarget=oldImage;
  const finish=()=>{
-  oldImage.remove();stage.querySelector(".portrait-burn-canvas")?.remove();
-  stage.classList.remove("portrait-revealing","portrait-crossfade");picture.classList.remove("portrait-incoming");
+  oldImage.remove();maskLayer?.remove();stage.querySelector(".portrait-burn-canvas")?.remove();
+  stage.classList.remove("portrait-revealing","portrait-crossfade","desktop-original-fx");picture.classList.remove("portrait-incoming");
  };
  try{
   const b=stage.getBoundingClientRect();
@@ -44,8 +47,13 @@ function revealSaint(stage,oldImage,picture){
   const w=canvas.width=Math.min(720,Math.ceil(b.width*1.3)),h=canvas.height=Math.round(w*b.height/b.width);
   const ctx=canvas.getContext("2d");
   if(!ctx){stage.classList.add("portrait-crossfade");setTimeout(finish,1050);return}
-  const masked=window.CSS&&(CSS.supports("mask-image","linear-gradient(black,transparent)")||CSS.supports("-webkit-mask-image","linear-gradient(black,transparent)"));
-  oldImage.style.zIndex="2";stage.append(canvas);stage.classList.add("portrait-revealing");
+  const masked=window.CSS&&(window.CSS.supports("mask-image","linear-gradient(black,transparent)")||window.CSS.supports("-webkit-mask-image","linear-gradient(black,transparent)"));
+  if(stage.classList.contains("safe-portrait-fx")){
+   // Same original gold reveal, but mask a full-size stationary wrapper instead of the image.
+   maskLayer=document.createElement("div");maskLayer.className="desktop-base-reveal-layer";
+   maskLayer.setAttribute("aria-hidden","true");maskLayer.append(oldImage);stage.append(maskLayer);maskTarget=maskLayer;
+  }else oldImage.style.zIndex="2";
+  stage.append(canvas);stage.classList.add("portrait-revealing");
   const duration=1420;
   const stars=Array.from({length:43},(_,i)=>({
    born:.12+Math.random()*.72,x:(.09+Math.random()*.82)*w,
@@ -62,9 +70,9 @@ function revealSaint(stage,oldImage,picture){
    const edge=119-138*smooth,lo=edge-19,hi=edge+19;
    if(masked){
     const mask="linear-gradient(to bottom, #000 "+lo+"%, transparent "+hi+"%)";
-    oldImage.style.maskImage=mask;oldImage.style.webkitMaskImage=mask;
-   }else oldImage.style.opacity=String(1-smooth);
-   if(p===1)oldImage.style.visibility="hidden";
+    maskTarget.style.maskImage=mask;maskTarget.style.webkitMaskImage=mask;
+   }else maskTarget.style.opacity=String(1-smooth);
+   if(p===1)maskTarget.style.visibility="hidden";
    ctx.clearRect(0,0,w,h);
    const cy=edge*h/100,light=Math.sin(Math.PI*p);
    if(p<1){
@@ -96,7 +104,8 @@ function revealSaint(stage,oldImage,picture){
   }
   requestAnimationFrame(tick);
  }catch{
-  oldImage.style.zIndex="";oldImage.style.maskImage="";oldImage.style.webkitMaskImage="";oldImage.style.opacity="";oldImage.style.visibility="";
+  maskTarget.style.zIndex="";maskTarget.style.maskImage="";maskTarget.style.webkitMaskImage="";maskTarget.style.opacity="";maskTarget.style.visibility="";
+  if(maskLayer){stage.append(oldImage);maskLayer.remove();maskLayer=null;}
   stage.querySelector(".portrait-burn-canvas")?.remove();stage.classList.remove("portrait-revealing");stage.classList.add("portrait-crossfade");setTimeout(finish,1050);
  }
 }

@@ -161,3 +161,18 @@ test("Fallen Saint wrapper clipping uses the same jagged boundary as its fire",(
  assert.match(style,/top:calc\(var\(--burn-edge\) - 14\.645%\);animation:none/);
  assert.match(style,/rich-burn-portrait-layer\{\s*position:absolute;inset:0/);
 });
+
+
+test("Desktop restores original Base, Archsaint and mystery decorations without legacy Fallen redraw",()=>{
+ const code=read("class-showcase.js"),style=read("class-mobile-effects.css"),fx=read("class-portrait-effects.js");
+ assert.match(code,/if\(mobile\|\|fxMode==="simple"\|\|isFallen\)\{/);
+ assert.match(code,/stage\.classList\.add\("desktop-original-fx"\);\s*if\(special\)revealSpecialPath\(stage,oldImage,picture,special\);\s*else revealSaint\(stage,oldImage,picture\);/);
+ assert.match(style,/\.safe-portrait-fx\.desktop-original-fx \.portrait-special-effect\{display:block!important\}/);
+ assert.match(style,/\.desktop-base-reveal-layer\{position:absolute;inset:0;z-index:2/);
+ const base=fx.slice(fx.indexOf("function revealSaint("),fx.indexOf("function burnPortrait("));
+ assert.doesNotMatch(base,/drawImage|getImageData|putImageData/);
+ assert.match(base,/maskLayer\.append\(oldImage\);stage\.append\(maskLayer\);maskTarget=maskLayer/);
+ assert.match(base,/maskTarget\.style\.maskImage=mask/);
+ const special=fx.slice(fx.indexOf("function revealSpecialPath("),fx.indexOf("function revealSaint("));
+ assert.match(special,/if\(!stage\.classList\.contains\("safe-portrait-fx"\)\)picture\.style\.filter=/);
+});

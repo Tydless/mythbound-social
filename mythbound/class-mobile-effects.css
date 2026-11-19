@@ -144,3 +144,14 @@
  .class-showcase .safe-portrait-fx.rich-burn-sweep .rich-burn-old{visibility:hidden}
  .class-showcase .safe-portrait-fx.rich-burn-sweep .rich-burn-new{clip-path:none}
 }
+
+/* Restore the original desktop effect layers without restoring the original
+   portrait renderer. The base canvas is decoration only (gold/stars). */
+.class-showcase .safe-portrait-fx.desktop-original-fx .portrait-burn-canvas,
+.class-showcase .safe-portrait-fx.desktop-original-fx .portrait-special-effect{display:block!important}
+.class-showcase .saint-portrait-stage.safe-portrait-fx.desktop-original-fx{overflow:visible}
+.class-showcase .safe-portrait-fx .desktop-base-reveal-layer{position:absolute;inset:0;z-index:2;pointer-events:none}
+@media(prefers-reduced-motion:reduce){
+ .class-showcase .safe-portrait-fx.desktop-original-fx .portrait-burn-canvas,
+ .class-showcase .safe-portrait-fx.desktop-original-fx .portrait-special-effect{display:none!important}
+}
