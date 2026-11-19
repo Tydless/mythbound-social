@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-headeravatar1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-base-saint-scene1";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -737,6 +737,22 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 .ability-video-caption span{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#a5b0c2;text-align:right}
 @media(max-width:950px){.ability-group{grid-template-columns:1fr;gap:5px}.ability-group-icons{gap:6px}}
 @media(max-width:760px){.path-ability-layout{grid-template-columns:1fr}.ability-group{grid-template-columns:1fr}.class-showcase .path-ability-layout .ability-tile{width:88px}.ability-video-caption{flex-wrap:wrap}}
+</style>
+<style>
+/* Only the base Saint scenery stops at the top of the ability inspector. */
+.class-showcase[data-scene-class="saint"][data-scene="base"] .class-atmosphere{
+ bottom:auto;height:var(--base-saint-scene-height,max(760px,58vw));
+ mask-image:linear-gradient(to bottom,transparent 0%,#000 80px,#000 calc(100% - 100px),transparent 100%);
+ -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 80px,#000 calc(100% - 100px),transparent 100%);
+}
+.class-showcase[data-scene-class="saint"][data-scene="base"] .class-landscape{
+ background-position:center 78%;
+ mask-image:linear-gradient(to bottom,#000 0%,#000 74%,transparent 100%);
+ -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 74%,transparent 100%);
+}
+.class-showcase[data-scene-class="saint"][data-scene="base"] .class-foreground-motes{
+ bottom:auto;height:var(--base-saint-scene-height,max(760px,58vw));
+}
 </style>
 </head>
 <body class="mythbound-login-open">

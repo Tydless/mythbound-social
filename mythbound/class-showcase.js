@@ -892,6 +892,17 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
  }
 }));
 const atmosphere=document.querySelector(".class-atmosphere");
+// Anchor the base Saint's landscape to the actual end of the portrait overview,
+// not the height of the currently selected skill description.
+const sceneHost=$("class-details"),sceneOverview=sceneHost.querySelector(".path-overview");
+function sizeBaseSaintScene(){
+ const end=sceneOverview?.offsetTop||0;
+ if(end>0)sceneHost.style.setProperty("--base-saint-scene-height",end+"px");
+}
+if(typeof ResizeObserver==="function"){
+ const sceneObserver=new ResizeObserver(sizeBaseSaintScene);
+ for(const node of [sceneHost,sceneHost.querySelector(".showcase-columns"),sceneHost.querySelector(".showcase-overline")])if(node)sceneObserver.observe(node);
+}else window.addEventListener("resize",sizeBaseSaintScene);
 let environmentRequest=0,environmentKey=null,environmentFadeTimer=0;
 const SAINT_SCENES={
  1:{id:"heavenly",src:"../HeavenlyRealmBackground.png"},
@@ -958,6 +969,7 @@ function drawEnvironment(){
  function commit(){
   if(request!==environmentRequest||!faded||!loaded)return;
   host.dataset.scene=scene;host.dataset.sceneClass=classId;
+  if(classId==="saint"&&scene==="base")sizeBaseSaintScene();
   fillSceneEffects(layer,scene);
   landscape.style.backgroundImage=asset?'url("'+asset+'")':"";
   atmosphere.classList.toggle("has-landscape",Boolean(asset));
