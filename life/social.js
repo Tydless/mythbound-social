@@ -1,6 +1,6 @@
 (()=>{"use strict";
 const $=id=>document.getElementById(id),panel=$("npc-social"),bubble=$("social-bubble"),controls=$("social-controls"),log=$("social-log");
-const cast=["Fighter","Buddy"],limit=6;
+const cast=["Fighter","Chaotic"],limit=6;
 let place=null,session=null,activeSpeaker=null,skip=null;
 function status(s){$("social-status").textContent=s}
 function buttons(running){$("social-start").disabled=running;$("social-stop").disabled=!running;$("social-next").disabled=!running||!skip;$("social-topic").disabled=running}
@@ -10,7 +10,7 @@ function detach(){stop();place=null;panel.hidden=true;log.replaceChildren()}
 function attach(p){detach();place=p;panel.hidden=false;controls.hidden=false;$("social-toggle").textContent="−";$("social-toggle").setAttribute("aria-expanded","true");status("Ready — choose a topic or see what they talk about.");buttons(false)}
 function append(speaker,text){const p=document.createElement("p"),name=document.createElement("strong");name.textContent=speaker+": ";p.append(name,document.createTextNode(text));log.append(p);log.scrollTop=log.scrollHeight}
 function scripted(i,topic){
- const exchange=topic?["What do you think, Buddy?","That's an interesting idea. What's your take?","We could talk about it. What do you reckon?","Yeah, let's figure it out."]:["So, Buddy. Up for a game tonight?","Only if you promise not to blame the lag again.","Hey, that was one time. Mostly.","Sure it was. Pick a game, then."];
+ const exchange=topic?["Alright, Chaotic. What do you reckon?","I have a brilliant plan. Step one: improvisation.","That's not a plan, you idiot.","See? We're already on step two."]:["Chaotic, one match. Try not to throw it this time.","I prefer the term experimental esports.","I swear, if you pull that stunt again...","Relax, champ. I've got at least three worse ideas."];
  return {dialogue:exchange[i]||"",emotion:"neutral",action:"none"};
 }
 function wait(ms,s){return new Promise(resolve=>{let timer;const finish=()=>{clearTimeout(timer);s.ctrl.signal.removeEventListener("abort",finish);if(skip===finish)skip=null;if(session===s)buttons(true);resolve()};skip=finish;timer=setTimeout(finish,ms);s.ctrl.signal.addEventListener("abort",finish,{once:true});buttons(true)})}
@@ -22,7 +22,7 @@ async function start(){
  const p=place,s={ctrl:new AbortController(),history:[]};session=s;log.replaceChildren();buttons(true);
  const topic=$("social-topic").value.trim();
  if(topic){s.history.push({speaker:"Player",dialogue:topic});append("Player · public",topic)}
- const world={location:p.room,time:new Date().toTimeString().slice(0,5),present:["Fighter","Buddy","Player"],topic:topic||"Two friends are hanging out. Start a natural, casual conversation."};
+ const world={location:p.room,time:new Date().toTimeString().slice(0,5),present:["Fighter","Chaotic","Player"],topic:topic||"Two friends are hanging out. Start a natural, casual conversation."};
  const label=config.mode==="ollama"?"Live AI":"Scripted preview · no LLM";
  try{
  for(let i=0;i<(config.mode==="preview"?4:limit);i++){
@@ -35,7 +35,7 @@ async function start(){
   await wait(Math.min(9500,Math.max(2800,dialogue.length*53+900)),s);if(session!==s)return;hideBubble();
  }
  if(session===s){session=null;buttons(false);status(label+" — conversation finished.")}
- }catch(e){if(session===s)stop("Conversation failed: "+String(e.message||e).slice(0,160))}
+ }catch(e){if(session===s)stop(e.code==="REPEAT_DIALOGUE"?"Live AI — conversation ended to avoid repeating a line.":"Conversation failed: "+String(e.message||e).slice(0,160))}
  finally{if(session===s)stop("Conversation ended.")}
 }
 function project(B){

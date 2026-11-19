@@ -1,14 +1,22 @@
 (()=>{"use strict";
 const $=id=>document.getElementById("lab-"+id),dialog=document.getElementById("character-lab");
-const defaults={personality:"Fighter is the player's gaming buddy. His background and personality are still being developed.",style:"Natural conversational English. Keep replies brief; don't narrate the player's thoughts or actions.",memories:"",buddyPersonality:"Buddy is a visiting friend who enjoys games and friendly banter. His personality is provisional.",buddyStyle:"Casual, curious and playful; brief conversational English.",provider:"preview",model:"qwen3:4b",voiceProvider:"browser",voice:"marius",autospeak:false};
-const key="afterhours-character-lab-v1",fields={personality:"personality",style:"style",memories:"memories",buddyPersonality:"buddy-personality",buddyStyle:"buddy-style",provider:"provider",model:"model",voiceProvider:"voice-provider",voice:"voice"};
+const defaults={"personality":"Fighter is a former professional MMA fighter. A life-changing incident left his legs weaker. He is still bulky and strong, but his passion shifted toward gaming after discovering Mythbound Online. His main is the female Saint, his princess, who probably has more outfits than he does. He sometimes designs outfits for her himself. PRIVATE: he has a drawer of half-finished outfit sketches that he does not talk about. Do not volunteer that secret or assume anyone else knows it. He is hotheaded, loves challenges and cares about his buddies. He regularly playfights with Chaotic when Chaotic does something idiotic. The precise incident and further medical details are not established.","style":"Direct, casual, competitive, sometimes grumpy. Brief punchy reactions, dry teasing and friendly trash talk. Can get unexpectedly enthusiastic about his Saint or fashion, but do not force these interests into unrelated conversations. Do not speak or act for others.","memories":"","chaoticPersonality":"Chaotic is chaos incarnate. He talks first and probably never thinks. His regular sport is esports. His relationship status changes more often than his underwear. He is pretty and broke. He is Fighter's buddy and they often tease and playfight when he does something idiotic. His current partner and exact finances are unspecified.","chaoticStyle":"Impulsive, playful, irreverent, cheeky and unpredictable. React to what was actually said. Make ridiculous jokes or tease Fighter when appropriate, rather than repeating the same punchline. Do not constantly mention dating or money. Short natural English. Do not speak or act for others.","provider":"preview","model":"qwen3:4b","voiceProvider":"browser","voice":"marius","autospeak":false};
+const key="afterhours-character-lab-v2",legacyKey="afterhours-character-lab-v1",fields={personality:"personality",style:"style",memories:"memories",chaoticPersonality:"chaotic-personality",chaoticStyle:"chaotic-style",provider:"provider",model:"model",voiceProvider:"voice-provider",voice:"voice"};
+function restoreProfile(storage){
+ const p={...defaults};let current=null,legacy=null;
+ try{current=JSON.parse(storage.getItem(key)||"null");if(!current)legacy=JSON.parse(storage.getItem(legacyKey)||"null")}catch{}
+ const saved=current||legacy;
+ const allowed=current?Object.keys(defaults):["memories","provider","model","voiceProvider","voice","autospeak"];
+ if(saved&&typeof saved==="object")for(const k of allowed)if(typeof saved[k]===typeof defaults[k])p[k]=saved[k];
+ return p;
+}
 const voices=["marius","javert"],moods=["relaxed","excited","annoyed","tired","sad","amused","neutral"];
 let history=[],busy=false,controller=null,speechController=null,objectURL=null,last=null,actualLocation="Your room",onClose=()=>{};
 const local=location.hostname==="localhost"&&location.port==="3000"&&location.protocol==="http:";
 const ollama="http://localhost:11434",pocket="http://localhost:8000";
 function status(t){$("status").textContent=t}
 function profile(){const p={};for(const [k,id] of Object.entries(fields))p[k]=$(id).value;p.autospeak=$("autospeak").checked;return p}
-function load(){let p={...defaults};try{const v=JSON.parse(localStorage.getItem(key)||"null");if(v&&typeof v==="object")for(const k of Object.keys(defaults))if(typeof v[k]===typeof defaults[k])p[k]=v[k]}catch{}for(const [k,id] of Object.entries(fields))$(id).value=p[k];$("autospeak").checked=p.autospeak;if(!["preview","ollama"].includes($("provider").value))$("provider").value="preview";if(!["browser","pocket","off"].includes($("voice-provider").value))$("voice-provider").value="browser";if(!voices.includes($("voice").value))$("voice").value="marius"}
+function load(){const p=restoreProfile(localStorage);for(const [k,id] of Object.entries(fields))$(id).value=p[k];$("autospeak").checked=p.autospeak;if(!["preview","ollama"].includes($("provider").value))$("provider").value="preview";if(!["browser","pocket","off"].includes($("voice-provider").value))$("voice-provider").value="browser";if(!voices.includes($("voice").value))$("voice").value="marius"}
 function save(){try{localStorage.setItem(key,JSON.stringify(profile()));status("Character profile saved locally.");return true}catch{status("Local storage unavailable; export your profile instead.");return false}}
 function context(){return {location:$("location").value,time:$("time").value,mood:$("mood").value,relationship:$("relationship").value,event:$("event").value}}
 function line(role,t){const d=document.createElement("div");d.className="lab-line "+role;const who=document.createElement("strong");who.textContent=role==="player"?"PLAYER":role==="event"?"SIMULATED EVENT":role==="preview"?"FIGHTER · SCRIPTED PREVIEW":"FIGHTER · LIVE AI";const text=document.createElement("span");text.textContent=t;d.append(who,text);$("transcript").append(d);$("transcript").scrollTop=$("transcript").scrollHeight}
@@ -30,17 +38,20 @@ function decodeDialogue(data){
  if(!parsed||Array.isArray(parsed)||typeof parsed.dialogue!=="string")throw Error("Missing dialogue field");
  return normalize(parsed);
 }
-async function requestDialogue(model,messages,ctrl){
+function dialogueKey(text){return text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu," ").trim()}
+async function requestDialogue(model,messages,ctrl,priorDialogue=[]){
+ const used=new Set(priorDialogue.map(dialogueKey).filter(Boolean));
  let issue="";
  for(let attempt=0;attempt<2;attempt++){
   if(ctrl.signal.aborted)throw new DOMException("Cancelled","AbortError");
-  const prompt=[{...messages[0],content:messages[0].content+"\nReturn exactly this JSON schema: "+JSON.stringify(dialogueSchema)+(attempt?"\nYour previous attempt could not be read. Return only one valid object, with the dialogue field containing your character's own words.":"")},...messages.slice(1)];
-  const r=await timedFetch(ollama+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model,messages:prompt,stream:false,think:false,format:dialogueSchema,options:{num_predict:attempt?768:384,temperature:attempt?.2:.65}}),controller:ctrl},120000);
+  const prompt=[{...messages[0],content:messages[0].content+"\nReturn exactly this JSON schema: "+JSON.stringify(dialogueSchema)+(attempt?"\nYour previous attempt was invalid or repeated an earlier line. Return one valid object with a new reaction, or leave dialogue empty if the exchange is over.":"")},...messages.slice(1)];
+  const r=await timedFetch(ollama+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model,messages:prompt,stream:false,think:false,format:dialogueSchema,options:{num_predict:attempt?768:384,temperature:attempt?.35:.75,repeat_penalty:1.15}}),controller:ctrl},120000);
   if(!r.ok)throw Error("Ollama HTTP "+r.status+" — check that the selected model is installed.");
   const data=await r.json();
   if(ctrl.signal.aborted)throw new DOMException("Cancelled","AbortError");
-  try{return decodeDialogue(data)}catch(e){issue=e.message}
+  try{const v=decodeDialogue(data);if(v.dialogue.trim()&&used.has(dialogueKey(v.dialogue)))throw Error("Repeated earlier dialogue");return v}catch(e){issue=e.message}
  }
+ if(issue==="Repeated earlier dialogue"){const e=Error("Conversation ended to avoid repeated dialogue.");e.code="REPEAT_DIALOGUE";throw e}
  throw Error("Invalid AI reply after retry: "+issue+". Try again or inspect the model.");
 }
 function preview(c,eventOnly){const dialogue=eventOnly?"Hey, you're here. What's up?":c.mood==="Tired"?"Sorry, I'm a little tired. What were you saying?":c.mood==="Annoyed"?"Give me a second, okay?": "Hey. Tell me more.";return {dialogue,emotion:c.mood.toLowerCase(),action:"none (preview only)"}}
@@ -64,19 +75,19 @@ async function respond(eventOnly){
 }
 async function check(){if(!local){status("Public preview: run the repository locally at http://localhost:3000/life/ to connect Ollama and Pocket TTS.");return}$("check").disabled=true;status("Checking local services…");try{const results=await Promise.allSettled([timedFetch(ollama+"/api/tags"),timedFetch(pocket+"/health")]);const ok=r=>r.status==="fulfilled"&&r.value.ok;let models="";if(ok(results[0])){try{const j=await results[0].value.json();models=(j.models||[]).map(m=>m.name).join(", ")}catch{}}status("Ollama: "+(ok(results[0])?"connected"+(models?" · "+models:""):"unavailable")+" | Pocket TTS: "+(ok(results[1])?"connected":"unavailable"));}finally{$("check").disabled=false}}
 // Shared provider and model, separate character profiles; no private test history.
-function npcConfig(){const p=profile();return {mode:p.provider,model:p.model.trim(),local,characters:{Fighter:{personality:p.personality,style:p.style},Buddy:{personality:p.buddyPersonality,style:p.buddyStyle}}}}
+function npcConfig(){const p=profile();return {mode:p.provider,model:p.model.trim(),local,characters:{Fighter:{personality:p.personality,style:p.style},Chaotic:{personality:p.chaoticPersonality,style:p.chaoticStyle}}}}
 async function npcTurn(config,speaker,world,publicHistory,signal){
  if(config.mode!=="ollama"||!local)throw Error("Live Ollama requires the local development version.");
  if(!config.model||!Object.hasOwn(config.characters,speaker))throw Error("Missing model or character.");
  const ctrl=new AbortController(),cancel=()=>ctrl.abort();if(signal.aborted)cancel();else signal.addEventListener("abort",cancel,{once:true});
  try{
- const system="You portray "+speaker+", a fictional NPC in After Hours. Speak only as this character to the other NPC or the room. Use only public conversation and your own profile; do not invent private memories or control anyone else. One or two short natural sentences, at most 200 characters. Empty dialogue ends the exchange. Output JSON with dialogue, emotion (relaxed/excited/annoyed/tired/sad/amused/neutral), and action (suggestion only). Profile: "+JSON.stringify(config.characters[speaker]);
+ const system="You portray "+speaker+", a fictional NPC in After Hours. Speak only as this character to the other NPC or the room. Use only public conversation and your own profile; do not invent private memories or control anyone else. One or two short natural sentences, at most 200 characters. Stay in character without reciting your profile. Advance the conversation rather than repeating a previous line. Do not claim actions have already occurred. You can address the player or the other NPC. Empty dialogue ends the exchange if naturally finished. Output JSON with dialogue, emotion (relaxed/excited/annoyed/tired/sad/amused/neutral), and action (suggestion only). Profile: "+JSON.stringify(config.characters[speaker]);
  const messages=[{role:"system",content:system},{role:"user",content:JSON.stringify({world,publicConversation:publicHistory.slice(-12),speaker,task:"Respond as "+speaker+" to the most recent public statement. Do not write dialogue for any other character."})}];
- const v=await requestDialogue(config.model,messages,ctrl);return {...v,dialogue:v.dialogue.slice(0,240)};
+ const previous=publicHistory.filter(h=>h.speaker===speaker).map(h=>h.dialogue);const v=await requestDialogue(config.model,messages,ctrl,previous);return {...v,dialogue:v.dialogue.slice(0,240)};
  }finally{signal.removeEventListener("abort",cancel)}
 }
 function clear(){history=[];last=null;$("transcript").replaceChildren();$("output").textContent="No response yet.";status("Test conversation cleared.");stopVoice()}
-$("save").onclick=save;$("voice-provider").onchange=voiceState;$("speak").onclick=()=>speak($("audition").value);$("stop-voice").onclick=stopVoice;$("check").onclick=check;$("form").onsubmit=e=>{e.preventDefault();respond(false)};$("react").onclick=()=>respond(true);$("clear").onclick=clear;$("current").onclick=()=>{$("location").value=actualLocation;$("time").value=new Date().toTimeString().slice(0,5);status("Current room and device time copied into test context.")};$("close").onclick=()=>dialog.close();
+$("save").onclick=save;$("provider").addEventListener("change",save);$("model").addEventListener("change",save);$("voice-provider").onchange=voiceState;$("speak").onclick=()=>speak($("audition").value);$("stop-voice").onclick=stopVoice;$("check").onclick=check;$("form").onsubmit=e=>{e.preventDefault();respond(false)};$("react").onclick=()=>respond(true);$("clear").onclick=clear;$("current").onclick=()=>{$("location").value=actualLocation;$("time").value=new Date().toTimeString().slice(0,5);status("Current room and device time copied into test context.")};$("close").onclick=()=>dialog.close();
 $("export").onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify({schemaVersion:1,character:"Fighter",profile:profile(),world:context(),history,last},null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=u;a.download="fighter-character-lab.json";a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
 dialog.addEventListener("close",()=>{controller?.abort();stopVoice();onClose()});
 load();voiceState();

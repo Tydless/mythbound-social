@@ -171,7 +171,7 @@ function buildRoom(){
   npcs[name]=fighter.root;
   }
   guest("Fighter",.9,.35,"#a76b70",-Math.PI/2);
-  guest("Buddy",-1.05,.35,"#789e88",Math.PI/2);
+  guest("Chaotic",-1.05,.35,"#789e88",Math.PI/2);
   LifeSocial.attach({room:c.name,npcs,scene,camera,engine,canvas,blocked:modalOpen});
   scene.onAfterRenderObservable.add(()=>LifeSocial.project(B));
  }
