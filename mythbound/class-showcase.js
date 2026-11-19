@@ -807,6 +807,7 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
  const changed=next!==previousPath;
  if(changed)stopVoice();
  activePath=next;chosen=0;renderPath();
+ if(changed)drawEnvironment();
  if(changed){
   renderPreview(true);updateVoiceButton();
   // Mystery entry uses its teaser; the other paths retain their switch greetings.
@@ -816,10 +817,46 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
 }));
 const atmosphere=document.querySelector(".class-atmosphere");
 let environmentRequest=0;
+const SAINT_SCENES={
+ 1:{id:"heavenly",src:"../HeavenlyRealmBackground.png"},
+ 2:{id:"bloodmoon",src:"../BloodMoonshrineBackground.png"},
+ 3:{id:"judgment",src:"../HallOfJudgmentGrayscaleBackground.png"}
+};
+function fillSceneEffects(layer,scene){
+ if(layer.dataset.scene===scene)return;
+ layer.dataset.scene=scene;layer.replaceChildren();
+ function add(kind,i,vars){
+  const p=document.createElement("span");p.className="scene-fx "+kind;
+  for(const [key,val] of Object.entries(vars))p.style.setProperty("--"+key,String(val));
+  if(kind==="scene-feather"){
+   // A lightweight feather silhouette; strokes form the quill and separate vanes.
+   p.innerHTML='<svg viewBox="0 0 32 52" fill="none" aria-hidden="true"><path d="M27 2C11 4 2 15 4 29c0 6 4 10 7 13 2-9 8-12 13-20 4-7 5-15 3-20Z" fill="#fff9ee"/><path d="M5 50Q13 30 25 8M11 36l-5-12M14 30l-5-12M17 24l-3-10M12 35l11-8M16 28l10-7M20 19l6-5" stroke="#c9cce5" stroke-width="1" stroke-linecap="round"/></svg>';
+  }else if(kind==="scene-petal"){
+   p.innerHTML='<svg viewBox="0 0 24 18" aria-hidden="true"><path d="M1 8C6 0 16-2 23 3c-1 8-8 13-15 13C4 16 1 12 1 8Z" fill="currentColor"/><path d="M3 10Q13 9 21 4" fill="none" stroke="#ffc1c5" stroke-width=".6" opacity=".6"/></svg>';
+  }
+  layer.append(p);
+ }
+ if(scene==="judgment"){
+  for(let i=0;i<3;i++)add("scene-mist",i,{y:(24+i*23)+"%",duration:(27+i*10)+"s",delay:(-7-i*12)+"s",alpha:[.38,.31,.24][i]});
+  return;
+ }
+ if(!["heavenly","bloodmoon"].includes(scene))return;
+ const heavenly=scene==="heavenly",count=heavenly?12:22;
+ for(let i=0;i<count;i++){
+  const d=(heavenly?15:10)+(i%7)*1.8;
+  add(heavenly?"scene-feather":"scene-petal",i,{x:(3+(i*37.13)%94)+"%",size:(heavenly?13+(i%5)*3:8+(i%5)*2)+"px",duration:d+"s",delay:(-d*(i*.371%1))+"s",drift:((i%5-2)*32)+"px",turn:((i%2?1:-1)*(40+i%4*35))+"deg",alpha:(.43+(i%4)*.10).toFixed(2),hue:(i%3)*8+"deg"});
+ }
+ for(let i=0;i<30;i++)add("scene-glint",i,{x:(2+(i*53.17)%96)+"%",y:(7+(i*29.71)%88)+"%",size:(1.5+(i%4)*.9)+"px",duration:(5+i%6*1.3)+"s",delay:(-i*.73)+"s",drift:((i%7-3)*9)+"px"});
+}
 function drawEnvironment(){
  if(!atmosphere)return;
  const host=$("class-details"),landscape=atmosphere.querySelector(".class-landscape"),embers=atmosphere.querySelector(".class-embers");
  host.dataset.environment=active;
+ const special=active==="saint"?SAINT_SCENES[activePath]:null;
+ const scene=special?.id||"base";
+ const layer=atmosphere.querySelector(".class-scene-effects");
+ host.dataset.scene=scene;
+ fillSceneEffects(layer,scene);
  const foreground=host.querySelector(".class-foreground-motes");
  if(foreground&&!foreground.children.length){
   for(let i=0;i<12;i++){
@@ -836,8 +873,8 @@ function drawEnvironment(){
  const request=++environmentRequest;
  atmosphere.classList.remove("has-landscape");
  landscape.style.backgroundImage="";
- const candidates=["../Environment"+cap(active)+".jpg","../Environment"+cap(active)+".png"];
- if(active==="saint")candidates.push("../mythbound-home-watercolor.jpg");
+ const candidates=special?[special.src]:["../Environment"+cap(active)+".jpg","../Environment"+cap(active)+".png"];
+ if(active==="saint"&&!special)candidates.push("../mythbound-home-watercolor.jpg");
  function tryImage(i){
   if(i>=candidates.length||request!==environmentRequest)return;
   const image=new Image();
