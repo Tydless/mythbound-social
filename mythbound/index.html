@@ -10,28 +10,28 @@
   <script>
   // Decide before first paint; the intro runs once per tab session, not on internal navigation.
   (function(){
-    try{if(sessionStorage.getItem("mb-whimble-intro-v1")==="seen")return}catch{}
+    try{if(sessionStorage.getItem("mb-whimble-intro-v2")==="seen")return}catch{}
     document.documentElement.classList.add("mb-intro-active");
   })();
   </script>
   <style>
   /* Inline critical styles: the studio screen covers the document from its first paint. */
-  #mb-studio-intro{display:none;position:fixed;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:0;overflow:hidden;z-index:2147483647;isolation:isolate;background:radial-gradient(ellipse at center,#fffdf8 12%,#f8eeeb 55%,#dfd0e5 100%);color:#72538d;cursor:default;opacity:1;transition:opacity .7s ease-in-out;-webkit-tap-highlight-color:transparent}
+  #mb-studio-intro{display:none;position:fixed;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:0;overflow:hidden;z-index:2147483647;isolation:isolate;background:radial-gradient(ellipse at center,#fffdf8 12%,#f8eeeb 55%,#dfd0e5 100%);color:#72538d;cursor:default;-webkit-tap-highlight-color:transparent}
   html.mb-intro-active{overflow:hidden}
   html.mb-intro-active #mb-studio-intro{display:block}
   #mb-studio-intro:focus{outline:none}
   #mb-studio-intro:focus-visible{outline:2px solid #b69ac8;outline-offset:-5px}
   #mb-studio-intro::before{content:"";position:absolute;inset:0;background:url("../Whimble_Animated_Background.webp") center/cover no-repeat;z-index:-1}
   .mb-intro-stage{position:absolute;left:50%;top:50%;width:min(100vw,177.68vh);height:min(100vh,56.28vw);width:min(100vw,177.68dvh);height:min(100dvh,56.28vw);transform:translate(-50%,-50%);pointer-events:none}
-  .mb-intro-art{position:absolute;left:50%;display:block;height:auto;max-width:none;object-fit:contain;opacity:0;transform:translate(-50%,-50%);transition:opacity .65s ease-out}
+  .mb-intro-art{position:absolute;left:50%;display:block;height:auto;max-width:none;object-fit:contain;opacity:1;transform:translate(-50%,-50%)}
   .mb-intro-studio{width:36%;top:30.5%}
   .mb-intro-presents{width:9%;top:52.5%}
   .mb-intro-game{width:35.5%;top:66%}
-  #mb-studio-intro.is-ready .mb-intro-art{opacity:1}
-  #mb-studio-intro.is-ready .mb-intro-presents{transition-delay:.25s}
-  #mb-studio-intro.is-ready .mb-intro-game{transition-delay:.5s}
-  #mb-studio-intro.is-leaving .mb-intro-art{opacity:0;transition-delay:0s}
-  #mb-studio-intro.is-leaving{opacity:0}
+  #mb-studio-intro.is-ready .mb-intro-art{animation:mb-intro-pulse 2.8s ease-in-out infinite}
+  @keyframes mb-intro-pulse{
+    0%,100%{transform:translate(-50%,-50%) scale(1)}
+    50%{transform:translate(-50%,-50%) scale(1.035)}
+  }
   @media(max-aspect-ratio:1/1){
     .mb-intro-stage{width:100%;height:100%}
     .mb-intro-studio{width:86%;max-width:590px;top:35%}
@@ -39,13 +39,13 @@
     .mb-intro-game{width:80%;max-width:580px;top:64%}
   }
   @media(prefers-reduced-motion:reduce){
-    #mb-studio-intro,#mb-studio-intro .mb-intro-art{transition:none!important}
+    #mb-studio-intro,#mb-studio-intro .mb-intro-art{animation:none!important;transition:none!important}
     #mb-studio-intro::before{background:none}
   }
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-whimble-intro1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-whimble-intro2";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -827,14 +827,13 @@ body.mythbound-guest .mb-header-friends{display:none!important}
   (function(){
     const root=document.documentElement,screen=document.getElementById("mb-studio-intro");
     if(!root.classList.contains("mb-intro-active")){screen.remove();return}
-    const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let finished=false,leaving=false,holdTimer=0,assetTimer=0,exitTimer=0,watchdog=0;
+    let finished=false,holdTimer=0,assetTimer=0,watchdog=0;
     const restore=[];
     const previous=document.activeElement;
     function unlock(){
       if(finished)return;
       finished=true;
-      clearTimeout(holdTimer);clearTimeout(assetTimer);clearTimeout(exitTimer);clearTimeout(watchdog);
+      clearTimeout(holdTimer);clearTimeout(assetTimer);clearTimeout(watchdog);
       root.classList.remove("mb-intro-active");
       document.removeEventListener("keydown",onKey,true);
       document.removeEventListener("DOMContentLoaded",shield);
@@ -842,14 +841,10 @@ body.mythbound-guest .mb-header-friends{display:none!important}
       const focusWasIntro=document.activeElement===screen;
       screen.remove();
       if(focusWasIntro&&previous&&previous!==document.body&&previous.isConnected&&!previous.closest("[hidden]"))previous.focus({preventScroll:true});
-      try{sessionStorage.setItem("mb-whimble-intro-v1","seen")}catch{}
+      try{sessionStorage.setItem("mb-whimble-intro-v2","seen")}catch{}
     }
-    function leave(){
-      if(finished||leaving)return;
-      leaving=true;clearTimeout(holdTimer);clearTimeout(assetTimer);
-      screen.classList.add("is-leaving");
-      if(reduced)unlock();else exitTimer=setTimeout(unlock,710);
-    }
+    // Cut straight to the existing page, without a crossfade.
+    function leave(){unlock()}
     function onKey(e){if(e.key==="Escape"){e.preventDefault();e.stopImmediatePropagation();leave()}else if(e.key==="Tab"){e.preventDefault();screen.focus({preventScroll:true})}}
     function shield(){
       if(finished)return;
@@ -864,14 +859,14 @@ body.mythbound-guest .mb-header-friends{display:none!important}
     document.addEventListener("DOMContentLoaded",shield,{once:true});
     let started=false;
     function start(){
-      if(started||finished||leaving)return;
+      if(started||finished)return;
       started=true;clearTimeout(assetTimer);
       screen.classList.add("is-ready");
-      holdTimer=setTimeout(leave,reduced?1400:3200);
+      holdTimer=setTimeout(leave,5900);
     }
     // Allow a short asset-loading grace period, but never trap visitors on the splash.
     assetTimer=setTimeout(start,1200);
-    watchdog=setTimeout(unlock,5500);
+    watchdog=setTimeout(unlock,7500);
     Promise.all([...screen.querySelectorAll("img")].map(img=>img.complete?Promise.resolve():new Promise(resolve=>{
       img.addEventListener("load",resolve,{once:true});img.addEventListener("error",resolve,{once:true});
     }))).then(start,start);
