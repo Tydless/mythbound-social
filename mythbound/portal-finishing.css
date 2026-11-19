@@ -20,3 +20,7 @@
 .site-footer .footer-whimble-logo{grid-column:2;grid-row:1;display:block;width:clamp(100px,12vw,190px);height:auto;object-fit:contain;justify-self:end}
 .site-footer p{grid-column:1/-1;grid-row:2}
 @media(max-width:480px){.site-footer{column-gap:12px;padding-inline:18px}.site-footer .footer-brand.wordmark-host{width:min(100%,188px)}.site-footer .footer-whimble-logo{width:105px}}
+
+/* Horizontal touch swipes belong to the carousel; vertical scrolling and pinch zoom stay native. */
+.featured-news-card{touch-action:pan-y pinch-zoom}
+.featured-news-card .featured-news-art img{-webkit-user-drag:none;user-select:none}

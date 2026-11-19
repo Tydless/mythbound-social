@@ -245,3 +245,33 @@ test("Marked ability headings and category icon share the saturated title color"
  const details=style.slice(style.indexOf("/* The selected path owns"),style.indexOf("/* Typographic hierarchy:"));
  assert.doesNotMatch(details,/\.ability-detail-heading h4|\.showcase-section-title h3/);
 });
+
+
+test("Path and advancement symbols are centered with explicit SVG geometry",()=>{
+ const style=read("class-specializations.css");
+ assert.match(html,/<span class="path-advancement-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"/);
+ assert.match(html,/M12 4Q13\.5 10\.5 20 12Q13\.5 13\.5 12 20Q10\.5 13\.5 4 12Q10\.5 10\.5 12 4Z/);
+ assert.match(style,/\.subclass-intro>div\{align-items:center\}/);
+ assert.match(style,/\.subclass-intro h3\{margin:0;line-height:1\.25\}/);
+ assert.match(style,/\.path-advancement-symbol\{\s*display:grid;place-items:center;box-sizing:border-box;flex:0 0 34px/);
+ assert.match(style,/\.path-advancement-symbol svg\{display:block;width:20px;height:20px;margin:0\}/);
+});
+
+test("News rotates every five seconds and swipes wrap without opening articles",()=>{
+ const code=html.slice(html.indexOf("function swipeDirection"),html.indexOf("showFeatured(0);schedule();"));
+ const fn= new Function("card","showFeatured","schedule","openArticle","items","Date","event", "let gesture=null,suppressClickUntil=0,index=0;"+code+";return ()=>index;");
+ const handlers={},calls=[],card={addEventListener(n,f){handlers[n]=f}};
+ let schedules=0,now=100;
+ const index=fn(card,(i,a,d)=>{calls.push([i,a,d])},()=>schedules++,id=>calls.push(id),[{id:"one"},{id:"two"},{id:"three"},{id:"four"}],{now:()=>now});
+ function touch(x,y){return {identifier:1,clientX:x,clientY:y}}
+ function start(x,y){handlers.touchstart({touches:[touch(x,y)]})}
+ function end(x,y){let prevented=false;handlers.touchend({changedTouches:[touch(x,y)],cancelable:true,preventDefault(){prevented=true}});return prevented}
+ start(180,60);assert.equal(end(90,62),true);assert.deepEqual(calls.pop(),[1,true,1]);
+ let blocked=false;card.onclick({detail:1,preventDefault(){blocked=true}});assert.equal(blocked,true);assert.equal(calls.length,0);
+ start(30,80);assert.equal(end(120,83),true);assert.deepEqual(calls.pop(),[3,true,-1]);
+ start(100,100);assert.equal(end(95,210),false);assert.equal(calls.length,0);
+ start(100,100);assert.equal(end(103,104),false);card.onclick({detail:1,preventDefault(){}});assert.equal(calls.pop(),"one");
+ assert.ok(schedules>=8);assert.equal(index(),0);
+ assert.match(html,/const interval=5000;/);
+ assert.match(read("portal-finishing.css"),/touch-action:pan-y pinch-zoom/);
+});
