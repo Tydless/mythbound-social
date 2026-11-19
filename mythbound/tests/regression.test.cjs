@@ -291,3 +291,26 @@ test("Uploaded region cues use their exact filenames, individual mixer trims and
  }
  latest.events.ended();assert.equal(latest.paused,true);
 });
+
+test("Home decorative subtitles are removed, while news titles remain",()=>{
+ const home=html.slice(html.indexOf('id="page-home"'),html.indexOf('id="page-news"'));
+ for(const label of ["A GLIMPSE BEYOND THE VEIL","LETTERS FROM THE THRESHOLD","BEYOND THE GAME","CHRONICLE I · THE FIRST AWAKENING"])assert.ok(!home.includes(label));
+ assert.ok(html.includes("Letters from the Threshold — developer diary"));
+});
+test("News filters show every matching category and Home deep-links reveal hidden articles",()=>{
+ const keys=["cosmetics","patch-notes","announcement","community","developer-diary"];
+ const buttons=["all",...keys].map(newsFilter=>({dataset:{newsFilter},classList:{toggle(n,v){this.active=v}},setAttribute(n,v){this[n]=v},addEventListener(n,f){this.click=f}}));
+ const articles=keys.map(newsCategory=>({dataset:{newsCategory},hidden:false}));
+ const tags=keys.map(newsTag=>({dataset:{newsTag},addEventListener(n,f){this.click=f}}));
+ const home={addEventListener(n,f){this.click=f}},status={hidden:true};
+ const doc={querySelectorAll(s){return s==="[data-news-filter]"?buttons:s==="#news-list .news-entry"?articles:s==="[data-news-tag]"?tags:s==='#page-home [data-go="news"]'?[home]:[]},getElementById(){return status}};
+ const code=html.slice(html.indexOf(" function filterNews(category)"),html.indexOf(" function toggleArticle(id,open)"));
+ new Function("document",code)(doc);
+ for(let i=0;i<keys.length;i++){
+  buttons[i+1].click();assert.equal(articles.filter(a=>!a.hidden).length,1);assert.equal(articles[i].hidden,false);assert.equal(buttons[i+1]["aria-pressed"],"true");assert.equal(status.hidden,true);
+  tags[(i+1)%keys.length].click();assert.equal(articles[(i+1)%keys.length].hidden,false);
+ }
+ buttons[0].click();assert.ok(articles.every(a=>!a.hidden));buttons[1].click();home.click();assert.ok(articles.every(a=>!a.hidden));
+ assert.ok(html.includes('function openArticle(id){\n  filterNews("all");'));
+ for(const [i,key] of keys.entries()){assert.ok(html.includes('data-news-category="'+key+'"'));assert.ok(html.includes('data-news-tag="'+key+'"'))}
+});
