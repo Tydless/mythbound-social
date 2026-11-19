@@ -56,22 +56,27 @@
 @media(prefers-reduced-motion:reduce){.mw-map-pin *,.mw-terrain [data-terrain],.mw-region-entry{transition:none}}
 
 /* Region window — independent of atlas positioning and page layout. */
-#mw-region-preview{position:fixed;inset:0;margin:auto;padding:0;width:min(470px,calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 32px);overflow:auto;border:1px solid var(--region-accent,#dfbf86);border-radius:5px;background:#172335;color:#eaddc7;box-shadow:0 18px 90px #050a14b0;box-sizing:border-box}
-#mw-region-preview:not([open]){display:none}
-#mw-region-preview::backdrop{background:#080e1bb8;backdrop-filter:blur(3px)}
+#mw-region-preview{position:fixed;inset:auto;margin:0;padding:0;width:min(350px,calc(100vw - 20px));max-width:none;max-height:calc(100dvh - 85px);z-index:1000;overflow:auto;border:1px solid var(--region-accent,#dfbf86);border-radius:5px;background:#172335;color:#eaddc7;box-shadow:0 18px 90px #050a14b0;box-sizing:border-box}
+#mw-region-preview[hidden]{display:none}
+#mw-region-preview::backdrop{background:transparent;backdrop-filter:none;pointer-events:none}
 .mw-preview-landscape{position:relative;display:grid;place-items:center;aspect-ratio:720/320;overflow:hidden;background:linear-gradient(150deg,color-mix(in srgb,var(--region-accent) 20%,#25364b),#172335)}
 .mw-preview-landscape>img,.mw-preview-landscape>svg{display:block;width:100%;height:100%;position:absolute;inset:0;object-fit:cover}
 .mw-preview-landscape>svg:not([viewBox="0 0 720 320"]){width:64px;height:64px;inset:0;margin:auto;color:var(--region-accent)}
 .mw-preview-artnote{position:absolute;bottom:8px;left:10px;color:#fff0d7;background:#121e2bd9;padding:4px 7px;font-size:10px}
 #mw-region-preview .mw-preview-close{position:absolute;z-index:2;right:10px;top:10px;display:grid;place-items:center;width:34px;height:34px;padding:0;background:#142032e8;border:1px solid #efdfba80;border-radius:50%;color:#fff0d7;font:400 25px/1 system-ui}
 #mw-region-preview .mw-preview-close:hover{background:#344259}
-.mw-preview-body{padding:23px 25px 25px}
+.mw-preview-body{padding:16px 18px 18px}
 #mw-region-preview .mw-kicker{color:var(--region-accent)}
-#mw-region-preview h2{font:600 clamp(23px,4vw,30px)/1.25 'Cinzel',Georgia,serif;margin:6px 0 10px;color:#f6e6cb}
-#mw-region-preview p{font-size:14px;line-height:1.65;color:#c7d1df;margin:0 0 18px}
-.mw-preview-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;border-block:1px solid #ad997b35;padding:13px 0;margin-bottom:18px}
+#mw-region-preview h2{font:600 clamp(20px,3.5vw,25px)/1.25 'Cinzel',Georgia,serif;margin:6px 0 10px;color:#f6e6cb}
+#mw-region-preview p{font-size:13px;line-height:1.55;color:#c7d1df;margin:0 0 12px}
+.mw-preview-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;border-block:1px solid #ad997b35;padding:10px 0;margin-bottom:12px}
 .mw-preview-label{display:block;color:#b5c0d0;font-size:11px;margin-bottom:4px}
 .mw-preview-label small{font-size:10px;color:#99a7bb}
 .mw-preview-meta strong{color:var(--region-accent);font:600 15px 'Cinzel',Georgia,serif}
 .mw-preview-dots{display:flex;gap:7px;padding-right:3px}.mw-preview-dots[hidden]{display:none}.mw-preview-dots span{width:10px;height:10px;transform:rotate(45deg);border:1px solid var(--region-accent);opacity:.35}.mw-preview-dots span.is-filled{opacity:1;background:var(--region-accent)}
-@media(max-width:480px){.mw-preview-body{padding:18px}.mw-preview-landscape{aspect-ratio:16/8}.mw-preview-meta{gap:7px}.mw-preview-dots{gap:5px}.mw-preview-dots span{width:8px;height:8px}}
+@media(max-width:480px){#mw-region-preview{width:min(300px,calc(100vw - 20px))}.mw-preview-body{padding:13px 15px}.mw-preview-landscape{aspect-ratio:16/7}.mw-preview-meta{gap:7px}.mw-preview-dots{gap:5px}.mw-preview-dots span{width:8px;height:8px}}
+
+/* The active selection changes the detail panel, never another button's hue. */
+#page-discover .mw-location-tab{color:var(--region-accent);border-color:color-mix(in srgb,var(--region-accent) 40%,transparent)}
+#page-discover .mw-location-tab:hover,#page-discover .mw-location-tab:focus-visible,#page-discover .mw-location-tab.is-active{color:var(--region-accent);border-color:var(--region-accent);background:color-mix(in srgb,var(--region-accent) 13%,#192638)}
+#mw-region-preview{--atlas-gold:#dfbf86;--atlas-line:#c7a66b42;box-shadow:0 10px 35px #050a1480}

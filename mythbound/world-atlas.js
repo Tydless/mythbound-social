@@ -26,9 +26,52 @@ function emblem(region){
 }
 const preview=$("mw-region-preview");
 let opener=null;
-function openPreview(id,trigger){
+function previewPlacement(anchor,width,height,vw,vh,header=0){
+ const gap=12,pad=10,topEdge=Math.max(pad,header+pad),bottomEdge=vh-pad;
+ const clamp=(v,min,max)=>Math.max(min,Math.min(v,Math.max(min,max)));
+ const sideY=clamp(anchor.top+(anchor.height-height)/2,topEdge,bottomEdge-height);
+ const centeredX=clamp(anchor.left+(anchor.width-width)/2,pad,vw-pad-width);
+ const right=anchor.right+gap,left=anchor.left-gap-width,below=anchor.bottom+gap,above=anchor.top-gap-height;
+ // Prefer a side on wide screens; on phones use the available space above or below.
+ if(vw>600){
+  const preferRight=vw-anchor.right>=anchor.left;
+  if(preferRight&&right+width<=vw-pad)return {x:right,y:sideY};
+  if(left>=pad)return {x:left,y:sideY};
+  if(right+width<=vw-pad)return {x:right,y:sideY};
+ }
+ if(below+height<=bottomEdge)return {x:centeredX,y:below};
+ if(above>=topEdge)return {x:centeredX,y:above};
+ // On short screens constrain the card to the side with more usable vertical space.
+ const down=bottomEdge-below,up=anchor.top-gap-topEdge;
+ const useBelow=down>=up,available=Math.max(0,useBelow?down:up);
+ if(available>=100)return {x:centeredX,y:useBelow?below:topEdge,maxHeight:available};
+ return {x:centeredX,y:clamp(useBelow?below:above,topEdge,bottomEdge-height)};
+}
+function positionPreview(){
+ if(!opener)return;
+ const anchor=opener.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=window.innerHeight;
+ if(anchor.bottom<0||anchor.top>vh||anchor.right<0||anchor.left>vw){closePreview();return}
+ const header=document.querySelector(".site-header");
+ const headerBottom=header?Math.max(0,header.getBoundingClientRect().bottom):0;
+ preview.style.maxHeight="";
+ const size=preview.getBoundingClientRect();
+ const pos=previewPlacement(anchor,size.width,size.height,vw,vh,headerBottom);
+ if(pos.maxHeight)preview.style.maxHeight=pos.maxHeight+"px";
+ preview.style.left=Math.round(pos.x)+"px";preview.style.top=Math.round(pos.y)+"px";
+}
+function closePreview(restore=false){
+ if(!opener)return;
+ const old=opener;opener=null;old.setAttribute("aria-expanded","false");
+ if(typeof preview.hidePopover==="function"){if(preview.matches(":popover-open"))preview.hidePopover()}else preview.hidden=true;
+ if(restore)old.focus({preventScroll:true});
+}
+function openPreview(id,trigger,{sound=false}={}){
  const r=find(id);if(!r||!preview)return;
- choose(id,{sound:true});opener=trigger instanceof HTMLElement?trigger:markers.querySelector('[data-atlas-region="'+id+'"]');
+ const anchor=trigger instanceof HTMLElement?trigger:markers.querySelector('[data-atlas-region="'+id+'"]');
+ if(!anchor)return;
+ if(opener===anchor){closePreview();return}
+ if(opener)closePreview();
+ choose(id,{sound});opener=anchor;opener.setAttribute("aria-expanded","true");
  preview.style.setProperty("--region-accent",r.color);
  $("mw-preview-type").textContent=r.type;
  $("mw-preview-title").textContent=r.name;
@@ -40,13 +83,20 @@ function openPreview(id,trigger){
  const landscape=$("mw-preview-landscape");landscape.replaceChildren();
  function fallback(){landscape.replaceChildren();if(landscapeSketches[id]){landscape.innerHTML='<svg viewBox="0 0 720 320" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+landscapeSketches[id]+'</svg>';}else{landscape.append(emblem(r));}landscape.append(make("span","mw-preview-artnote",landscapeSketches[id]?"Landscape concept · placeholder":"Landscape forthcoming"));}
  if(r.art){const img=make("img");img.alt=r.name+" landscape";img.addEventListener("error",()=>{if(landscape.contains(img))fallback()},{once:true});img.src=r.art;landscape.append(img);if(r.artLabel)landscape.append(make("span","mw-preview-artnote",r.artLabel));}else fallback();
- if(!preview.open)preview.showModal();
+ preview.style.left="0px";preview.style.top="0px";
+ if(typeof preview.showPopover==="function"){preview.showPopover()}else preview.hidden=false;
+ positionPreview();
 }
 if(preview){
- $("mw-preview-close").addEventListener("click",()=>preview.close());
- $("mw-preview-guide").addEventListener("click",()=>{preview.close();moveTo($("mw-locations"))});
- preview.addEventListener("click",e=>{if(e.target===preview){const r=preview.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)preview.close()}});
- preview.addEventListener("close",()=>{opener?.focus({preventScroll:true});opener=null});
+ // Native manual popover is non-modal and in the top layer, avoiding atlas clipping.
+ if(typeof preview.showPopover!=="function"){preview.removeAttribute("popover");preview.hidden=true;document.body.append(preview)}
+ $("mw-preview-close").addEventListener("click",()=>closePreview(true));
+ $("mw-preview-guide").addEventListener("click",()=>{closePreview();moveTo($("mw-locations"))});
+ document.addEventListener("pointerdown",e=>{if(opener&&!preview.contains(e.target)&&!opener.contains(e.target))closePreview()},true);
+ document.addEventListener("keydown",e=>{if(opener&&e.key==="Escape"){e.preventDefault();closePreview(true)}});
+ window.addEventListener("resize",positionPreview);
+ window.addEventListener("scroll",positionPreview,{passive:true});
+ if(typeof MutationObserver!=="undefined")new MutationObserver(()=>{if(world.hidden)closePreview()}).observe(world,{attributes:true,attributeFilter:["hidden"]});
 }
 function moveTo(el){el.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"})}
 function choose(id,{scroll=false,sound=false}={}){
@@ -68,7 +118,7 @@ function choose(id,{scroll=false,sound=false}={}){
  locationHeading.append(make("span","mw-kicker","Exploring"),make("h3","",r.name),make("p","",r.note));
  const tabs=make("div","mw-location-tabs");tabs.setAttribute("role","group");tabs.setAttribute("aria-label","Filter by region");
  for(const v of regions){
-  const btn=make("button","mw-location-tab",v.name);btn.type="button";btn.dataset.atlasRegion=v.id;btn.classList.toggle("is-active",v.id===id);btn.setAttribute("aria-pressed",String(v.id===id));btn.addEventListener("click",()=>{choose(v.id,{sound:true});location.querySelector('[data-atlas-region="'+v.id+'"]')?.focus({preventScroll:true})});tabs.append(btn)
+  const btn=make("button","mw-location-tab",v.name);btn.type="button";btn.dataset.atlasRegion=v.id;btn.style.setProperty("--region-accent",v.color);btn.classList.toggle("is-active",v.id===id);btn.setAttribute("aria-pressed",String(v.id===id));btn.addEventListener("click",()=>{closePreview();choose(v.id);location.querySelector('[data-atlas-region="'+v.id+'"]')?.focus({preventScroll:true})});tabs.append(btn)
  }
  location.replaceChildren(tabs,locationHeading);
  if(scroll){
@@ -84,15 +134,15 @@ function choose(id,{scroll=false,sound=false}={}){
 for(const r of regions){
  const pin=make("button","mw-map-pin");pin.type="button";pin.dataset.atlasRegion=r.id;
  pin.style.setProperty("--pin-x",r.x+"%");pin.style.setProperty("--pin-y",r.y+"%");pin.style.setProperty("--region-accent",r.color);
- pin.setAttribute("aria-haspopup","dialog");pin.setAttribute("aria-label","Explore "+r.name);pin.setAttribute("aria-pressed","false");
+ pin.setAttribute("aria-haspopup","dialog");pin.setAttribute("aria-expanded","false");pin.setAttribute("aria-controls","mw-region-preview");pin.setAttribute("aria-label","Explore "+r.name);pin.setAttribute("aria-pressed","false");
  const symbol=make("span","mw-pin-symbol",r.symbol);symbol.setAttribute("aria-hidden","true");
- const label=make("span","mw-pin-label",r.name);pin.append(symbol,label);pin.addEventListener("click",()=>openPreview(r.id,pin));markers.append(pin);
+ const label=make("span","mw-pin-label",r.name);pin.append(symbol,label);pin.addEventListener("click",()=>openPreview(r.id,pin,{sound:true}));markers.append(pin);
  const card=make("article","mw-region mw-region-entry");card.style.setProperty("--region-accent",r.color);
  const art=make("div","mw-region-art");art.append(emblem(r));
  const content=make("div","mw-region-copy");
- const button=make("button","mw-region-open","Explore region");button.type="button";button.dataset.atlasRegion=r.id;button.setAttribute("aria-label","Explore "+r.name);button.setAttribute("aria-pressed","false");button.setAttribute("aria-haspopup","dialog");button.addEventListener("click",()=>openPreview(r.id,button));
+ const button=make("button","mw-region-open","Explore region");button.type="button";button.dataset.atlasRegion=r.id;button.setAttribute("aria-label","Explore "+r.name);button.setAttribute("aria-pressed","false");button.setAttribute("aria-haspopup","dialog");button.setAttribute("aria-expanded","false");button.setAttribute("aria-controls","mw-region-preview");button.addEventListener("click",()=>openPreview(r.id,button));
  content.append(make("span","mw-kicker",r.type),make("h3","",r.name),make("p","",r.description),button);card.append(art,content);directory.append(card);
 }
-world.querySelectorAll("[data-terrain]").forEach(path=>path.addEventListener("click",()=>openPreview(path.dataset.terrain,path)));
+world.querySelectorAll("[data-terrain]").forEach(path=>path.addEventListener("click",()=>openPreview(path.dataset.terrain,path,{sound:true})));
 choose(selected);
 })();
