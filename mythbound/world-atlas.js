@@ -108,19 +108,12 @@ function choose(id,{scroll=false,sound=false}={}){
  });
  world.querySelectorAll("[data-terrain]").forEach(p=>p.classList.toggle("is-active",p.dataset.terrain===id));
  detail.style.setProperty("--region-accent",r.color);
- const art=make("div","mw-detail-symbol");art.append(emblem(r));
- const copy=make("div","mw-detail-copy");
- copy.append(make("span","mw-kicker",r.type),make("h3","",r.name),make("p","",r.description),make("p","mw-region-note",r.note));
- const guide=make("button","outline-action mw-detail-guide","View location guide");guide.type="button";guide.addEventListener("click",()=>moveTo($("mw-locations")));
- detail.replaceChildren(art,copy,guide);
  location.style.setProperty("--region-accent",r.color);
- const locationHeading=make("div","mw-location-current");
- locationHeading.append(make("span","mw-kicker","Exploring"),make("h3","",r.name),make("p","",r.note));
- const tabs=make("div","mw-location-tabs");tabs.setAttribute("role","group");tabs.setAttribute("aria-label","Filter by region");
- for(const v of regions){
-  const btn=make("button","mw-location-tab",v.name);btn.type="button";btn.dataset.atlasRegion=v.id;btn.style.setProperty("--region-accent",v.color);btn.classList.toggle("is-active",v.id===id);btn.setAttribute("aria-pressed",String(v.id===id));btn.addEventListener("click",()=>{closePreview();choose(v.id);location.querySelector('[data-atlas-region="'+v.id+'"]')?.focus({preventScroll:true})});tabs.append(btn)
+ for(const entry of world.querySelectorAll("[data-region-panel]")){
+  const on=entry.dataset.regionPanel===id;
+  entry.classList.toggle("is-current",on);
+  entry.setAttribute("aria-hidden",String(!on));
  }
- location.replaceChildren(tabs,locationHeading);
  if(scroll){
   requestAnimationFrame(()=>{
    const atlas=world.querySelector(".mw-atlas"),header=document.querySelector(".site-header");
@@ -131,6 +124,33 @@ function choose(id,{scroll=false,sound=false}={}){
   });
  }
 }
+// Stack every region's content in the same grid cell. The tallest entry reserves
+// space at the current screen width; switching only visibility cannot cause reflow.
+function initStableDetails(){
+ const symbols=make("div","mw-detail-symbol-stack mw-region-stack");
+ const copies=make("div","mw-detail-copy-stack mw-region-stack");
+ const headings=make("div","mw-location-stack mw-region-stack");
+ function panel(node,r){
+  node.dataset.regionPanel=r.id;
+  node.style.setProperty("--region-accent",r.color);
+  node.setAttribute("aria-hidden","true");
+  return node;
+ }
+ const tabs=make("div","mw-location-tabs");tabs.setAttribute("role","group");tabs.setAttribute("aria-label","Filter by region");
+ for(const r of regions){
+  const art=panel(make("div","mw-detail-symbol"),r);art.append(emblem(r));symbols.append(art);
+  const copy=panel(make("div","mw-detail-copy"),r);
+  copy.append(make("span","mw-kicker",r.type),make("h3","",r.name),make("p","",r.description),make("p","mw-region-note",r.note));copies.append(copy);
+  const heading=panel(make("div","mw-location-current"),r);
+  heading.append(make("span","mw-kicker","Exploring"),make("h3","",r.name),make("p","",r.note));headings.append(heading);
+  const btn=make("button","mw-location-tab",r.name);btn.type="button";btn.dataset.atlasRegion=r.id;btn.style.setProperty("--region-accent",r.color);btn.setAttribute("aria-pressed","false");
+  btn.addEventListener("click",()=>{closePreview();choose(r.id)});tabs.append(btn);
+ }
+ const guide=make("button","outline-action mw-detail-guide","View location guide");guide.type="button";guide.addEventListener("click",()=>moveTo($("mw-locations")));
+ detail.replaceChildren(symbols,copies,guide);
+ location.replaceChildren(tabs,headings);
+}
+initStableDetails();
 for(const r of regions){
  const pin=make("button","mw-map-pin");pin.type="button";pin.dataset.atlasRegion=r.id;
  pin.style.setProperty("--pin-x",r.x+"%");pin.style.setProperty("--pin-y",r.y+"%");pin.style.setProperty("--region-accent",r.color);

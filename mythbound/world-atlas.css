@@ -80,3 +80,15 @@
 #page-discover .mw-location-tab{color:var(--region-accent);border-color:color-mix(in srgb,var(--region-accent) 40%,transparent)}
 #page-discover .mw-location-tab:hover,#page-discover .mw-location-tab:focus-visible,#page-discover .mw-location-tab.is-active{color:var(--region-accent);border-color:var(--region-accent);background:color-mix(in srgb,var(--region-accent) 13%,#192638)}
 #mw-region-preview{--atlas-gold:#dfbf86;--atlas-line:#c7a66b42;box-shadow:0 10px 35px #050a1480}
+
+/* Reserve the largest region's actual text height at every viewport width.
+   All entries participate in layout but only the active entry is painted. */
+#page-discover .mw-region-stack{display:grid;min-width:0}
+#page-discover .mw-region-stack>[data-region-panel]{grid-area:1/1;visibility:hidden;pointer-events:none;min-width:0}
+#page-discover .mw-region-stack>[data-region-panel].is-current{visibility:visible;pointer-events:auto}
+#page-discover .mw-detail-symbol-stack{align-self:center;justify-self:start}
+#page-discover .mw-detail-copy-stack{align-self:center}
+#page-discover .mw-detail-copy-stack .mw-detail-copy{align-self:start}
+#page-discover .mw-location-stack .mw-location-current{align-self:stretch}
+#page-discover .mw-location-tabs .mw-location-tab{box-sizing:border-box;min-height:32px;line-height:1.4;border-width:1px;font-size:11px;font-weight:400;transform:none}
+#page-discover .mw-location-tabs .mw-location-tab:hover,#page-discover .mw-location-tabs .mw-location-tab:focus-visible,#page-discover .mw-location-tabs .mw-location-tab.is-active{border-width:1px;font-weight:400;transform:none}

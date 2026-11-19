@@ -338,3 +338,14 @@ test("Header portrait optical alignment moves the presence marker with the artwo
  assert.ok(s.includes("width:100%;height:100%;margin:0;"));
  assert.ok(html.includes('id="account-button" class="account-chip"'));
 });
+
+test("Atlas region selection keeps all panels and location tabs mounted",()=>{
+ const code=read("world-atlas.js"),style=read("world-atlas.css");
+ const choose=code.slice(code.indexOf("function choose("),code.indexOf("function initStableDetails("));
+ assert.ok(!choose.includes("replaceChildren"));
+ assert.ok(choose.includes('entry.classList.toggle("is-current",on)'));
+ assert.ok(choose.includes('entry.setAttribute("aria-hidden",String(!on))'));
+ assert.ok(code.includes("initStableDetails();"));
+ assert.ok(style.includes("grid-area:1/1;visibility:hidden"));
+ assert.ok(style.includes(".is-current{visibility:visible"));
+});
