@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-saintpathicons1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-abilityinspector1";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -690,6 +690,51 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 .class-showcase .showcase-seal.class-art-host[data-art-src="../IconArchsaint.png"],.class-showcase .showcase-seal.class-art-host[data-art-src="../IconFallenSaint.png"]{width:86px;height:90px}
 @media(max-width:650px){.class-showcase .showcase-seal.class-art-host[data-art-src="../IconArchsaint.png"],.class-showcase .showcase-seal.class-art-host[data-art-src="../IconFallenSaint.png"]{width:66px;height:70px}}
 </style>
+<style>
+/* Compact skill catalogue, single inspector and video-ready gameplay stage. */
+.path-ability-layout{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(18px,2.4vw,38px);align-items:start}
+.ability-groups{display:grid;gap:12px}
+.ability-groups[hidden],.ability-video-placeholder[hidden]{display:none!important}
+.ability-group{display:grid;grid-template-columns:minmax(96px,126px) minmax(0,1fr);gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid #a9b9d321}
+.ability-group-head h4{font:600 15px 'Cinzel',Georgia,serif;color:#e5d9c3;margin:0;line-height:1.4}
+.ability-group-ultimate .ability-group-head h4{color:var(--class-highlight)}
+.ability-group-icons{display:flex;gap:9px;flex-wrap:wrap;align-items:flex-start;min-width:0}
+.class-showcase .path-ability-layout .ability-tile{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;background:transparent;border:1px solid transparent;padding:7px 5px;min-height:0;width:clamp(75px,7vw,104px);max-width:100%;border-radius:7px;box-shadow:none;transform:none}
+.class-showcase .path-ability-layout .ability-tile:hover{background:#ffffff0a;border-color:#a89a785b}
+.class-showcase .path-ability-layout .ability-tile.is-current{background:color-mix(in srgb,var(--class-highlight) 11%,transparent);border-color:var(--class-highlight);box-shadow:inset 0 0 16px #e5c68f0d}
+.ability-art{--ability-ink:#f8dc9e;--ability-deep:#765628;display:grid;place-items:center;flex:none;width:58px;height:58px;box-sizing:border-box;border-radius:11px;border:1px solid color-mix(in srgb,var(--ability-ink) 66%,#364153);color:var(--ability-ink);background:radial-gradient(ellipse at 50% 35%,color-mix(in srgb,var(--ability-deep) 72%,#263143),#151d2d 85%);box-shadow:inset 0 0 0 2px #ffffff0e,inset 0 0 13px #05090c55;font-size:27px;line-height:1}
+.ability-art svg{width:86%;height:86%;filter:drop-shadow(0 0 3px color-mix(in srgb,var(--ability-ink) 42%,transparent))}
+.ability-art svg .ink{fill:color-mix(in srgb,var(--ability-ink) 25%,transparent)}
+.class-showcase[data-unrevealed="true"] .ability-art{--ability-ink:#bec5d5}
+.class-showcase[data-skill-theme="archsaint"] .ability-art{--ability-ink:#fff0ce;--ability-deep:#596f9c}
+.class-showcase[data-skill-theme="fallensaint"] .ability-art{--ability-ink:#ffc0bd;--ability-deep:#842b45}
+.ability-group-ultimate .ability-art{border:2px solid #dfbd7f;box-shadow:inset 0 0 14px #e2ba6740,0 0 8px #e2ba672b}
+.class-showcase .path-ability-layout .ability-tile .skill-name{font-size:10px;letter-spacing:0;line-height:1.35;text-align:center;color:#c9d2df}
+.ability-group-empty{margin:0;padding:7px 0;color:#98a5b9;font-size:12px;font-style:italic}
+.class-showcase .path-ability-layout .skill-detail{margin-top:18px;padding:clamp(14px,2vw,24px);min-height:0}
+.ability-detail-header{display:flex;align-items:center;gap:14px}
+.ability-detail-header .ability-art{width:65px;height:65px}
+.ability-detail-heading{min-width:0}
+.ability-category-label{font-size:9px;text-transform:uppercase;letter-spacing:.15em;color:#a7b2c6}
+.ability-detail-heading h4{font:600 clamp(17px,1.7vw,24px) 'Cinzel',Georgia,serif;color:var(--class-highlight);margin:3px 0;line-height:1.25}
+.ability-detail-type{font-size:11px;color:#b8c3d5}
+.class-showcase .skill-detail>p,.ability-mechanic p{font-size:13px;line-height:1.7;color:#c5cfdd;margin:12px 0}
+.ability-mechanic{margin-top:13px;padding-top:12px;border-top:1px solid #a5b2c32e}
+.ability-mechanic h4{font:600 15px 'Cinzel',Georgia,serif;color:var(--class-highlight);margin:0 0 6px}
+.ability-mechanic p.path-mechanic-note{font-size:11px;font-style:italic;color:#aeb9ca}
+.ability-video-frame{position:relative;aspect-ratio:16/9;overflow:hidden;border:1px solid #9dacc445;border-radius:8px;background:radial-gradient(ellipse at center,#34425a66,transparent 72%),#101827}
+.ability-video-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:15px;color:#aeb9c9}
+.ability-video-placeholder strong{color:#d8dce4;font:600 clamp(12px,1.4vw,18px) 'Cinzel',Georgia,serif}
+.ability-video-placeholder>span:last-child{font-size:11px;color:#99a8bc}
+.ability-video-play{width:48px;height:48px;color:#ad9d7c;opacity:.65}
+.ability-video-play svg{width:100%;height:100%}
+.ability-video{width:100%;height:100%;object-fit:contain;background:#0b101a;display:block}
+.ability-video-caption{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 2px;color:#c7d1e0}
+.ability-video-caption strong{font:600 15px 'Cinzel',Georgia,serif;color:var(--class-highlight)}
+.ability-video-caption span{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#a5b0c2;text-align:right}
+@media(max-width:950px){.ability-group{grid-template-columns:1fr;gap:5px}.ability-group-icons{gap:6px}}
+@media(max-width:760px){.path-ability-layout{grid-template-columns:1fr}.ability-group{grid-template-columns:1fr}.class-showcase .path-ability-layout .ability-tile{width:88px}.ability-video-caption{flex-wrap:wrap}}
+</style>
 </head>
 <body class="mythbound-login-open">
   <section id="mythbound-login" class="mb-login" aria-labelledby="login-title">
@@ -900,15 +945,10 @@ body.mythbound-guest .mb-header-friends{display:none!important}
             <div class="subclass-intro"><div><span class="eyebrow" id="path-type">BASE PATH</span><h3 id="path-detail-title">Saint · Base class</h3></div></div>
             <p id="path-description">Master the foundations of your class.</p>
             <div class="path-ability-layout"><div>
-              <div class="showcase-section-title skills-title"><h3 id="path-core-title">Core abilities</h3><span id="path-inspect-label">SELECT TO INSPECT</span></div>
-              <div id="class-skills" class="skill-row" role="group" aria-label="Selected path skills"></div>
+              <div class="showcase-section-title skills-title"><h3 id="path-core-title">Abilities &amp; mechanics</h3><span id="path-inspect-label">SELECT TO INSPECT</span></div>
+              <div id="class-skills" class="ability-groups" aria-label="Selected path skills"></div>
               <div id="skill-detail" class="skill-detail" aria-live="polite" aria-atomic="true"></div>
-            </div><div class="path-signature-panel"><div class="showcase-section-title"><h3>Ability showcase</h3></div><div id="path-signatures"></div></div></div>
-            <section id="path-mechanics" class="path-mechanics" aria-labelledby="path-mechanics-title" hidden>
-              <div class="showcase-section-title"><h3 id="path-mechanics-title">Core mechanics</h3><span>INHERENT TRAITS &amp; COMBAT RULES</span></div>
-              <div id="path-mechanics-grid" class="path-mechanics-grid"></div>
-              <p class="path-mechanic-note">All numerical values are preliminary design estimates.</p>
-            </section>
+            </div><div class="path-signature-panel"><div class="showcase-section-title"><h3>Ability showcase</h3><span>IN-GAME PREVIEW</span></div><div id="path-signatures"></div></div></div>
           </section>
           <p class="concept-disclaimer">Preview values and skill effects are illustrative game-design concepts, not finalized balance numbers. Male and female base avatars have the exact same class abilities and stats.</p>
         </section>

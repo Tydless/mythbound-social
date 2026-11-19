@@ -44,7 +44,7 @@ const statDescriptions=[
  "How easily a class can move, reposition and evade attacks.",
  "How effectively a class can restrict, disrupt or manipulate enemies."
 ];
-let active="saint",gender="male",chosen=0,activePath=0;
+let active="saint",gender="male",chosen=null,activePath=0;
 const isUnrevealed=()=>active==="saint"&&activePath===3;
 // Add approved specialization content here, grouped by class and path number.
 // Each entry may provide name, description, icon, skills (same format as DATA), and signatureMoves.
@@ -85,7 +85,7 @@ const SPECIALIZATIONS={
   3:{name:"Coming soon",type:"UNREVEALED PATH",artwork:{male:"../ComingSoonSaintMalePortrait.png",female:"../ComingSoonSaintFemalePortrait.png"},description:"A new path awaits those who dare to question their sacred calling. More will be revealed in a future chronicle.",skills:[],signatureMoves:[]}
  }
 };
-const pathData=()=>activePath===0?{name:cap(active),description:"Master the foundations of your class.",skills:DATA[active].skills,signatureMoves:[]}:SPECIALIZATIONS[active]?.[activePath]||{name:"Specialization "+activePath,description:"This advanced path has yet to be revealed.",skills:[],signatureMoves:[]};
+const pathData=()=>activePath===0?{name:cap(active),description:"Master the foundations of your class.",skills:DATA[active].skills,media:DATA[active].media,signatureMoves:[]}:SPECIALIZATIONS[active]?.[activePath]||{name:"Specialization "+activePath,description:"This advanced path has yet to be revealed.",skills:[],signatureMoves:[]};
 const pathCombatData=()=>{const base=DATA[active],path=pathData();return {...base,stats:path.stats||base.stats,difficulty:path.difficulty??base.difficulty,play:path.play||base.play,roles:path.roles||CLASS_ROLES[active]}};
 
 /* A fixed gender greeting plus three independent, cyclic voice previews.
@@ -684,39 +684,145 @@ function renderStats(){
  radarDismiss=()=>{pinned=hovered=focused=null;showTip()};
  stats.replaceChildren(svg);
 }
-function skillDetail(){
- const s=pathData().skills[chosen];
- detail.replaceChildren();
- if(!s){const p=document.createElement("p");p.className="path-pending";p.textContent="✧  Advanced abilities have yet to be revealed.";detail.append(p);return;}
- const head=document.createElement("div");head.className="skill-detail-head";
- const title=document.createElement("strong");title.textContent=s[1];
- const tag=document.createElement("span");tag.textContent=s[2];head.append(title,tag);
- const desc=document.createElement("p");desc.textContent=s[6];
- const grid=document.createElement("div");grid.className="skill-data";
- [["Range",s[3]],["Effect",s[4]],["Cooldown",s[5]]].forEach(([k,v])=>{
-  const cell=document.createElement("div"),small=document.createElement("span"),strong=document.createElement("strong");
-  small.textContent=k;strong.textContent=v;cell.append(small,strong);grid.append(cell);
+// Shared ability inspector. A path may supply media keyed by the exact entry name:
+// media: {"Marionette": {video:"../video.mp4",poster:"../poster.png"}}
+const SKILL_ART={
+ "Gentle Benediction":'<path d="M32 9v46M9 32h46M18 18l28 28M46 18L18 46"/><path class="ink" d="M32 18l5 9 9 5-9 5-5 9-5-9-9-5 9-5Z"/><circle cx="32" cy="32" r="4" />',
+ "Hallowed Veil":'<path class="ink" d="M32 9 51 17v16c0 12-11 20-19 24-8-4-19-12-19-24V17Z"/><path d="M32 17v29M22 29h20"/><ellipse cx="32" cy="14" rx="15" ry="5"/>',
+ "Judgment Ray":'<path d="m12 51 36-36M21 51l30-30M12 42l30-30"/><path class="ink" d="m46 5 3 9 10 4-10 3-3 10-4-10-9-3 9-4Z"/><path d="M10 54h16"/>',
+ "Merciful Heart":'<path class="ink" d="M32 52 12 33C-2 18 22 7 32 23 42 7 66 18 52 33Z"/><path d="M32 27v15m-8-7h16"/>',
+ "Divine Projection":'<path d="M8 48 23 34l8 2 7-4m-22 17 10-7 12 1 10-10M15 38l-7 7"/><path class="ink" d="m43 7 4 12 12 4-12 4-4 12-4-12-12-4 12-4Z"/><path d="m22 12 3 6m-12 5 8 2"/>',
+ "Celestial Power":'<circle cx="32" cy="32" r="21"/><path class="ink" d="m32 5 6 20 21 7-21 6-6 21-6-21-21-6 21-7Z"/><path d="m17 17 4 4m22 22 4 4m0-30-4 4M21 43l-4 4"/>',
+ "Heavenly Wings":'<path class="ink" d="M30 49C13 43 8 26 6 9c11 13 23 11 24 30Zm4 0C51 43 56 26 58 9 47 22 35 20 34 39Z"/><path d="m10 23 16 17m-11-6 13 12m26-23L38 40m11-6L36 46M32 45v12"/>',
+ "Heaven's Arbiter":'<path d="M14 10Q57 11 54 50L14 10m0 0 2 42 38-2M10 54 53 11"/><path class="ink" d="m51 5 8 0 0 8-7-3-4 4-4-4 4-4Z"/><path d="m10 45 2 7 7 2"/>',
+ "Divine Radiance":'<circle class="ink" cx="32" cy="32" r="11"/><path d="M32 4v12m0 32v12M4 32h12m32 0h12M12 12l9 9m22 22 9 9m0-40-9 9M21 43l-9 9"/><circle cx="32" cy="32" r="4"/>',
+ "Grace of Heaven":'<path class="ink" d="M47 7C23 9 10 28 15 46 34 46 53 25 47 7Z"/><path d="M12 56 44 13M22 42l-1-13m9 4V20m-4 18 14-4m-8-7 13-6"/><path d="M52 39v14m-7-7h14"/>',
+ "Heaven's Mercy":'<path d="M32 7v37m-9-10 9-11 9 11M11 49h42M18 55h28"/><path class="ink" d="M27 43C10 41 5 23 8 15c9 12 17 10 19 28Zm10 0c17-2 22-20 19-28-9 12-17 10-19 28Z"/><path d="m12 29 12 10m28-10L40 39"/><ellipse cx="32" cy="12" rx="10" ry="4"/>',
+ "The Blood Moon's Pact":'<path class="ink" d="M44 9C13-2 1 36 21 51c14 10 31 1 34-11C29 52 16 23 44 9Z"/><path d="M44 16v16m-8-8h16"/><path class="ink" d="M42 38q-11 13 0 16 11-3 0-16Z"/>',
+ "The Price of Mercy":'<path class="ink" d="M32 5C26 18 13 29 13 41a19 19 0 0 0 38 0C51 29 38 18 32 5Z"/><path d="M32 26v21m-10-10h20"/>',
+ "Blood Stillness":'<path d="M32 9v46M12 20l40 24m0-24L12 44"/><path class="ink" d="M32 22q-17 15 0 21 17-6 0-21Z"/><path d="M25 9h14M25 55h14M8 26l8-12m32 36 8-12M8 38l8 12m32-36 8 12"/>',
+ "Crimson Covenant":'<path class="ink" d="M32 9Q18 24 18 31a14 14 0 0 0 28 0Q46 24 32 9Z"/><path d="M6 42q9-5 17 4l9 7 9-7q8-9 17-4M6 49l10 5m42-5-10 5M32 23v17m-8-8h16"/>',
+ "Sanguine Harvest":'<path d="M12 19q18-16 38 0l-8 2m8-2-3-8M52 45q-18 16-38 0l8-2m-8 2 3 8"/><path class="ink" d="M32 12Q16 30 16 38a16 16 0 0 0 32 0Q48 30 32 12Z"/><path d="M24 39q2 8 10 8"/>',
+ "Marionette":'<path d="M9 9h46M32 5v9M13 10l9 24M51 10l-9 24M32 10v14"/><circle class="ink" cx="32" cy="30" r="6"/><path d="m22 34 10 9 10-9M32 36v11m-9 10 9-10 9 10"/><path class="ink" d="M32 3 36 9 32 15 28 9Z"/>'
+};
+function abilityEntries(path){
+ const entries=[];
+ const core=path.mechanics||[];
+ const isArch=active==="saint"&&activePath===1,isFallen=active==="saint"&&activePath===2;
+ // General traits remain selectable. Skill-specific rules are shown only with their skill.
+ const linked=isArch?{"Heaven's Mercy":[3]}:isFallen?{"Crimson Covenant":[1],"Sanguine Harvest":[1],"Marionette":[2,3]}:{};
+ const standalone=isArch?[0,1,2]:isFallen?[0,1]:core.map((_,i)=>i);
+ standalone.forEach(i=>{const m=core[i];if(m)entries.push({name:m.name,icon:m.icon,type:m.type,group:"core",mechanic:m})});
+ path.skills.forEach(s=>{
+  const group=s[5]==="Passive"||s[2]==="Passive"?"core":/signature|ultimate/i.test(s[2])?"ultimate":"standard";
+  entries.push({name:s[1],icon:s[0],type:s[2],group,skill:s,mechanics:(linked[s[1]]||[]).map(i=>core[i]).filter(Boolean)});
  });
- detail.append(head,desc,grid);
+ return entries;
+}
+function el(tag,cls,txt){const n=document.createElement(tag);if(cls)n.className=cls;if(txt!==undefined)n.textContent=txt;return n}
+function abilitySymbol(entry){
+ const box=el("span","ability-art");box.setAttribute("aria-hidden","true");
+ const art=SKILL_ART[entry.name];
+ if(art)box.innerHTML='<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round">'+art+'</svg>';
+ else box.textContent=entry.icon;
+ return box;
+}
+function mechanicDetail(m,includeHeading=true){
+ const panel=el("section","ability-mechanic");
+ if(includeHeading)panel.append(el("h4","",m.name));
+ panel.append(el("p","",m.description));
+ if(m.table){
+  const table=el("table","path-mechanic-table");table.setAttribute("aria-label",m.name+" — proposed scaling");
+  const header=el("thead"),tr=el("tr");
+  for(const value of m.table.headers){const th=el("th","",value);th.scope="col";tr.append(th)}
+  header.append(tr);table.append(header);
+  const body=el("tbody");
+  for(const row of m.table.rows){const tr=el("tr");row.forEach((value,i)=>{const cell=el(i===0?"th":"td","",value);if(i===0)cell.scope="row";tr.append(cell)});body.append(tr)}
+  table.append(body);panel.append(table);
+ }
+ if(m.note)panel.append(el("p","path-mechanic-note",m.note));
+ return panel;
+}
+function renderAbilityMedia(path,entry){
+ const host=$("path-signatures");if(!host)return;
+ // Stop any previous playback rather than playing two previews on top of each other.
+ host.querySelector("video")?.pause();host.replaceChildren();
+ if(isUnrevealed()){
+  const panel=el("div","unrevealed-signature");
+  const mark=el("span","unrevealed-signature-mark","?");mark.setAttribute("aria-hidden","true");
+  panel.append(mark,el("strong","","FOOTAGE UNAVAILABLE"),el("p","","This path has yet to make its debut."));host.append(panel);return;
+ }
+ const videoData=entry&&path.media?.[entry.name];
+ const frame=el("div","ability-video-frame");
+ const placeholder=el("div","ability-video-placeholder");
+ const play=el("span","ability-video-play");play.setAttribute("aria-hidden","true");
+ play.innerHTML='<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="16" cy="16" r="14"/><path d="m13 10 10 6-10 6Z" fill="currentColor" stroke="none"/></svg>';
+ placeholder.append(play,el("strong","",entry?"Gameplay preview coming soon":"No footage available"),el("span","","In-game ability demonstration"));
+ frame.append(placeholder);
+ if(videoData?.video){
+  const video=el("video","ability-video");video.controls=true;video.preload="metadata";video.playsInline=true;video.setAttribute("aria-label",entry.name+" gameplay video");
+  if(videoData.poster)video.poster=videoData.poster;
+  video.addEventListener("error",()=>{video.remove();placeholder.hidden=false;placeholder.querySelector("strong").textContent="Footage currently unavailable"},{once:true});
+  placeholder.hidden=true;video.src=videoData.video;frame.append(video);
+ }
+ host.append(frame);
+ if(entry){
+  const caption=el("div","ability-video-caption");caption.append(el("strong","",entry.name),el("span","",videoData?.video?"Gameplay footage":"Footage pending"));host.append(caption);
+ }
+}
+function skillDetail(path,entry){
+ detail.replaceChildren();
+ if(!entry){detail.append(el("p","path-pending","Advanced abilities have yet to be revealed."));renderAbilityMedia(path,null);return}
+ const head=el("div","ability-detail-header"),text=el("div","ability-detail-heading");
+ const category={core:"Core mechanic",standard:"Standard skill",ultimate:"Ultimate"}[entry.group];
+ text.append(el("span","ability-category-label",category),el("h4","",entry.name),el("span","ability-detail-type",entry.type));
+ head.append(abilitySymbol(entry),text);detail.append(head);
+ if(entry.skill){
+  const s=entry.skill;
+  detail.append(el("p","",s[6]));
+  const grid=el("div","skill-data");
+  [["Range",s[3]],["Effect",s[4]],["Cooldown",s[5]]].forEach(([k,v])=>{
+   const cell=el("div");cell.append(el("span","",k),el("strong","",v));grid.append(cell);
+  });
+  detail.append(grid);
+  for(const m of entry.mechanics||[])detail.append(mechanicDetail(m));
+ }else if(entry.mechanic)detail.append(mechanicDetail(entry.mechanic,false));
+ renderAbilityMedia(path,entry);
 }
 function renderSkills(){
+ const path=pathData();
+ $("class-details").dataset.skillTheme=active==="saint"&&activePath===1?"archsaint":active==="saint"&&activePath===2?"fallensaint":active;
  skills.replaceChildren();
  if(isUnrevealed()){
   skills.hidden=true;detail.replaceChildren();
-  const sealed=document.createElement("div");sealed.className="unrevealed-sealed-panel";
-  const lock=document.createElement("span");lock.className="unrevealed-lock";lock.setAttribute("aria-hidden","true");lock.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></svg>';
-  const heading=document.createElement("strong");heading.textContent="ABILITIES SEALED";
-  const copy=document.createElement("p");copy.textContent="No abilities have been revealed for this path.";
-  sealed.append(lock,heading,copy);detail.append(sealed);return;
+  const sealed=el("div","unrevealed-sealed-panel");
+  const lock=el("span","unrevealed-lock");lock.setAttribute("aria-hidden","true");lock.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></svg>';
+  sealed.append(lock,el("strong","","ABILITIES SEALED"),el("p","","No abilities have been revealed for this path."));detail.append(sealed);renderAbilityMedia(path,null);return;
  }
- pathData().skills.forEach((s,i)=>{
-  const btn=document.createElement("button");btn.type="button";btn.className="skill-icon"+(i===chosen?" is-current":"");
-  btn.setAttribute("aria-label","Inspect "+s[1]);btn.setAttribute("aria-pressed",String(i===chosen));btn.title=s[1];
-  const glyph=document.createElement("span");glyph.className="skill-symbol";glyph.textContent=s[0];
-  const n=document.createElement("span");n.className="skill-name";n.textContent=s[1];
-  btn.append(glyph,n);btn.addEventListener("click",()=>{chosen=i;renderSkills()});skills.append(btn);
- });
- skillDetail();
+ const entries=abilityEntries(path);
+ skills.hidden=!entries.length;
+ if(!entries.some(e=>e.name===chosen))chosen=(entries.find(e=>e.group==="standard")||entries[0])?.name||null;
+ const buttons=[];
+ function select(entry){
+  chosen=entry.name;
+  for(const [b,e] of buttons){const on=e.name===chosen;b.classList.toggle("is-current",on);b.setAttribute("aria-pressed",String(on))}
+  skillDetail(path,entry);
+ }
+ for(const [group,label] of [["core","Core Mechanics"],["standard","Standard Skills"],["ultimate","Ultimate"]]){
+  const section=el("section","ability-group ability-group-"+group),header=el("div","ability-group-head");
+  header.append(el("h4","",label));section.append(header);
+  const list=el("div","ability-group-icons");list.setAttribute("role","group");list.setAttribute("aria-label",label);
+  const members=entries.filter(e=>e.group===group);
+  if(!members.length)list.append(el("p","ability-group-empty",group==="ultimate"?"Not yet revealed":"No entries revealed"));
+  for(const entry of members){
+   const btn=el("button","skill-icon ability-tile");btn.type="button";btn.title=entry.name;btn.setAttribute("aria-label","Inspect "+entry.name);
+   btn.append(abilitySymbol(entry),el("span","skill-name",entry.name));
+   btn.addEventListener("click",()=>select(entry));buttons.push([btn,entry]);list.append(btn);
+  }
+  section.append(list);skills.append(section);
+ }
+ const selected=entries.find(e=>e.name===chosen);
+ if(selected)select(selected);else skillDetail(path,null);
 }
 const SAINT_PATH_ART={1:{name:"Archsaint",emblem:"◇"},2:{name:"FallenSaint",emblem:"✧"}};
 function renderPathPresentation(){
@@ -741,31 +847,6 @@ function renderPathPresentation(){
  if(!path.overviewType)delete host.dataset.customPathHeader;
  renderClassMeta(pathCombatData());renderStats();
 }
-function renderMechanics(path){
- const section=$("path-mechanics"),grid=$("path-mechanics-grid");if(!section||!grid)return;
- grid.replaceChildren();
- const entries=isUnrevealed()?[]:path.mechanics||[];
- section.hidden=!entries.length;
- for(const m of entries){
-  const card=document.createElement("article");card.className="path-mechanic-card";
-  const top=document.createElement("div");top.className="path-mechanic-head";
-  const symbol=document.createElement("span");symbol.className="path-mechanic-symbol";symbol.textContent=m.icon;symbol.setAttribute("aria-hidden","true");
-  const titles=document.createElement("div"),type=document.createElement("span"),name=document.createElement("h4");
-  type.className="eyebrow";type.textContent=m.type;name.textContent=m.name;titles.append(type,name);top.append(symbol,titles);
-  const copy=document.createElement("p");copy.textContent=m.description;card.append(top,copy);
-  if(m.table){
-   const table=document.createElement("table");table.className="path-mechanic-table";table.setAttribute("aria-label",m.name+" — proposed scaling");
-   const header=document.createElement("thead"),tr=document.createElement("tr");
-   for(const value of m.table.headers){const th=document.createElement("th");th.scope="col";th.textContent=value;tr.append(th)}
-   header.append(tr);table.append(header);
-   const body=document.createElement("tbody");
-   for(const row of m.table.rows){const tr=document.createElement("tr");row.forEach((value,i)=>{const cell=document.createElement(i===0?"th":"td");if(i===0)cell.scope="row";cell.textContent=value;tr.append(cell)});body.append(tr)}
-   table.append(body);card.append(table);
-  }
-  if(m.note){const note=document.createElement("p");note.className="path-mechanic-note";note.textContent=m.note;card.append(note)}
-  grid.append(card);
- }
-}
 function renderPath(){
  renderPathPresentation();
  const path=pathData(),buttons=$("class-paths");
@@ -789,24 +870,11 @@ function renderPath(){
    }
   });
  }
- const title=$("path-detail-title"),desc=$("path-description"),label=$("path-type"),core=$("path-core-title"),sig=$("path-signatures");
+ const title=$("path-detail-title"),desc=$("path-description"),label=$("path-type"),core=$("path-core-title");
  if(title)title.textContent=path.name+(activePath===0?" · Base class":"");
  if(desc)desc.textContent=path.description;
  if(label)label.textContent=activePath===0?"BASE PATH":path.type||"ADVANCED PATH";
- if(core)core.textContent=isUnrevealed()?"Unrevealed abilities":activePath===0?"Core abilities":"Specialization abilities";
- renderMechanics(path);
- if(sig){
-  sig.replaceChildren();
-  if(isUnrevealed()){
-   const panel=document.createElement("div");panel.className="unrevealed-signature";
-   const mark=document.createElement("span");mark.className="unrevealed-signature-mark";mark.setAttribute("aria-hidden","true");mark.textContent="?";
-   const title=document.createElement("strong");title.textContent="FOOTAGE UNAVAILABLE";
-   const copy=document.createElement("p");copy.textContent="This path has yet to make its debut.";
-   panel.append(mark,title,copy);sig.append(panel);
-  }else if(path.signatureMoves?.length){path.signatureMoves.forEach(move=>{const p=document.createElement("p");p.textContent=move;sig.append(p)})}
-  else{const p=document.createElement("p");p.className="signature-pending";p.textContent="To be revealed";sig.append(p)}
- }
- skills.hidden=!path.skills.length;
+ if(core)core.textContent=isUnrevealed()?"Unrevealed abilities":"Abilities & mechanics";
  renderSkills();
 }
 $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener("click",()=>{
@@ -814,7 +882,7 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
  const previousPath=activePath;
  const changed=next!==previousPath;
  if(changed)stopVoice();
- activePath=next;chosen=0;renderPath();
+ activePath=next;chosen=null;renderPath();
  if(changed)drawEnvironment();
  if(changed){
   renderPreview(true);updateVoiceButton();
@@ -966,7 +1034,7 @@ function draw(){
 document.querySelectorAll("[data-class]").forEach(button=>{
  button.addEventListener("click",()=>{
   if(!DATA[button.dataset.class])return;
-  stopVoice();active=button.dataset.class;activePath=0;chosen=0;gender="male";draw();updateVoiceButton();
+  stopVoice();active=button.dataset.class;activePath=0;chosen=null;gender="male";draw();updateVoiceButton();
  });
 });
 document.querySelectorAll(".gender-option").forEach(button=>button.addEventListener("click",()=>{
