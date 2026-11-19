@@ -106,3 +106,13 @@ test("Heavenly Realm recording trim follows the SFX mixer even without Web Audio
  level=.4;handler();assert.ok(Math.abs(latest.volume-.26)<.0001);
  win.MythboundRegionAudio.stop();
 });
+
+
+test("Desktop and mobile default to the same safe portrait renderer; diagnostics retain legacy and off modes",()=>{
+ const code=read("class-showcase.js"),style=read("class-mobile-effects.css");
+ assert.match(code,/const safePortraitFx=mobile\|\|fxMode!=="legacy"/);
+ assert.match(code,/const animate=fxMode!=="off"&&allowTransformation/);
+ assert.match(code,/if\(safePortraitFx\)\{/);
+ assert.match(style,/\.saint-portrait-stage\.safe-portrait-fx\.mobile-portrait-dissolve \.portrait-incoming/);
+ assert.match(style,/\.saint-portrait-stage\.safe-portrait-fx \.saint-portrait\{filter:none!important/);
+});

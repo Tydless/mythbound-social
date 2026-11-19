@@ -42,6 +42,10 @@ function renderPreview(allowTransformation=false){
  // as a fallback until the two image files have been uploaded to GitHub.
  stopTransformationAudio();
  const mobile=useMobilePortraitEffects();
+ // Compare the same portrait renderer on either device without changing desktop layout.
+ // The original desktop canvas/mask animations remain available for diagnosis.
+ const fxMode=new URLSearchParams(location.search).get("portraitFx");
+ const safePortraitFx=mobile||fxMode!=="legacy";
  $("class-details").classList.toggle("mobile-portrait-fx",mobile);
  // If a switch is interrupted while an image is still loading, retain the last
  // loaded portrait rather than cloning the not-yet-ready incoming image.
@@ -61,7 +65,7 @@ function renderPreview(allowTransformation=false){
   const picture=document.createElement("img");
   const isFallen=activePath===2;
   picture.className="saint-portrait"+(isFallen?" fallen-saint-portrait":"")+(isUnrevealed()?" unrevealed-portrait":"");
-  const stage=document.createElement("div");stage.className="saint-portrait-stage";
+  const stage=document.createElement("div");stage.className="saint-portrait-stage"+(safePortraitFx?" safe-portrait-fx":"");
   picture.alt=cap(gender)+" "+artworkName+" class illustration in an ornate floral frame";
   const sourceURL=new URL(artwork||(gender==="female"?"../FemaleSaint.png":"../MaleSaint.png"),document.baseURI);
   // Refresh every portrait together while retaining the Fallen Saint asset revision.
@@ -70,7 +74,7 @@ function renderPreview(allowTransformation=false){
   // Only a change between the holy and corrupted paths triggers a transformation.
   // Gender changes and ordinary class selection are instantaneous.
   const special=activePath===1?"archsaint":isUnrevealed()?"mystery":null;
-  const animate=allowTransformation&&(!!special||!!oldImage)&&(!oldImage||oldImage.src!==new URL(source,document.baseURI).href)&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const animate=fxMode!=="off"&&allowTransformation&&(!!special||!!oldImage)&&(!oldImage||oldImage.src!==new URL(source,document.baseURI).href)&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if(animate){
    prepareTransformationAudio();
    if(oldImage){oldImage.setAttribute("aria-hidden","true");oldImage.alt="";oldImage.classList.remove("portrait-incoming");oldImage.classList.add("portrait-previous");stage.append(oldImage)}
@@ -84,7 +88,7 @@ function renderPreview(allowTransformation=false){
    if(!picture.isConnected)return;
    preview.classList.add("has-saint-art");
    if(animate){
-    if(mobile){
+    if(safePortraitFx){
      if(special)playSpecialSound(special);else playTransformationAudio(isFallen);
      revealMobilePath(stage,oldImage,picture,special||(isFallen?"fallen":"base"));
     }else if(special){playSpecialSound(special);revealSpecialPath(stage,oldImage,picture,special)}

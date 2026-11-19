@@ -1,18 +1,19 @@
 
-/* Mobile-safe portrait composition. No animated filters, blend modes, masked
-   overlays or canvas readback on touch devices. Desktop effects are unchanged. */
+/* Shared safe portrait composition. Animate only original image opacity and
+   independent effects; never rasterize, mask, or transform the artwork itself.
+   Device-specific backdrop and layout rules stay separate. */
 .class-showcase.mobile-portrait-fx{backdrop-filter:none;-webkit-backdrop-filter:none}
 .class-showcase.mobile-portrait-fx .showcase-info,
 .class-showcase.mobile-portrait-fx .path-overview{backdrop-filter:none;-webkit-backdrop-filter:none}
-.class-showcase.mobile-portrait-fx .saint-portrait-stage{overflow:hidden;isolation:auto}
-.class-showcase.mobile-portrait-fx .class-preview .saint-portrait-stage .saint-portrait{filter:none!important;mix-blend-mode:normal;will-change:auto}
-.class-showcase.mobile-portrait-fx .portrait-burn-canvas,
-.class-showcase.mobile-portrait-fx .portrait-special-effect{display:none!important}
+.class-showcase .saint-portrait-stage.safe-portrait-fx{overflow:hidden;isolation:auto}
+.class-showcase .class-preview .saint-portrait-stage.safe-portrait-fx .saint-portrait{filter:none!important;mix-blend-mode:normal;will-change:auto}
+.class-showcase .safe-portrait-fx .portrait-burn-canvas,
+.class-showcase .safe-portrait-fx .portrait-special-effect{display:none!important}
 .class-showcase.mobile-portrait-fx .scene-mist{filter:none}
-.class-showcase.mobile-portrait-fx .saint-portrait-stage.mobile-portrait-dissolve .portrait-incoming{
+.class-showcase .saint-portrait-stage.safe-portrait-fx.mobile-portrait-dissolve .portrait-incoming{
  animation:mb-mobile-portrait-in var(--reveal-duration,2400ms) ease-in-out both;
 }
-.class-showcase.mobile-portrait-fx .saint-portrait-stage.mobile-portrait-dissolve .portrait-previous{
+.class-showcase .saint-portrait-stage.safe-portrait-fx.mobile-portrait-dissolve .portrait-previous{
  animation:mb-mobile-portrait-out var(--reveal-duration,2400ms) ease-in-out both;
 }
 @keyframes mb-mobile-portrait-in{0%,12%{opacity:0}68%,100%{opacity:1}}
@@ -39,8 +40,8 @@
 @keyframes mb-mobile-reveal{0%{opacity:0;transform:translate(0,0) scale(.5)}24%{opacity:.95;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.55)}}
 @media(prefers-reduced-motion:reduce){
  .portrait-mobile-effect{display:none!important}
- .class-showcase.mobile-portrait-fx .saint-portrait-stage.mobile-portrait-dissolve .portrait-incoming{animation:none!important;opacity:1}
- .class-showcase.mobile-portrait-fx .saint-portrait-stage.mobile-portrait-dissolve .portrait-previous{animation:none!important;opacity:0}
+ .class-showcase .saint-portrait-stage.safe-portrait-fx.mobile-portrait-dissolve .portrait-incoming{animation:none!important;opacity:1}
+ .class-showcase .saint-portrait-stage.safe-portrait-fx.mobile-portrait-dissolve .portrait-previous{animation:none!important;opacity:0}
 }
 @media(max-width:760px){
  #page-classes{overflow-x:hidden;overflow-x:clip;min-width:0;max-width:100%}
