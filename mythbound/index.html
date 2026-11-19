@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-abilityinspector1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-headeravatar1";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -307,6 +307,9 @@
 .site-header .mb-session-action{border:0;border-left:1px solid #d5bb8e36;border-radius:0;background:transparent;color:#9eaac0;min-height:25px;padding:4px 9px;font:500 11px 'DM Sans',system-ui,sans-serif;box-shadow:none}
 .site-header .mb-session-action:hover{background:transparent;color:#f1d5a1;border-color:#d5bb8e70}
 .site-header .account-label{font:600 13px 'Cinzel',Georgia,serif}
+/* Header profile: portrait and presence only; retain the guest login label. */
+.site-header .account-chip:not(.mb-guest-login) .account-label{display:none!important}
+.site-header .account-chip:not(.mb-guest-login){padding:0;gap:0;justify-content:center}
 .friend-meta strong,.whisper-preview strong,.mb-inbox-top strong,.mb-inbox-words>strong{font-family:'Cinzel',Georgia,serif;font-weight:600}
 [data-presence]{position:relative;overflow:visible}
 [data-presence]::after{content:"";position:absolute;width:10px;height:10px;box-sizing:border-box;right:0;bottom:1px;border-radius:50%;border:1.5px solid #1b2639;background:var(--presence-offline);box-shadow:0 0 0 1px #ccd4df22;z-index:5;pointer-events:none}
