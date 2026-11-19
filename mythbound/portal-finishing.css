@@ -53,3 +53,19 @@
  #page-home>.section-heading,#page-home .home-news>.hub-heading,#page-home .community-hub>.hub-heading{gap:9px}
  #page-home>.section-heading{padding-inline:23px}
 }
+
+/* Header-only optical alignment: the framed portrait sits slightly below the
+   neighboring icon centers. Move the complete sigil, including presence dot,
+   without shifting the header row, guest login or any other avatar. */
+.site-header #account-button:not(.mb-guest-login){
+ align-self:center;align-items:center;justify-content:center;
+}
+.site-header #account-button>.account-sigil.mb-account-portrait{
+ align-self:center;margin:0;transform:translateY(-5px);
+}
+.site-header #account-button>.account-sigil.mb-account-portrait>.mb-avatar-art{
+ width:100%;height:100%;margin:0;
+}
+@media(max-width:760px){
+ .site-header #account-button>.account-sigil.mb-account-portrait{transform:translateY(-4px)}
+}
