@@ -59,7 +59,7 @@ let selectedPlace=current,travelled=false;
 function selectPlace(id){const p=cityPlaces.find(v=>v.id===id);if(!p)return;selectedPlace=id;document.querySelectorAll("[data-city-place]").forEach(b=>{const here=b.dataset.cityPlace===current,on=b.dataset.cityPlace===id;b.classList.toggle("current",here);b.classList.toggle("selected",on);b.setAttribute("aria-pressed",String(on));b.setAttribute("aria-label",cityPlaces.find(v=>v.id===b.dataset.cityPlace).name+(here?" — current location":""));const tag=b.querySelector("small");if(tag)tag.textContent=here?"YOU ARE HERE":"AVAILABLE"});$("city-status").textContent=id===current?"CURRENT LOCATION":"DESTINATION";$("city-place").textContent=p.name;$("city-description").textContent=p.description;$("city-enter").textContent=id===current?"Return to room":"Enter location"}
 for(const p of cityPlaces){for(const [container,cls] of [["city-pins","city-pin"],["city-list","city-card"]]){const b=document.createElement("button");b.type="button";b.className=cls;b.dataset.cityPlace=p.id;b.style.setProperty("--x",p.x+"%");b.style.setProperty("--y",p.y+"%");const icon=document.createElement("span");icon.className="city-icon";icon.textContent=p.icon;const label=document.createElement("strong");label.textContent=p.name;b.append(icon,label);if(cls==="city-card")b.append(document.createElement("small"));b.onclick=()=>selectPlace(p.id);$(container).append(b)}}
 function openCity(){if($("city").open)return;save();keys.clear();touches.clear();travelled=false;selectPlace(current);log("life","city.opened",{from:current});$("city").showModal()}
-function travelTo(id){if(!roomDefs[id]||!cityPlaces.some(p=>p.id===id))return;if(id===current){$("city").close();return}const from=current;LifeRadio.pause();current=id;start={x:0,z:-1.8};nearest=null;$("interact").hidden=true;if(engine)buildRoom();else body=null;roomLabel();save();travelled=true;log("life","room.visited",{room:current,from,via:"city-map"});$("city").close();notify("Arrived at "+roomDefs[current].name)}
+function travelTo(id){if(!roomDefs[id]||!cityPlaces.some(p=>p.id===id))return;if(id===current){$("city").close();return}const from=current;LifeSocial.detach();LifeRadio.pause();current=id;start={x:0,z:-1.8};nearest=null;$("interact").hidden=true;if(engine)buildRoom();else body=null;roomLabel();save();travelled=true;log("life","room.visited",{room:current,from,via:"city-map"});$("city").close();notify("Arrived at "+roomDefs[current].name)}
 $("city-enter").onclick=()=>travelTo(selectedPlace);$("city-close").onclick=()=>$("city").close();$("city").addEventListener("close",()=>{if(!travelled)log("life","city.closed",{room:current});focusRoom()});
 const editor=LifeDecor.editor({get:()=>decorations,avatar:()=>body?.position||start,set:(next,type,details)=>{decorations=next;save();log("life",type,details)},close:()=>{if(engine&&current==="home"){save();const view=camera?{a:camera.alpha,b:camera.beta,r:camera.radius}:null;buildRoom();if(view){camera.alpha=view.a;camera.beta=view.b;camera.radius=view.r}}focusRoom()}});
 function openDecor(){if(current!=="home")return;save();keys.clear();touches.clear();editor.open()}
@@ -81,12 +81,13 @@ function showJournal(){
 $("journal").onclick=showJournal;$("close-journal").onclick=()=>$("memories").close();$("memories").addEventListener("close",focusRoom);
 $("export").onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(M.snapshot(),null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="afterhours-player-memory.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 $("action").onclick=interact;
+$("social-topic").addEventListener("focus",()=>{keys.clear();touches.clear()});
 const moveKeys=["w","a","s","d","arrowup","arrowleft","arrowdown","arrowright"];
-window.addEventListener("keydown",e=>{if(modalOpen())return;const k=e.key.toLowerCase();if(moveKeys.includes(k)){e.preventDefault();keys.add(k)}if(k==="e"&&!e.repeat){e.preventDefault();interact()}});
+window.addEventListener("keydown",e=>{if(modalOpen()||e.target?.closest?.("input,textarea,select,[contenteditable=true]"))return;const k=e.key.toLowerCase();if(moveKeys.includes(k)){e.preventDefault();keys.add(k)}if(k==="e"&&!e.repeat){e.preventDefault();interact()}});
 window.addEventListener("keyup",e=>keys.delete(e.key.toLowerCase()));window.addEventListener("blur",()=>{keys.clear();touches.clear();save()});window.addEventListener("pagehide",save);document.addEventListener("visibilitychange",()=>{if(document.hidden){keys.clear();touches.clear();save()}});
 document.querySelectorAll("[data-key]").forEach(b=>{const k=b.dataset.key;const clear=()=>touches.delete(k);b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture(e.pointerId);touches.add(k)};b.onpointerup=clear;b.onpointercancel=clear;b.onlostpointercapture=clear});
 function buildRoom(){
- const B=window.BABYLON;if(scene)scene.dispose();scene=new B.Scene(engine);scene.clearColor=new B.Color4(.085,.111,.145,1);scene.ambientColor=new B.Color3(.72,.72,.72);
+ const B=window.BABYLON;LifeSocial.detach();if(scene)scene.dispose();scene=new B.Scene(engine);scene.clearColor=new B.Color4(.085,.111,.145,1);scene.ambientColor=new B.Color3(.72,.72,.72);
  const c=roomDefs[current];targets=[];obstacles=[];
  function mat(name,color,glow=false){const m=new B.StandardMaterial(name,scene);m.diffuseColor=B.Color3.FromHexString(color);m.specularColor=new B.Color3(.09,.09,.09);if(glow)m.emissiveColor=B.Color3.FromHexString(color).scale(.65);return m}
  const palette={wall:mat("wall",c.wall),floor:mat("floor",c.floor),wood:mat("wood",c.wood),cream:mat("cream","#dfd5c4"),cloth:mat("cloth",c.cloth),rug:mat("rug",c.rug),metal:mat("metal","#3a4750"),screen:mat("screen","#779dba",true),green:mat("plant","#6c9879"),gold:mat("gold","#d9c39b",true),dark:mat("dark","#35444d"),skin:mat("skin","#d1b49e"),hair:mat("hair","#483b39"),shirt:mat("shirt","#7896ad"),pants:mat("pants","#4c5866")};
@@ -156,15 +157,23 @@ function buildRoom(){
  }
  const player=makeAvatar("player",Math.max(-4.65,Math.min(4.65,start.x)),Math.max(-3.65,Math.min(3.65,start.z)));
  body=player.root;const {torso,armL,armR,legL,legR}=player;
+ const npcs={};
  if(current==="friend"){
-  const fighter=makeAvatar("Fighter",.9,.35,mat("fighter shirt","#a76b70"));
-  fighter.root.rotation.y=Math.PI;
-  obstacles.push({x:.9,z:.35,w:.55,d:.40});
-  const tag=B.MeshBuilder.CreatePlane("Fighter nameplate",{width:1.15,height:.30},scene);
+  function guest(name,x,z,color,rotation){
+  const fighter=makeAvatar(name,x,z,mat(name+" shirt",color));
+  fighter.root.rotation.y=rotation;
+  obstacles.push({x,z,w:.55,d:.40});
+  const tag=B.MeshBuilder.CreatePlane(name+" nameplate",{width:1.15,height:.30},scene);
   tag.parent=fighter.root;tag.position.set(0,1.68,0);tag.billboardMode=B.Mesh.BILLBOARDMODE_ALL;tag.isPickable=false;
-  const tex=new B.DynamicTexture("Fighter label",{width:512,height:128},scene,false);tex.hasAlpha=true;
-  const ctx=tex.getContext();ctx.clearRect(0,0,512,128);ctx.fillStyle="#16232de8";ctx.fillRect(6,12,500,104);ctx.strokeStyle="#d9c098";ctx.lineWidth=4;ctx.strokeRect(6,12,500,104);ctx.font="600 58px system-ui";ctx.fillStyle="#f0dfc5";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("Fighter",256,65);tex.update();
-  const labelMat=new B.StandardMaterial("Fighter label material",scene);labelMat.diffuseTexture=tex;labelMat.emissiveTexture=tex;labelMat.disableLighting=true;labelMat.useAlphaFromDiffuseTexture=true;labelMat.backFaceCulling=false;tag.material=labelMat;
+  const tex=new B.DynamicTexture(name+" label",{width:512,height:128},scene,false);tex.hasAlpha=true;
+  const ctx=tex.getContext();ctx.clearRect(0,0,512,128);ctx.fillStyle="#16232de8";ctx.fillRect(6,12,500,104);ctx.strokeStyle="#d9c098";ctx.lineWidth=4;ctx.strokeRect(6,12,500,104);ctx.font="600 58px system-ui";ctx.fillStyle="#f0dfc5";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(name,256,65);tex.update();
+  const labelMat=new B.StandardMaterial(name+" label material",scene);labelMat.diffuseTexture=tex;labelMat.emissiveTexture=tex;labelMat.disableLighting=true;labelMat.useAlphaFromDiffuseTexture=true;labelMat.backFaceCulling=false;tag.material=labelMat;
+  npcs[name]=fighter.root;
+  }
+  guest("Fighter",.9,.35,"#a76b70",-Math.PI/2);
+  guest("Buddy",-1.05,.35,"#789e88",Math.PI/2);
+  LifeSocial.attach({room:c.name,npcs,scene,camera,engine,canvas,blocked:modalOpen});
+  scene.onAfterRenderObservable.add(()=>LifeSocial.project(B));
  }
  for(const m of scene.meshes){if(!m.name.startsWith("interaction")&&m!==floor&&!m.name.includes("wall")&&!m.name.includes("nameplate"))shadows.addShadowCaster(m)}
  function blocked(x,z){return x< -4.65||x>4.65||z< -3.65||z>3.65||obstacles.some(o=>Math.abs(x-o.x)<o.w/2+.23&&Math.abs(z-o.z)<o.d/2+.23)}
@@ -190,7 +199,7 @@ function buildRoom(){
 refreshIdentity();roomLabel();log("life","session.started",{room:current});
 try{
  const B=window.BABYLON;if(!B||!B.Engine.isSupported())throw Error("WebGL unavailable");
- engine=new B.Engine(canvas,true,{preserveDrawingBuffer:false,stencil:true});buildRoom();engine.runRenderLoop(()=>{if(!desktop.hidden||$("city").open||document.hidden)return;scene?.render()});window.addEventListener("resize",()=>engine.resize());$("loading").hidden=true;focusRoom();
+ engine=new B.Engine(canvas,true,{preserveDrawingBuffer:false,stencil:true});buildRoom();engine.runRenderLoop(()=>{if(modalOpen()||document.hidden)LifeSocial.interrupt();if(!desktop.hidden||$("city").open||document.hidden)return;scene?.render()});window.addEventListener("resize",()=>engine.resize());$("loading").hidden=true;focusRoom();
 }catch(err){console.warn("Room startup",err);$("loading").textContent="3D could not start. Your computer and travel controls are still available from Menu.";if(engine){engine.dispose();engine=null;body=null}}
 setInterval(()=>{if(!modalOpen())save()},4000);
 })();

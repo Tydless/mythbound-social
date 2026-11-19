@@ -1,7 +1,7 @@
 (()=>{"use strict";
 const $=id=>document.getElementById("lab-"+id),dialog=document.getElementById("character-lab");
-const defaults={personality:"Fighter is the player's gaming buddy. His background and personality are still being developed.",style:"Natural conversational English. Keep replies brief; don't narrate the player's thoughts or actions.",memories:"",provider:"preview",model:"qwen3:4b",voiceProvider:"browser",voice:"marius",autospeak:false};
-const key="afterhours-character-lab-v1",fields={personality:"personality",style:"style",memories:"memories",provider:"provider",model:"model",voiceProvider:"voice-provider",voice:"voice"};
+const defaults={personality:"Fighter is the player's gaming buddy. His background and personality are still being developed.",style:"Natural conversational English. Keep replies brief; don't narrate the player's thoughts or actions.",memories:"",buddyPersonality:"Buddy is a visiting friend who enjoys games and friendly banter. His personality is provisional.",buddyStyle:"Casual, curious and playful; brief conversational English.",provider:"preview",model:"qwen3:4b",voiceProvider:"browser",voice:"marius",autospeak:false};
+const key="afterhours-character-lab-v1",fields={personality:"personality",style:"style",memories:"memories",buddyPersonality:"buddy-personality",buddyStyle:"buddy-style",provider:"provider",model:"model",voiceProvider:"voice-provider",voice:"voice"};
 const voices=["marius","javert"],moods=["relaxed","excited","annoyed","tired","sad","amused","neutral"];
 let history=[],busy=false,controller=null,speechController=null,objectURL=null,last=null,actualLocation="Your room",onClose=()=>{};
 const local=location.hostname==="localhost"&&location.port==="3000"&&location.protocol==="http:";
@@ -41,10 +41,22 @@ async function respond(eventOnly){
  }catch(e){if(!ctrl.signal.aborted){status("Dialogue failed: "+errorText(e));if(!eventOnly)$("message").value=input}}finally{if(controller===ctrl){controller=null;busy=false;$("send").disabled=$("react").disabled=$("clear").disabled=false}}
 }
 async function check(){if(!local){status("Public preview: run the repository locally at http://localhost:3000/life/ to connect Ollama and Pocket TTS.");return}$("check").disabled=true;status("Checking local services…");try{const results=await Promise.allSettled([timedFetch(ollama+"/api/tags"),timedFetch(pocket+"/health")]);const ok=r=>r.status==="fulfilled"&&r.value.ok;let models="";if(ok(results[0])){try{const j=await results[0].value.json();models=(j.models||[]).map(m=>m.name).join(", ")}catch{}}status("Ollama: "+(ok(results[0])?"connected"+(models?" · "+models:""):"unavailable")+" | Pocket TTS: "+(ok(results[1])?"connected":"unavailable"));}finally{$("check").disabled=false}}
+// Shared provider and model, separate character profiles; no private test history.
+function npcConfig(){const p=profile();return {mode:p.provider,model:p.model.trim(),local,characters:{Fighter:{personality:p.personality,style:p.style},Buddy:{personality:p.buddyPersonality,style:p.buddyStyle}}}}
+async function npcTurn(config,speaker,world,publicHistory,signal){
+ if(config.mode!=="ollama"||!local)throw Error("Live Ollama requires the local development version.");
+ if(!config.model||!Object.hasOwn(config.characters,speaker))throw Error("Missing model or character.");
+ const ctrl=new AbortController(),cancel=()=>ctrl.abort();if(signal.aborted)cancel();else signal.addEventListener("abort",cancel,{once:true});
+ try{
+ const system="You portray "+speaker+", a fictional NPC in After Hours. Speak only as this character to the other NPC or the room. Use only public conversation and your own profile; do not invent private memories or control anyone else. One or two short natural sentences, at most 200 characters. Empty dialogue ends the exchange. Output JSON with dialogue, emotion (relaxed/excited/annoyed/tired/sad/amused/neutral), and action (suggestion only). Profile: "+JSON.stringify(config.characters[speaker]);
+ const r=await timedFetch(ollama+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:config.model,messages:[{role:"system",content:system},{role:"user",content:JSON.stringify({world,publicConversation:publicHistory.slice(-12),speaker})}],stream:false,think:false,format:"json",options:{num_predict:180}}),controller:ctrl},120000);
+ if(!r.ok)throw Error("Ollama HTTP "+r.status+" — check local model and service.");const data=await r.json();const v=normalize(JSON.parse(data.message.content));return {...v,dialogue:v.dialogue.slice(0,240)};
+ }finally{signal.removeEventListener("abort",cancel)}
+}
 function clear(){history=[];last=null;$("transcript").replaceChildren();$("output").textContent="No response yet.";status("Test conversation cleared.");stopVoice()}
 $("save").onclick=save;$("voice-provider").onchange=voiceState;$("speak").onclick=()=>speak($("audition").value);$("stop-voice").onclick=stopVoice;$("check").onclick=check;$("form").onsubmit=e=>{e.preventDefault();respond(false)};$("react").onclick=()=>respond(true);$("clear").onclick=clear;$("current").onclick=()=>{$("location").value=actualLocation;$("time").value=new Date().toTimeString().slice(0,5);status("Current room and device time copied into test context.")};$("close").onclick=()=>dialog.close();
 $("export").onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify({schemaVersion:1,character:"Fighter",profile:profile(),world:context(),history,last},null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=u;a.download="fighter-character-lab.json";a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
 dialog.addEventListener("close",()=>{controller?.abort();stopVoice();onClose()});
 load();voiceState();
-window.LifeLab=Object.freeze({open(room){actualLocation=room;if(!dialog.open){dialog.showModal();status(local?"Local development mode — check services before live testing.":"Preview mode — no live AI connected.")}},onClose(fn){onClose=fn}});
+window.LifeLab=Object.freeze({npcConfig,npcTurn,open(room){actualLocation=room;if(!dialog.open){dialog.showModal();status(local?"Local development mode — check services before live testing.":"Preview mode — no live AI connected.")}},onClose(fn){onClose=fn}});
 })();
