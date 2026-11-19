@@ -217,7 +217,7 @@
 /* Path category identity is scoped to the abilities panel; landscapes and portrait geometry are untouched. */
 .path-overview[data-path-theme]{--path-tone:#dac6a1;--path-wash:#b59a6422}
 .path-overview[data-path-theme="base"]{--path-tone:var(--class-highlight);--path-wash:color-mix(in srgb,var(--class-highlight) 14%,transparent)}
-.path-overview[data-path-theme="true"]{--path-tone:#f2d8a0;--path-wash:#d9b56a28}
+.path-overview[data-path-theme="true"]{--path-tone:#ffdf80;--path-wash:#e7b73724}
 .path-overview[data-path-theme="corrupted"]{--path-tone:#e9a0ab;--path-wash:#9e334d31}
 .path-overview[data-path-theme="twisted"]{--path-tone:#c4afe9;--path-wash:#7954ad30}
 .path-overview[data-path-theme="fable"]{--path-tone:#b4d8aa;--path-wash:#578e6a30}
@@ -243,15 +243,8 @@
  --codex-border:color-mix(in srgb,var(--path-tone) 32%,#475268);
 }
 .class-showcase .path-overview[data-path-theme] :is(
- .showcase-section-title h3,
- .ability-group-head h4,
- .ability-detail-heading h4,
- .ability-mechanic h4,
- .path-mechanic-head h4,
  .path-mechanic-table thead th,
  .path-mechanic-table td,
- .ability-video-caption strong,
- .skill-detail-head strong,
  .skill-data strong
 ){color:var(--path-tone)}
 .class-showcase .path-overview[data-path-theme] :is(
@@ -290,7 +283,7 @@
 }
 /* Deliberately richer, darker heading swatches instead of a gray tint.
    Only titles use these values; small copy and ultimate trim are unchanged. */
-.class-showcase .path-overview[data-path-theme="true"]{--title-tone:#d2a757}
+.class-showcase .path-overview[data-path-theme="true"]{--title-tone:#f2bd35}
 .class-showcase .path-overview[data-path-theme="corrupted"]{--title-tone:#d87589}
 .class-showcase .path-overview[data-path-theme="twisted"]{--title-tone:#a38ad5}
 .class-showcase .path-overview[data-path-theme="fable"]{--title-tone:#82b879}
@@ -302,11 +295,19 @@
 .class-showcase[data-skill-theme="strider"] .path-overview[data-path-theme="base"]{--title-tone:#a287d0}
 .class-showcase[data-skill-theme="herder"] .path-overview[data-path-theme="base"]{--title-tone:#a0b86a}
 .class-showcase[data-skill-theme="animar"] .path-overview[data-path-theme="base"]{--title-tone:#60aa96}
-.class-showcase .path-overview[data-path-theme] :is(
- .subclass-intro h3,.path-advancement h4,
- .showcase-section-title h3,.ability-group-head h4,
- .ability-detail-heading h4,.ability-mechanic h4,.path-mechanic-head h4
-){color:var(--title-tone)}
+/* Target the headings explicitly, including the three marked in the screenshot.
+   Keep the title and its category glyph on exactly the same accent. */
+.class-showcase .path-overview[data-path-theme] .subclass-intro h3,
+.class-showcase .path-overview[data-path-theme] .path-category-icon,
+.class-showcase .path-overview[data-path-theme] .path-advancement h4,
+.class-showcase .path-overview[data-path-theme] .path-ability-layout .showcase-section-title h3,
+.class-showcase .path-overview[data-path-theme] .ability-group-head h4,
+.class-showcase .path-overview[data-path-theme] .skill-detail .ability-detail-heading h4,
+.class-showcase .path-overview[data-path-theme] .ability-mechanic h4,
+.class-showcase .path-overview[data-path-theme] .path-mechanic-head h4,
+.class-showcase .path-overview[data-path-theme] .skill-detail-head strong{color:var(--title-tone)}
+/* The smaller caption under the footage is not a section title. */
+.class-showcase .path-overview[data-path-theme] .ability-video-caption strong{color:var(--path-tone)}
 .class-showcase .path-overview[data-path-theme] .ability-group-ultimate .ability-group-head h4{
  font-weight:800;letter-spacing:.045em;
  text-shadow:0 0 9px color-mix(in srgb,var(--path-tone) 38%,transparent);
