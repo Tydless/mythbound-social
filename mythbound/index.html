@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="../MythboundMascot.png">
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-news-autoplay1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-news-autoplay2";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -1089,12 +1089,12 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 <script>
 document.addEventListener("DOMContentLoaded",()=>{
  const items=[{"id":"wardrobe","title":"Saint wardrobe spotlight","category":"COSMETICS","image":"../BannerSaint.png","symbol":"✥"},{"id":"patch","title":"Update 1.4.2 — The companion situation","category":"PATCH NOTES","image":"../mythbound-home-watercolor.jpg","symbol":"✧"},{"id":"avatars","title":"New feature: class profile pictures","category":"ANNOUNCEMENT","image":null,"symbol":"✦"},{"id":"contest","title":"Design the Legend — community spotlight","category":"COMMUNITY","image":null,"symbol":"❃"}];
- let index=0,timer=0,hovered=false,focused=false,inView=true;
- const art=document.getElementById("featured-news-art"),dots=document.getElementById("featured-news-dots"),card=document.getElementById("featured-news-open"),pause=document.getElementById("featured-news-pause"),home=document.getElementById("page-home"),feature=card.closest(".featured-news");
+ let index=0,timer=0;
+ const art=document.getElementById("featured-news-art"),dots=document.getElementById("featured-news-dots"),card=document.getElementById("featured-news-open"),pause=document.getElementById("featured-news-pause"),home=document.getElementById("page-home");
  const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
- let paused=reduced.matches;
+ let paused=false;
  const interval=7000;
- function canRotate(){return !paused&&!hovered&&!focused&&inView&&!document.hidden&&!home.hidden}
+ function canRotate(){return !paused&&!document.hidden&&!home.hidden}
  function schedule(){
   clearTimeout(timer);timer=0;
   if(canRotate())timer=setTimeout(()=>{timer=0;if(canRotate())showFeatured((index+1)%items.length,true);schedule()},interval);
@@ -1115,17 +1115,10 @@ document.addEventListener("DOMContentLoaded",()=>{
  }
  items.forEach((a,i)=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-label",a.title);b.onclick=()=>{showFeatured(i,true);schedule()};dots.append(b);if(a.image){const preload=new Image();preload.src=a.image}});
  pause.addEventListener("click",()=>{paused=!paused;updatePause();schedule()});
- feature.addEventListener("pointerenter",e=>{if(e.pointerType==="touch")return;hovered=true;schedule()});
- feature.addEventListener("pointerleave",()=>{hovered=false;schedule()});
- feature.addEventListener("focusin",()=>{focused=true;schedule()});
- feature.addEventListener("focusout",e=>{if(!feature.contains(e.relatedTarget)){focused=false;schedule()}});
+ // Only deliberately pausing, leaving Home or hiding the browser tab stops rotation.
+ // Hover and retained button focus must not stall the slideshow.
  document.addEventListener("visibilitychange",schedule);
  new MutationObserver(schedule).observe(home,{attributes:true,attributeFilter:["hidden"]});
- if(typeof IntersectionObserver==="function"){
-  const observer=new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;schedule()},{threshold:.1});observer.observe(feature);
- }
- const motionChange=e=>{if(e.matches)paused=true;updatePause();schedule()};
- if(reduced.addEventListener)reduced.addEventListener("change",motionChange);else if(reduced.addListener)reduced.addListener(motionChange);
  updatePause();
  function toggleArticle(id,open){
   const b=document.querySelector('[data-news-toggle="'+id+'"]'),body=document.getElementById("article-"+id);
