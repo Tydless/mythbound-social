@@ -380,6 +380,25 @@ function renderPathAdvancement(path){
 function pathSectionTitle(path,isBase){
  return isBase?"Base Class":(path.type||"ADVANCED PATH").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
 }
+// Shared visual identities for every revealed path type.
+function renderPathIdentity(path,isBase){
+ const heading=$("path-detail-title"),icon=$("path-category-icon"),panel=heading?.closest(".path-overview");
+ if(!icon||!panel)return;
+ const key=isBase?"base":(path.type||"UNREVEALED PATH").toLowerCase().replace(/ path$/,"");
+ const symbols={
+  base:'<path d="M12 3v18M4 12h16M12 5l7 7-7 7-7-7Z"/>',
+  true:'<circle cx="12" cy="12" r="4"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4M5 5l3 3m8 8 3 3M5 19l3-3m8-8 3-3"/>',
+  corrupted:'<path d="M19 15A8 8 0 0 1 9 5a8 8 0 1 0 10 10Z"/><path d="M17 3q-4 5 0 7 4-2 0-7Z"/>',
+  twisted:'<path d="M12 21v-6c0-4-6-4-6-9m6 9c0-4 6-4 6-9M3 8l3-3 3 3m6 0 3-3 3 3"/>',
+  fable:'<path d="M3 6q5-2 9 2 4-4 9-2v12q-5-2-9 2-4-4-9-2ZM12 8v12M16 3v4m-2-2h4"/>',
+  mythical:'<path d="M13 2c1 5 7 8 7 13a8 8 0 0 1-16 0c0-4 3-6 5-9 0 4 2 5 3 5 2-2 2-5 1-9Z"/><path d="M12 12c3 3 4 5 0 8-4-3-3-5 0-8Z"/>',
+  unrevealed:'<path d="M9 8a3 3 0 1 1 5 2c-1 1-2 2-2 4m0 4h.01M12 2l10 10-10 10L2 12Z"/>'
+ };
+ const theme=Object.prototype.hasOwnProperty.call(symbols,key)?key:"unrevealed";
+ panel.dataset.pathTheme=theme;
+ icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" focusable="false">'+symbols[theme]+'</svg>';
+ icon.hidden=false;
+}
 function renderPath(){
  renderPathPresentation();
  const path=pathData(),buttons=$("class-paths");
@@ -405,6 +424,7 @@ function renderPath(){
  }
  const title=$("path-detail-title"),desc=$("path-description"),core=$("path-core-title");
  if(title)title.textContent=pathSectionTitle(path,activePath===0);
+ renderPathIdentity(path,activePath===0);
  if(desc)desc.textContent=path.description;
  renderPathAdvancement(path);
  if(core)core.textContent=isUnrevealed()?"Unrevealed abilities":"Abilities & mechanics";
@@ -421,8 +441,8 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
   renderPreview(true);updateVoiceButton();
   // Mystery entry uses its teaser; the other paths retain their switch greetings.
   if(window.MythboundSFX?.enabled()===false)return;
-  if(isUnrevealed())playVoice("Teaser");
-  else if(active==="saint"&&(activePath===1||activePath===2||((previousPath===1||previousPath===2||previousPath===3)&&activePath===0)))playVoice("Switch");
+  if(isUnrevealed())playVoice("Teaser",true);
+  else if(active==="saint"&&(activePath===1||activePath===2||((previousPath===1||previousPath===2||previousPath===3)&&activePath===0)))playVoice("Switch",true);
  }
 }));
 const atmosphere=document.querySelector(".class-atmosphere");
@@ -569,7 +589,7 @@ document.querySelectorAll("[data-class]").forEach(button=>{
 });
 document.querySelectorAll(".gender-option").forEach(button=>button.addEventListener("click",()=>{
  const next=button.dataset.gender;if(next===gender||!["male","female"].includes(next))return;
- gender=next;renderPreview(false);if(window.MythboundSFX?.enabled()!==false)playVoice("Switch");else stopVoice();
+ gender=next;renderPreview(false);if(window.MythboundSFX?.enabled()!==false)playVoice("Switch",true);else stopVoice();
 }));
 draw();updateVoiceButton();
 })();

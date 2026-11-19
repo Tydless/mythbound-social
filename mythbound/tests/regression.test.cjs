@@ -66,3 +66,24 @@ test("Skill section headings identify the path without duplicating the class nam
  assert.equal(title({},false),"Advanced Path");
  assert.doesNotMatch(html,/id="path-type"/);
 });
+
+test("Independent volume preferences and overlapping music ducking preserve the latest volume",()=>{
+ const win={},saved=new Map(),music={volume:1};
+ const doc={getElementById:id=>id==="mythbound-theme"?music:null,querySelector:()=>null,addEventListener(){},dispatchEvent(){}};
+ new Function("window","document","localStorage","Event",read("sound-settings.js"))(win,doc,{getItem:k=>saved.get(k)??null,setItem:(k,v)=>saved.set(k,String(v))},class Event{});
+ const mixer=win.MythboundAudio;
+ assert.equal(mixer.level("music"),.3);assert.equal(win.MythboundSFX.volume(),1);
+ mixer.duck("region",.45);mixer.setLevel("music",.6);assert.ok(Math.abs(music.volume-.27)<.0001);
+ mixer.duck("voice",.28);mixer.release("region");assert.ok(Math.abs(music.volume-.168)<.0001);
+ mixer.release("voice");assert.equal(music.volume,.6);
+ mixer.setLevel("sfx",.4);win.MythboundSFX.setEnabled(false);assert.equal(win.MythboundSFX.volume(),0);
+ assert.equal(saved.get("mythbound-sfx-volume"),"0.4");win.MythboundSFX.setEnabled(true);assert.equal(win.MythboundSFX.volume(),.4);
+});
+test("Path identities use shared categories without revealing the mystery path",()=>{
+ const code=read("class-showcase.js"),icon={},panel={dataset:{}},heading={closest:()=>panel};
+ const render=new Function("$",code.slice(code.indexOf("function renderPathIdentity("),code.indexOf("function renderPath(){"))+";return renderPathIdentity")(id=>id==="path-detail-title"?heading:icon);
+ for(const key of ["base","true","corrupted","twisted","fable","mythical","unrevealed"]){
+  render({type:key.toUpperCase()+" PATH"},key==="base");
+  assert.equal(panel.dataset.pathTheme,key);assert.match(icon.innerHTML,/<svg/);
+ }
+});

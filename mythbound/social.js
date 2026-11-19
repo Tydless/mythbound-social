@@ -169,15 +169,14 @@
   ];
   const partyVersion=new URL(document.currentScript?.src||location.href,document.baseURI).searchParams.get("v");
   const partyMusic=$("mythbound-theme");
-  let playingPartyAudio=null,partyMusicVolume=null;
+  let playingPartyAudio=null;
   const playIcon='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l12-7z"/></svg>';
   const pauseIcon='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>';
   const microphoneIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-3 0h6"/></svg>';
   function releasePartyVoice(audio){
     if(playingPartyAudio!==audio)return;
     playingPartyAudio=null;
-    if(partyMusic&&partyMusicVolume!==null){try{partyMusic.volume=partyMusicVolume}catch{}}
-    partyMusicVolume=null;
+    window.MythboundAudio?.release("party-voice");
   }
   function stopPartyVoice(){
     const audio=playingPartyAudio;
@@ -188,7 +187,7 @@
     stopPartyVoice();
     document.dispatchEvent(new Event("mythbound:party-voice-start"));
     playingPartyAudio=audio;
-    if(partyMusic){try{partyMusicVolume=partyMusic.volume;partyMusic.volume=partyMusicVolume*.28}catch{}}
+    window.MythboundAudio?.duck("party-voice",.28);
   }
   function durationText(value){
     const n=Math.max(0,Math.floor(Number.isFinite(value)?value:0));

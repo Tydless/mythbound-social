@@ -6,8 +6,7 @@ window.createMythboundClassVoice=function({$,classPage,cap,isUnrevealed,getState
    Assets: ../VoiceSaintMaleSwitch.mp3, ../VoiceFallenSaintFemaleSwitch.mp3, etc.
    One player at a time; missing recordings never break the codex. */
 const voiceNext=Object.create(null);
-let voicePlaying=null,musicVolume=null;
-const music=$("mythbound-theme");
+let voicePlaying=null,automaticVoice=false;
 const voiceButton=document.createElement("button");
 voiceButton.type="button";voiceButton.className="class-voice-button";
 voiceButton.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></svg>';
@@ -32,8 +31,7 @@ function updateVoiceButton(){
  voiceButton.classList.toggle("is-speaking",!!voicePlaying);
 }
 function restoreMusic(){
- if(music&&musicVolume!==null){try{music.volume=musicVolume}catch{}}
- musicVolume=null;
+ window.MythboundAudio?.release("class-voice");
 }
 function stopVoice(clearStatus=true){
  const old=voicePlaying;voicePlaying=null;
@@ -42,17 +40,18 @@ function stopVoice(clearStatus=true){
  if(clearStatus)voiceStatus.textContent="";
  updateVoiceButton();
 }
-function playVoice(kind){
+function playVoice(kind,automatic=false){
  // All preview requests on the mystery path resolve to its sole approved teaser.
  if(isUnrevealed())kind="Teaser";
  document.dispatchEvent(new Event("mythbound:class-voice-start"));
  stopVoice();
  const filename="Voice"+voiceClass()+cap(getState().gender)+kind+".mp3";
- const audio=new Audio();audio.preload="auto";voicePlaying=audio;
+ const audio=new Audio();audio.preload="auto";voicePlaying=audio;automaticVoice=automatic;
+ if(automatic)audio.volume=window.MythboundSFX?.volume()??1;
  const fail=()=>{if(voicePlaying!==audio)return;stopVoice(false);voiceStatus.textContent="Voice preview unavailable — recording pending or playback blocked."};
  audio.addEventListener("playing",()=>{
   if(voicePlaying!==audio)return;
-  if(music&&musicVolume===null){try{musicVolume=music.volume;music.volume=musicVolume*.28}catch{}}
+  window.MythboundAudio?.duck("class-voice",.28);
  },{once:true});
  audio.addEventListener("ended",()=>{if(voicePlaying===audio)stopVoice()},{once:true});
  audio.addEventListener("error",fail,{once:true});
@@ -70,7 +69,7 @@ const voiceVisibility=new MutationObserver(()=>{
 voiceVisibility.observe(classPage,{attributes:true,attributeFilter:["hidden"]});
 voiceVisibility.observe(document.body,{attributes:true,attributeFilter:["class"]});
 document.addEventListener("mythbound:party-voice-start",()=>stopVoice());
-document.addEventListener("mythbound:sfx-change",()=>{if(window.MythboundSFX?.enabled()===false)stopVoice()});
+document.addEventListener("mythbound:sfx-change",()=>{if(voicePlaying&&automaticVoice){if(window.MythboundSFX?.enabled()===false)stopVoice();else voicePlaying.volume=window.MythboundSFX?.volume()??1}});
 document.addEventListener("visibilitychange",()=>{if(document.hidden)stopVoice()});
 window.addEventListener("pagehide",()=>stopVoice());
 return {updateVoiceButton,stopVoice,playVoice};

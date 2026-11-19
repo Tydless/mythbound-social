@@ -143,7 +143,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
   if(!audio||!toggle||!label)return;
   let enabled=true, blocked=false, unavailable=false, pending=false;
   try{enabled=localStorage.getItem("mythbound-music-enabled")!=="false"}catch{}
-  audio.volume=0.30;
+  window.MythboundAudio?.applyMusic();
   audio.loop=true;
   audio.muted=false;
   const announce=message=>{if(live)live.textContent=message};
@@ -221,7 +221,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
 
 // Original, synthesized UI foley: no downloaded sound assets or external dependencies.
 (function installMythboundInterfaceSounds(){
- let ctx,noise,last=-Infinity;
+ let ctx,noise,last=-Infinity;const outputs=new Set();
  function play(kind){
   // Respect the existing audio preference; no surprise sounds when muted.
   if(window.MythboundSFX?.enabled()===false)return;
@@ -239,7 +239,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
     const samples=noise.getChannelData(0);
     for(let i=0;i<samples.length;i++)samples[i]=Math.random()*2-1;
    }
-   const out=ctx.createGain();out.gain.value=.42;out.connect(ctx.destination);
+   const out=ctx.createGain();out.gain.value=.6*(window.MythboundSFX?.volume()??1);out.connect(ctx.destination);outputs.add(out);
    function rustle(start,duration,from,to,volume,q){
     const source=ctx.createBufferSource();source.buffer=noise;
     const filter=ctx.createBiquadFilter();filter.type="bandpass";filter.Q.value=q;
@@ -258,7 +258,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
    }else{
     rustle(t,.095,1250,3800,.10,1.2);tick(t+.025,.12,940,.065);tick(t+.045,.09,1400,.025);
    }
-   setTimeout(()=>out.disconnect(),500);
+   setTimeout(()=>{out.disconnect();outputs.delete(out)},500);
   }catch{}
  }
  // Capture before handlers replace skill buttons or update route selection.
@@ -271,6 +271,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
   if(page&&location.hash!=="#"+page){play("page");return}
   if(button.dataset.class)play("select");
  },true);
+ document.addEventListener("mythbound:sfx-change",()=>{for(const out of outputs)out.gain.value=.6*(window.MythboundSFX?.volume()??1)});
  window.addEventListener("pagehide",()=>{if(ctx&&ctx.state==="running")ctx.suspend().catch(()=>{})});
 })();
 

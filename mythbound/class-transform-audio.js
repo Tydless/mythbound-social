@@ -3,7 +3,8 @@
 "use strict";
 window.createMythboundTransformationAudio=function({$,classPage,isArchsaint}){
 // Original transformation foley. Unlock on the selection gesture; play only when the new image is ready.
-let transformAudioContext=null, transformAudioSource=null, recordedChoir=null;
+let transformAudioContext=null, transformAudioSource=null, recordedChoir=null, transformGain=null, transformGainBase=1;
+const sfxLevel=()=>window.MythboundSFX?.volume()??1;
 // Choir of Voices - Single Chord, bone666138, CC0. See audio-credits.md.
 const choirSource="https://raw.githubusercontent.com/baron-elmwich/tethered-game/f23cd62702aa235f9056e1ac4d096a74cf1c5237/Assets/Audio/274121__bone666138__choir-of-voices-single-chord.wav";
 const transformBuffers=Object.create(null);
@@ -19,6 +20,7 @@ function prepareTransformationAudio(){
 function stopTransformationAudio(){
  if(recordedChoir){const old=recordedChoir;recordedChoir=null;old.pause();old.removeAttribute("src");old.load()}
  if(transformAudioSource){try{transformAudioSource.stop()}catch{}transformAudioSource=null}
+ transformGain=null;
 }
 
 // Original choir-like and mysterious sound effects.
@@ -57,7 +59,7 @@ function specialSound(ac,kind){
 function playRecordedChoir(){
  if(transformationMuted()||document.hidden||classPage.hidden)return;
  stopTransformationAudio();
- const audio=new Audio(choirSource);recordedChoir=audio;audio.preload="auto";audio.volume=.38;
+ const audio=new Audio(choirSource);recordedChoir=audio;audio.preload="auto";audio.volume=.65*sfxLevel();
  const fallback=()=>{if(recordedChoir!==audio)return;stopTransformationAudio();if(isArchsaint()&&!classPage.hidden)playSpecialSound("archsaint",true)};
  audio.addEventListener("error",fallback,{once:true});
  audio.addEventListener("ended",()=>{if(recordedChoir===audio)stopTransformationAudio()},{once:true});
@@ -65,7 +67,7 @@ function playRecordedChoir(){
   if(recordedChoir!==audio)return;
   const t=audio.currentTime;
   if(t>=4.8){stopTransformationAudio();return}
-  audio.volume=.38*Math.max(0,Math.min(1,(4.8-t)/1.35));
+  audio.volume=.65*sfxLevel()*Math.max(0,Math.min(1,(4.8-t)/1.35));
   requestAnimationFrame(fade);
  }
  audio.addEventListener("playing",()=>requestAnimationFrame(fade),{once:true});
@@ -77,9 +79,9 @@ function playSpecialSound(kind,forceSynth=false){
  const ac=transformAudioContext;if(!ac||ac.state==="closed")return;
  stopTransformationAudio();
  try{const buffer=transformBuffers[kind]||(transformBuffers[kind]=specialSound(ac,kind));
- const sound=ac.createBufferSource(),gain=ac.createGain();sound.buffer=buffer;gain.gain.value=kind==="archsaint"?.72:.66;
+ const sound=ac.createBufferSource(),gain=ac.createGain();sound.buffer=buffer;transformGain=gain;transformGainBase=kind==="archsaint"?.9:.85;gain.gain.value=transformGainBase*sfxLevel();
  sound.connect(gain);gain.connect(ac.destination);transformAudioSource=sound;
- sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound)transformAudioSource=null};sound.start()}catch{}
+ sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound){transformAudioSource=null;transformGain=null}};sound.start()}catch{}
 }
 
 function playTransformationAudio(fallen){
@@ -154,15 +156,15 @@ function playTransformationAudio(fallen){
    transformBuffers[key]=buffer;
   }
   const sound=ac.createBufferSource(),gain=ac.createGain();sound.buffer=transformBuffers[key];
-  gain.gain.value=fallen?.65:.72;sound.connect(gain);gain.connect(ac.destination);
+  transformGain=gain;transformGainBase=fallen?.85:.9;gain.gain.value=transformGainBase*sfxLevel();sound.connect(gain);gain.connect(ac.destination);
   transformAudioSource=sound;
-  sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound)transformAudioSource=null};
+  sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound){transformAudioSource=null;transformGain=null}};
   sound.start();
  }catch{}
 }
 document.addEventListener("visibilitychange",()=>{if(document.hidden)stopTransformationAudio()});
 window.addEventListener("pagehide",stopTransformationAudio);
-document.addEventListener("mythbound:sfx-change",()=>{if(transformationMuted())stopTransformationAudio()});
+document.addEventListener("mythbound:sfx-change",()=>{if(transformationMuted())stopTransformationAudio();else{if(transformGain)transformGain.gain.value=transformGainBase*sfxLevel();if(recordedChoir)recordedChoir.volume=.65*sfxLevel()*Math.max(0,Math.min(1,(4.8-recordedChoir.currentTime)/1.35))}});
 const transformVisibility=new MutationObserver(()=>{if(classPage.hidden||document.body.classList.contains("mythbound-login-open"))stopTransformationAudio()});
 transformVisibility.observe(classPage,{attributes:true,attributeFilter:["hidden"]});transformVisibility.observe(document.body,{attributes:true,attributeFilter:["class"]});
 document.addEventListener("mythbound:party-voice-start",stopTransformationAudio);
