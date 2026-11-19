@@ -506,12 +506,49 @@ function burnPortrait(stage,oldImage,picture,isFallen){
  }catch(e){oldImage.style.visibility="";stage.classList.remove("portrait-revealing");fallback()}
 }
 
+// Touch devices use small, ordinary CSS particles instead of canvas, blend modes,
+// animated image filters and masked full-portrait overlays. iPad desktop mode included.
+function useMobilePortraitEffects(){
+ return window.matchMedia("(max-width: 760px), (hover: none) and (pointer: coarse)").matches||
+  /iPad|iPhone|iPod/.test(navigator.userAgent)||
+  (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+}
+function revealMobilePath(stage,oldImage,picture,kind){
+ // The new artwork has loaded. Never obscure it with a full-size animated layer.
+ oldImage?.remove();
+ picture.classList.remove("portrait-incoming");
+ picture.style.removeProperty("opacity");
+ picture.style.removeProperty("filter");
+ stage.classList.remove("portrait-revealing","portrait-crossfade");
+ const layer=document.createElement("div");
+ layer.className="portrait-mobile-effect mobile-effect-"+kind;
+ layer.setAttribute("aria-hidden","true");
+ const amount=kind==="fallen"?12:10;
+ for(let i=0;i<amount;i++){
+  const particle=document.createElement("span");
+  particle.className="mobile-reveal-particle";
+  const x=10+(i*37.13)%80,y=12+(i*23.71)%72;
+  particle.style.setProperty("--px",x+"%");
+  particle.style.setProperty("--py",y+"%");
+  particle.style.setProperty("--dx",((i%5)-2)*9+"px");
+  particle.style.setProperty("--dy",(kind==="archsaint"?48:-36)-(i%3)*7+"px");
+  particle.style.setProperty("--delay",(i%5)*.055+"s");
+  particle.style.setProperty("--size",(4+i%3*2)+"px");
+  layer.append(particle);
+ }
+ stage.append(layer);
+ setTimeout(()=>layer.remove(),1500);
+}
 function renderPreview(allowTransformation=false){
  // Real artwork for both Saint appearances, with the old concept silhouette
  // as a fallback until the two image files have been uploaded to GitHub.
  stopTransformationAudio();
- const previous=preview.querySelector(".saint-portrait-stage .portrait-incoming")||preview.querySelector(".saint-portrait-stage .saint-portrait");
- const oldImage=previous?.complete&&previous.naturalWidth?previous.cloneNode(false):null;
+ const mobile=useMobilePortraitEffects();
+ $("class-details").classList.toggle("mobile-portrait-fx",mobile);
+ // If a switch is interrupted while an image is still loading, retain the last
+ // loaded portrait rather than cloning the not-yet-ready incoming image.
+ const previous=[...preview.querySelectorAll(".saint-portrait-stage .saint-portrait")].reverse().find(img=>img.complete&&img.naturalWidth);
+ const oldImage=previous?previous.cloneNode(false):null;
  if(oldImage){oldImage.removeAttribute("style");oldImage.classList.remove("portrait-incoming","portrait-previous","unrevealed-portrait-reveal")}
  preview.replaceChildren();
  preview.classList.remove("has-saint-art");
@@ -546,7 +583,10 @@ function renderPreview(allowTransformation=false){
    if(!picture.isConnected)return;
    preview.classList.add("has-saint-art");
    if(animate){
-    if(special){playSpecialSound(special);revealSpecialPath(stage,oldImage,picture,special)}
+    if(mobile){
+     if(special)playSpecialSound(special);else playTransformationAudio(isFallen);
+     revealMobilePath(stage,oldImage,picture,special||(isFallen?"fallen":"base"));
+    }else if(special){playSpecialSound(special);revealSpecialPath(stage,oldImage,picture,special)}
     else{playTransformationAudio(isFallen);if(isFallen)burnPortrait(stage,oldImage,picture,true);else revealSaint(stage,oldImage,picture)}
    }
    if(note)note.textContent=artworkName+" · illustrated class artwork";

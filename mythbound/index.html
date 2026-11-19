@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-whimble-intro3";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-mobile-portrait-fx1";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -813,6 +813,34 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 .site-footer .footer-whimble-logo{grid-column:2;grid-row:1;display:block;width:clamp(100px,12vw,190px);height:auto;object-fit:contain;justify-self:end}
 .site-footer p{grid-column:1/-1;grid-row:2}
 @media(max-width:480px){.site-footer{column-gap:12px;padding-inline:18px}.site-footer .footer-brand.wordmark-host{width:min(100%,188px)}.site-footer .footer-whimble-logo{width:105px}}
+</style>
+<style>
+/* Mobile-safe portrait composition. No animated filters, blend modes, masked
+   overlays or canvas readback on touch devices. Desktop effects are unchanged. */
+.class-showcase.mobile-portrait-fx{backdrop-filter:none;-webkit-backdrop-filter:none}
+.class-showcase.mobile-portrait-fx .showcase-info,
+.class-showcase.mobile-portrait-fx .path-overview{backdrop-filter:none;-webkit-backdrop-filter:none}
+.class-showcase.mobile-portrait-fx .saint-portrait-stage{overflow:hidden;isolation:auto}
+.class-showcase.mobile-portrait-fx .class-preview .saint-portrait-stage .saint-portrait{filter:none!important;mix-blend-mode:normal;will-change:auto}
+.class-showcase.mobile-portrait-fx .portrait-burn-canvas,
+.class-showcase.mobile-portrait-fx .portrait-special-effect{display:none!important}
+.class-showcase.mobile-portrait-fx .scene-mist{filter:none}
+.portrait-mobile-effect{position:absolute;inset:0;overflow:hidden;z-index:3;pointer-events:none;--particle:#fff3cf;--particle-glow:#f5d89a}
+.portrait-mobile-effect.mobile-effect-archsaint{--particle:#fff9ed;--particle-glow:#e3d7ff}
+.portrait-mobile-effect.mobile-effect-fallen{--particle:#ff9a97;--particle-glow:#e34b56}
+.portrait-mobile-effect.mobile-effect-mystery{--particle:#d4d9f2;--particle-glow:#9ba7d3}
+.mobile-reveal-particle{position:absolute;left:var(--px);top:var(--py);width:var(--size);height:var(--size);border-radius:50%;background:var(--particle);box-shadow:0 0 5px 1px var(--particle-glow);opacity:0;animation:mb-mobile-reveal 1.15s var(--delay) ease-out both}
+.mobile-effect-archsaint .mobile-reveal-particle:nth-child(3n){border-radius:85% 10% 85% 10%;height:calc(var(--size)*1.8)}
+.mobile-effect-fallen .mobile-reveal-particle:nth-child(3n){border-radius:80% 15% 80% 15%;height:calc(var(--size)*1.5)}
+@keyframes mb-mobile-reveal{0%{opacity:0;transform:translate(0,0)}24%{opacity:.85}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+@media(prefers-reduced-motion:reduce){.portrait-mobile-effect{display:none!important}}
+@media(max-width:760px){
+ #page-classes{overflow-x:hidden;overflow-x:clip;min-width:0;max-width:100%}
+ .class-showcase .showcase-columns,.class-showcase .path-ability-layout{grid-template-columns:minmax(0,1fr)}
+ .class-showcase .showcase-visual,.class-showcase .showcase-info,.class-showcase .class-preview,.class-showcase .path-overview,.class-showcase .path-ability-layout>*{min-width:0;max-width:100%}
+ .class-showcase .ability-group-icons{min-width:0;flex-wrap:wrap}
+ .class-showcase .preview-toolbar{min-width:0}
+}
 </style>
 </head>
 <body class="mythbound-login-open">
