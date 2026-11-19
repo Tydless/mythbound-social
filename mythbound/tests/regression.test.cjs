@@ -176,3 +176,17 @@ test("Desktop restores original Base, Archsaint and mystery decorations without 
  const special=fx.slice(fx.indexOf("function revealSpecialPath("),fx.indexOf("function revealSaint("));
  assert.match(special,/if\(!stage\.classList\.contains\("safe-portrait-fx"\)\)picture\.style\.filter=/);
 });
+
+
+test("All five path categories drive the ability inspector accent without changing the base class",()=>{
+ const style=read("class-specializations.css");
+ for(const theme of ["true","corrupted","twisted","fable","mythical","unrevealed"]){
+  assert.ok(style.includes('.path-overview[data-path-theme="'+theme+'"]{--path-tone:'));
+ }
+ assert.match(style,/\.path-overview\[data-path-theme\]:not\(\[data-path-theme="base"\]\)\{\s*--class-highlight:var\(--path-tone\)/);
+ for(const selector of [".ability-detail-heading h4",".ability-mechanic h4",".path-mechanic-table td",".ability-video-caption strong",".ability-group-head h4",".skill-data strong"]){
+  assert.ok(style.slice(style.indexOf("/* The selected path owns")).includes(selector));
+ }
+ assert.match(style,/\.ability-tile\.is-current\{\s*border-color:var\(--path-tone\)/);
+ assert.match(style,/\.ability-group-ultimate \.ability-art\{\s*border-color:var\(--path-tone\)/);
+});

@@ -231,3 +231,49 @@
 .path-category-icon svg{width:100%;height:100%}
 .path-overview[data-path-theme] .path-advancement{border-color:color-mix(in srgb,var(--path-tone) 32%,transparent)}
 .path-overview[data-path-theme] .path-advancement h4,.path-overview[data-path-theme] .path-advancement strong,.path-overview[data-path-theme] .path-advancement-symbol{color:var(--path-tone)}
+
+
+/* The selected path owns the accent inside its abilities inspector.
+   Class-wide scenery, portrait artwork, stats and Base Class stay unchanged.
+   All future paths inherit the same palette via data-path-theme. */
+.class-showcase .path-overview[data-path-theme]:not([data-path-theme="base"]){
+ --class-highlight:var(--path-tone);
+ --codex-border:color-mix(in srgb,var(--path-tone) 32%,#475268);
+}
+.class-showcase .path-overview[data-path-theme]:not([data-path-theme="base"]) :is(
+ .showcase-section-title h3,
+ .ability-group-head h4,
+ .ability-detail-heading h4,
+ .ability-mechanic h4,
+ .path-mechanic-head h4,
+ .path-mechanic-table thead th,
+ .path-mechanic-table td,
+ .ability-video-caption strong,
+ .skill-detail-head strong,
+ .skill-data strong
+){color:var(--path-tone)}
+.class-showcase .path-overview[data-path-theme]:not([data-path-theme="base"]) :is(
+ .ability-category-label,.skill-data span,.showcase-section-title>span,.ability-detail-type
+){color:color-mix(in srgb,var(--path-tone) 65%,#a7b2c6)}
+.class-showcase .path-overview[data-path-theme]:not([data-path-theme="base"]) .ability-tile.is-current{
+ border-color:var(--path-tone);
+ box-shadow:inset 0 0 16px color-mix(in srgb,var(--path-tone) 10%,transparent);
+}
+.class-showcase .path-overview[data-path-theme]:not([data-path-theme="base"]) .ability-tile.is-current .skill-name{color:var(--path-tone)}
+.class-showcase .path-overview[data-path-theme]:not([data-path-theme="base"]) .ability-tile:hover{
+ border-color:color-mix(in srgb,var(--path-tone) 45%,transparent);
+}
+.class-showcase .path-overview[data-path-theme]:not([data-path-theme="base"]) .ability-group-ultimate .ability-art{
+ border-color:var(--path-tone);
+ box-shadow:inset 0 0 14px color-mix(in srgb,var(--path-tone) 25%,transparent),0 0 8px color-mix(in srgb,var(--path-tone) 17%,transparent);
+}
+.class-showcase .path-overview[data-path-theme]:not([data-path-theme="base"]) .ability-video-play{color:var(--path-tone)}
+.class-showcase .path-overview[data-path-theme]:not([data-path-theme="base"]) .path-advancement-symbol{
+ border-color:color-mix(in srgb,var(--path-tone) 55%,transparent);
+}
+/* Generic future specialization icons follow the category; the bespoke
+   Archsaint/Fallen Saint icon artwork keeps its existing ink and deep tones. */
+.class-showcase:not([data-skill-theme="archsaint"]):not([data-skill-theme="fallensaint"]) .path-overview[data-path-theme]:not([data-path-theme="base"]) .ability-art{
+ --ability-ink:var(--path-tone);
+ --ability-deep:color-mix(in srgb,var(--path-tone) 36%,#263143);
+}
