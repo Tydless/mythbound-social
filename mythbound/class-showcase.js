@@ -66,7 +66,7 @@ const SPECIALIZATIONS={
     {icon:"⌁",name:"Heavenly Wings",type:"INHERENT ABILITY · FLIGHT",description:"Fly freely to evade ground-bound melee and certain hazards, but remain exposed to flying enemies and anti-air attacks. Injuries reduce flight speed and maximum altitude.",table:{headers:["Remaining HP","Flight speed","Max. altitude"],rows:[["76–100%","100%","100%"],["51–75%","85%","80%"],["26–50%","65%","50%"],["1–25%","40%","Near ground"]]}},
     {icon:"✥",name:"A Shared Miracle",type:"HEAVEN'S MERCY · RESURRECTION",description:"Divine energy is divided among all defeated party members revived in a single cast. Concentrate the miracle on one ally or save a larger group at reduced health. Positioning and follow-up healing are essential.",table:{headers:["Allies revived","HP per ally"],rows:[["1","80%"],["2","60%"],["3","40%"],["4","25%"],["5","20%"]]},note:"Illustrative scaling for up to five revived allies; larger groups are not yet balanced."}
    ],signatureMoves:[]},
-  2:{name:"Fallen Saint",type:"CORRUPTED PATH",artwork:{male:"../FallenSaintMalePortrait.png",female:"../FallenSaintFemalePortrait.png"},
+  2:{name:"Fallen Saint",type:"CORRUPTED PATH",artwork:{male:"../FallenSaintMalePortrait.png?v=5751506f",female:"../FallenSaintFemalePortrait.png?v=23b20526"},
    stats:[3,4,4,2,5],difficulty:4,play:"RANGED · BLOOD MAGIC / CONTROLLER",roles:[["ranged","Ranged"],["healer","Blood magic / control support"]],
    overviewType:"SUPPORT · BLOOD WEAVER",overviewDescription:"Forsaken by the heavens, Fallen Saints wield the Blood Moon's forbidden magic to mend allies, drain vitality and bend enemies to their will.",
    description:"Feeling betrayed by the Holy Spirit, the Fallen Saints sought answers at the Blood Moonshrine. The Blood Moon answered: in exchange for their blood and souls, its forbidden power flowed into them. Now they weave blood into dark magic, restoring companions through sacrifice and turning the life force of their enemies against them.",
@@ -452,7 +452,7 @@ function burnPortrait(stage,oldImage,picture,isFallen){
   const sc=source.getContext("2d",{willReadFrequently:true});if(!ctx||!sc){fallback();return}
   const scale=Math.min(w/oldImage.naturalWidth,h/oldImage.naturalHeight);
   const dw=oldImage.naturalWidth*scale,dh=oldImage.naturalHeight*scale;
-  sc.drawImage(oldImage,(w-dw)/2+(oldImage.classList.contains("fallen-saint-portrait")?-w*.0035:0),(h-dh)/2,dw,dh);
+  sc.drawImage(oldImage,(w-dw)/2,(h-dh)/2,dw,dh);
   const original=sc.getImageData(0,0,w,h),frame=ctx.createImageData(w,h),src=original.data,dst=frame.data;
   const field=new Float32Array(w*h);
   const layers=[{s:44,a:.15},{s:16,a:.065},{s:6,a:.025}].map(({s,a})=>{const cols=Math.ceil(w/s)+2,rows=Math.ceil(h/s)+2;return {s,a,cols,grid:Float32Array.from({length:cols*rows},()=>Math.random())}});
