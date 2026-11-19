@@ -314,3 +314,17 @@ test("News filters show every matching category and Home deep-links reveal hidde
  assert.ok(html.includes('function openArticle(id){\n  filterNews("all");'));
  for(const [i,key] of keys.entries()){assert.ok(html.includes('data-news-category="'+key+'"'));assert.ok(html.includes('data-news-tag="'+key+'"'))}
 });
+
+test("Home two-line headings have balanced spacing at desktop and mobile widths",()=>{
+ const s=read("portal-finishing.css");
+ assert.ok(s.includes("--home-class-heading-space:72px;--home-hub-heading-space:52px"));
+ assert.ok(s.includes("--home-class-heading-space:36px;--home-hub-heading-space:30px"));
+ assert.ok(s.includes("padding-block:var(--home-class-heading-space)"));
+ assert.ok(s.includes("#page-home>.preview-classes{padding-top:0}"));
+ assert.ok(s.includes("padding-top:var(--home-hub-heading-space)"));
+ assert.ok(s.includes("margin:0 0 var(--home-hub-heading-space);padding:0"));
+ assert.ok(s.includes("align-items:center;justify-content:center;gap:12px;text-align:center"));
+ assert.ok(s.includes("margin:0;line-height:1.25"));
+ assert.ok(s.includes("margin:0;line-height:1.6;max-width:65ch"));
+ for(const t of ["Choose the legend you become","Latest news","Join the community"])assert.ok(html.includes(t));
+});
