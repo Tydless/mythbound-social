@@ -718,6 +718,7 @@ function renderSkills(){
  });
  skillDetail();
 }
+const SAINT_PATH_ART={1:{name:"Archsaint",emblem:"◇"},2:{name:"FallenSaint",emblem:"✧"}};
 function renderPathPresentation(){
  const host=$("class-details"),mystery=isUnrevealed(),path=pathData(),wasSpecial=host.dataset.unrevealed==="true"||host.dataset.customPathHeader==="true";
  if(mystery)host.dataset.unrevealed="true";else delete host.dataset.unrevealed;
@@ -735,6 +736,7 @@ function renderPathPresentation(){
   $("class-name").textContent=path.name;
   $("class-type").textContent=path.overviewType;
   $("class-description").textContent=path.overviewDescription;
+  if(active==="saint"&&SAINT_PATH_ART[activePath]&&typeof setClassArtwork==="function")setClassArtwork($("class-emblem"),active,SAINT_PATH_ART[activePath]);
  }else if(wasSpecial&&typeof selectClass==="function")selectClass(active);
  if(!path.overviewType)delete host.dataset.customPathHeader;
  renderClassMeta(pathCombatData());renderStats();
@@ -777,8 +779,14 @@ function renderPath(){
    b.setAttribute("aria-label",b.title);
    const unknown=active==="saint"&&i===3;
    b.classList.toggle("is-unrevealed-path",unknown);
-   if(i===3)b.querySelector(".path-symbol").textContent=unknown?"?":"◈";
-   if(i===0&&typeof setClassArtwork==="function")setClassArtwork(b.querySelector(".path-symbol"),active);
+   const symbol=b.querySelector(".path-symbol");
+   const artwork=active==="saint"?SAINT_PATH_ART[i]:null;
+   if((i===0||artwork)&&typeof setClassArtwork==="function")setClassArtwork(symbol,active,artwork);
+   else {
+    symbol.classList.remove("class-art-host","has-class-art");
+    delete symbol.dataset.artSrc;
+    symbol.textContent=i===1?"◇":i===2?"✧":unknown?"?":"◈";
+   }
   });
  }
  const title=$("path-detail-title"),desc=$("path-description"),label=$("path-type"),core=$("path-core-title"),sig=$("path-signatures");

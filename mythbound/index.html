@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-saintscenefades1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-saintpathicons1";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -682,6 +682,13 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 .class-showcase .class-foreground-motes{transition:opacity .7s ease-in-out}
 .class-showcase.environment-fading .class-atmosphere,.class-showcase.environment-fading .class-foreground-motes{opacity:0}
 @media(prefers-reduced-motion:reduce){.class-showcase .class-atmosphere,.class-showcase .class-foreground-motes{transition:none}}
+</style>
+<style>
+/* Keep the same slots for the finished, already-framed subclass emblems. */
+.class-showcase .path-symbol.class-art-host{width:48px;height:48px;min-width:48px;min-height:48px}
+.class-showcase .path-symbol.class-art-host>.class-art-image{max-width:100%;max-height:100%;object-fit:contain}
+.class-showcase .showcase-seal.class-art-host[data-art-src="../IconArchsaint.png"],.class-showcase .showcase-seal.class-art-host[data-art-src="../IconFallenSaint.png"]{width:86px;height:90px}
+@media(max-width:650px){.class-showcase .showcase-seal.class-art-host[data-art-src="../IconArchsaint.png"],.class-showcase .showcase-seal.class-art-host[data-art-src="../IconFallenSaint.png"]{width:66px;height:70px}}
 </style>
 </head>
 <body class="mythbound-login-open">
