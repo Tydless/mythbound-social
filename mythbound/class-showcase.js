@@ -303,6 +303,7 @@ function renderAbilityMedia(path,entry){
 }
 function skillDetail(path,entry){
  detail.replaceChildren();
+ if(entry)detail.dataset.abilityGroup=entry.group;else delete detail.dataset.abilityGroup;
  if(!entry){detail.append(el("p","path-pending","Advanced abilities have yet to be revealed."));renderAbilityMedia(path,null);return}
  const head=el("div","ability-detail-header"),text=el("div","ability-detail-heading");
  const category={core:"Core mechanic",standard:"Standard skill",ultimate:"Ultimate"}[entry.group];
@@ -325,7 +326,7 @@ function renderSkills(){
  $("class-details").dataset.skillTheme=active==="saint"&&activePath===1?"archsaint":active==="saint"&&activePath===2?"fallensaint":active;
  skills.replaceChildren();
  if(isUnrevealed()){
-  skills.hidden=true;detail.replaceChildren();
+  skills.hidden=true;detail.replaceChildren();delete detail.dataset.abilityGroup;
   const sealed=el("div","unrevealed-sealed-panel");
   const lock=el("span","unrevealed-lock");lock.setAttribute("aria-hidden","true");lock.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></svg>';
   sealed.append(lock,el("strong","","ABILITIES SEALED"),el("p","","No abilities have been revealed for this path."));detail.append(sealed);renderAbilityMedia(path,null);return;

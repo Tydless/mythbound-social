@@ -279,3 +279,46 @@
  --ability-ink:var(--path-tone);
  --ability-deep:color-mix(in srgb,var(--path-tone) 36%,#263143);
 }
+
+
+/* Typographic hierarchy: retain the current small-text colors; use a deeper
+   shade of the same class/path accent for headings. Ultimates have their own
+   brighter ornamental trim and stronger type, without a competing palette. */
+.class-showcase .path-overview[data-path-theme]{
+ --title-tone:color-mix(in srgb,var(--path-tone) 82%,#252333);
+ --ultimate-tone:color-mix(in srgb,var(--path-tone) 78%,#fff3d8);
+}
+.class-showcase .path-overview[data-path-theme] :is(
+ .subclass-intro h3,.path-advancement h4,
+ .showcase-section-title h3,.ability-group-head h4,
+ .ability-detail-heading h4,.ability-mechanic h4,.path-mechanic-head h4
+){color:var(--title-tone)}
+.class-showcase .path-overview[data-path-theme] .ability-group-ultimate .ability-group-head h4{
+ font-weight:800;letter-spacing:.045em;
+ text-shadow:0 0 9px color-mix(in srgb,var(--path-tone) 38%,transparent);
+}
+.class-showcase .path-overview[data-path-theme] .ability-group-ultimate .ability-art,
+.class-showcase .path-overview[data-path-theme] .skill-detail[data-ability-group="ultimate"] .ability-art{
+ border:2px solid var(--ultimate-tone);
+ box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--path-tone) 22%,transparent),
+ inset 0 0 18px color-mix(in srgb,var(--path-tone) 32%,transparent),
+ 0 0 6px color-mix(in srgb,var(--ultimate-tone) 56%,transparent),
+ 0 0 16px color-mix(in srgb,var(--path-tone) 30%,transparent);
+}
+.class-showcase .path-overview[data-path-theme] .ability-group-ultimate .ability-tile .skill-name{
+ color:var(--ultimate-tone);font-weight:800;
+ text-shadow:0 0 7px color-mix(in srgb,var(--path-tone) 38%,transparent);
+}
+.class-showcase .path-overview[data-path-theme] .ability-group-ultimate .ability-tile.is-current{
+ border-color:var(--ultimate-tone);
+ box-shadow:inset 0 0 13px color-mix(in srgb,var(--path-tone) 15%,transparent),
+ 0 0 10px color-mix(in srgb,var(--path-tone) 24%,transparent);
+}
+.class-showcase .path-overview[data-path-theme] .skill-detail[data-ability-group="ultimate"]{
+ border-color:color-mix(in srgb,var(--ultimate-tone) 65%,#475268);
+ box-shadow:inset 0 0 22px color-mix(in srgb,var(--path-tone) 8%,transparent);
+}
+.class-showcase .path-overview[data-path-theme] .skill-detail[data-ability-group="ultimate"] .ability-detail-heading h4{
+ font-weight:800;
+ text-shadow:0 0 10px color-mix(in srgb,var(--path-tone) 35%,transparent);
+}

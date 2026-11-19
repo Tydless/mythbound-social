@@ -203,3 +203,17 @@ test("Base class accent inherits the selected class without a CSS custom propert
  const win={};new Function("window",read("class-data.js"))(win);
  for(const name of ["saint","strider","herder","animar","breaker","elemis"])assert.match(win.MythboundCodexData.DATA[name].color,/^#[0-9a-f]{6}$/i);
 });
+
+
+test("Deeper title accents and ultimate-only emphasis preserve the small-text palette",()=>{
+ const style=read("class-specializations.css"),code=read("class-showcase.js");
+ const rules=style.slice(style.indexOf("/* Typographic hierarchy:"));
+ assert.match(rules,/--title-tone:color-mix\(in srgb,var\(--path-tone\) 82%,#252333\)/);
+ assert.match(rules,/--ultimate-tone:color-mix\(in srgb,var\(--path-tone\) 78%,#fff3d8\)/);
+ for(const selector of [".showcase-section-title h3",".ability-group-head h4",".ability-detail-heading h4",".ability-mechanic h4"])assert.ok(rules.includes(selector));
+ assert.doesNotMatch(rules,/\.skill-data span|\.skill-data strong|\.ability-category-label|\.ability-detail-type/);
+ assert.match(rules,/\.ability-group-ultimate \.ability-group-head h4\{\s*font-weight:800/);
+ assert.match(rules,/\.skill-detail\[data-ability-group="ultimate"\] \.ability-art\{\s*border:2px solid var\(--ultimate-tone\)/);
+ assert.match(code,/if\(entry\)detail\.dataset\.abilityGroup=entry\.group;else delete detail\.dataset\.abilityGroup/);
+ assert.match(code,/skills\.hidden=true;detail\.replaceChildren\(\);delete detail\.dataset\.abilityGroup/);
+});
