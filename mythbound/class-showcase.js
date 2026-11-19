@@ -376,6 +376,10 @@ function renderPathAdvancement(path){
  quest.textContent=info.quest;target.textContent=path.name;
  copy.append("Complete the questline “",quest,"” to advance from "+info.from+" to ",target,".");
 }
+// Skill section headings describe the path, not the character class name.
+function pathSectionTitle(path,isBase){
+ return isBase?"Base Class":(path.type||"ADVANCED PATH").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+}
 function renderPath(){
  renderPathPresentation();
  const path=pathData(),buttons=$("class-paths");
@@ -399,11 +403,10 @@ function renderPath(){
    }
   });
  }
- const title=$("path-detail-title"),desc=$("path-description"),label=$("path-type"),core=$("path-core-title");
- if(title)title.textContent=path.name+(activePath===0?" · Base class":"");
+ const title=$("path-detail-title"),desc=$("path-description"),core=$("path-core-title");
+ if(title)title.textContent=pathSectionTitle(path,activePath===0);
  if(desc)desc.textContent=path.description;
  renderPathAdvancement(path);
- if(label)label.textContent=activePath===0?"BASE PATH":path.type||"ADVANCED PATH";
  if(core)core.textContent=isUnrevealed()?"Unrevealed abilities":"Abilities & mechanics";
  renderSkills();
 }

@@ -53,3 +53,16 @@ test("Each mobile transformation retains and cleans up the portrait",()=>{
   assert.deepEqual(stage.children,[pic]);assert.equal(pic.classList.contains("portrait-incoming"),false);
  }
 });
+
+test("Skill section headings identify the path without duplicating the class name",()=>{
+ const win={};new Function("window",read("class-data.js"))(win);
+ const paths=win.MythboundCodexData.SPECIALIZATIONS.saint;
+ const code=read("class-showcase.js");
+ const title=new Function(code.slice(code.indexOf("function pathSectionTitle("),code.indexOf("function renderPath(){"))+";return pathSectionTitle")();
+ assert.equal(title({},true),"Base Class");
+ assert.equal(title(paths[1],false),"True Path");
+ assert.equal(title(paths[2],false),"Corrupted Path");
+ assert.equal(title(paths[3],false),"Unrevealed Path");
+ assert.equal(title({},false),"Advanced Path");
+ assert.doesNotMatch(html,/id="path-type"/);
+});
