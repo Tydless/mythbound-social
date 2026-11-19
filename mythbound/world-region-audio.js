@@ -1,9 +1,9 @@
 /* Region cues: local recordings may replace synthesized placeholders. */
 (()=>{"use strict";
 const page=document.getElementById("page-discover");if(!page)return;
-const recordings={heavenly:"../HeavenlyRealmIntro.mp3"};
+const recordings={heavenly:"../HeavenlyRealmIntro.mp3",dunes:"../WildDunesIntro.mp3",wondrous:"../WondrousLandsIntro.mp3"};
 // Per-recording trim; keep the global SFX mixer and other regions unchanged.
-const recordingGain={heavenly:.65};
+const recordingGain={heavenly:.65,dunes:.4,wondrous:1};
 const notes={greatfields:[1760,2200,1480],fable:[523,659,784,988],wondrous:[784,1175,1047,1568,2093],bloodmoon:[65,98,58],heavenly:[131,196,262,330,392,523],dunes:[196,294,195]};
 let ctx,current,adjust,epoch=0;
 const level=()=>window.MythboundSFX?.volume()??1;
