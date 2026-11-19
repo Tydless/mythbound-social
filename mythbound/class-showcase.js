@@ -816,7 +816,7 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
  }
 }));
 const atmosphere=document.querySelector(".class-atmosphere");
-let environmentRequest=0;
+let environmentRequest=0,environmentKey=null,environmentFadeTimer=0;
 const SAINT_SCENES={
  1:{id:"heavenly",src:"../HeavenlyRealmBackground.png"},
  2:{id:"bloodmoon",src:"../BloodMoonshrineBackground.png"},
@@ -852,11 +852,13 @@ function drawEnvironment(){
  if(!atmosphere)return;
  const host=$("class-details"),landscape=atmosphere.querySelector(".class-landscape"),embers=atmosphere.querySelector(".class-embers");
  host.dataset.environment=active;
- const special=active==="saint"?SAINT_SCENES[activePath]:null;
+ const classId=active,special=classId==="saint"?SAINT_SCENES[activePath]:null;
  const scene=special?.id||"base";
  const layer=atmosphere.querySelector(".class-scene-effects");
- host.dataset.scene=scene;
- fillSceneEffects(layer,scene);
+ const key=classId+":"+scene;
+ if(key===environmentKey)return;
+ const initial=environmentKey===null;
+ environmentKey=key;
  const foreground=host.querySelector(".class-foreground-motes");
  if(foreground&&!foreground.children.length){
   for(let i=0;i<12;i++){
@@ -871,14 +873,29 @@ function drawEnvironment(){
   }
  }
  const request=++environmentRequest;
- atmosphere.classList.remove("has-landscape");
- landscape.style.backgroundImage="";
- const candidates=special?[special.src]:["../Environment"+cap(active)+".jpg","../Environment"+cap(active)+".png"];
- if(active==="saint"&&!special)candidates.push("../mythbound-home-watercolor.jpg");
+ clearTimeout(environmentFadeTimer);
+ const candidates=special?[special.src]:["../Environment"+cap(classId)+".jpg","../Environment"+cap(classId)+".png"];
+ if(classId==="saint"&&!special)candidates.push("../mythbound-home-watercolor.jpg");
+ const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ let faded=initial||reduced,loaded=false,asset=null;
+ host.classList.add("environment-fading");
+ function commit(){
+  if(request!==environmentRequest||!faded||!loaded)return;
+  host.dataset.scene=scene;host.dataset.sceneClass=classId;
+  fillSceneEffects(layer,scene);
+  landscape.style.backgroundImage=asset?'url("'+asset+'")':"";
+  atmosphere.classList.toggle("has-landscape",Boolean(asset));
+  // Commit the new image and effects while invisible, then start the fade-in.
+  // Guard the frame callback as well as the image callback against fast switches.
+  void atmosphere.offsetWidth;
+  if(request===environmentRequest)host.classList.remove("environment-fading");
+ }
+ if(!faded)environmentFadeTimer=setTimeout(()=>{faded=true;commit()},720);
  function tryImage(i){
-  if(i>=candidates.length||request!==environmentRequest)return;
+  if(request!==environmentRequest)return;
+  if(i>=candidates.length){loaded=true;commit();return}
   const image=new Image();
-  image.onload=()=>{if(request!==environmentRequest)return;landscape.style.backgroundImage='url("'+candidates[i]+'")';atmosphere.classList.add("has-landscape")};
+  image.onload=()=>{if(request!==environmentRequest)return;asset=candidates[i];loaded=true;commit()};
   image.onerror=()=>tryImage(i+1);
   image.src=candidates[i];
  }

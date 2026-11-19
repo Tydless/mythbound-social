@@ -8,7 +8,7 @@
   <title>Mythbound — Every legend leaves a trace</title>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-saintscenes1";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261119-saintscenefades1";
     for(const f of ["styles.css","account.css","world-atlas.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["app.js","class-showcase.js","account.js","social.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -222,12 +222,12 @@
 .class-showcase .class-atmosphere{position:absolute;inset:0 calc(-1 * clamp(20px,4vw,65px)) -85px;z-index:-1;overflow:hidden;pointer-events:none;mask-image:linear-gradient(to bottom,transparent 0%,#0003 12%,#000b 33%,#000 58%,#000 88%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#0003 12%,#000b 33%,#000 58%,#000 88%,transparent 100%)}
 .class-environment,.class-landscape,.class-embers{position:absolute;inset:0}
 .class-environment{background:radial-gradient(ellipse at 55% 73%,color-mix(in srgb,var(--environment-light) 22%,transparent),transparent 62%),linear-gradient(180deg,transparent,var(--environment-dark) 84%,#141d30);transition:background-color .35s}
-.class-showcase[data-environment="breaker"]{--environment-light:#ca7850;--environment-dark:#462630}
-.class-showcase[data-environment="animar"]{--environment-light:#47c5b2;--environment-dark:#123e43}
-.class-showcase[data-environment="herder"]{--environment-light:#b6d17b;--environment-dark:#304631}
-.class-showcase[data-environment="elemis"]{--environment-light:#82b9f0;--environment-dark:#263858}
-.class-showcase[data-environment="strider"]{--environment-light:#a990dc;--environment-dark:#362b50}
-.class-showcase[data-environment="saint"]{--environment-light:#e9c486;--environment-dark:#414056}
+.class-showcase[data-scene-class="breaker"]{--environment-light:#ca7850;--environment-dark:#462630}
+.class-showcase[data-scene-class="animar"]{--environment-light:#47c5b2;--environment-dark:#123e43}
+.class-showcase[data-scene-class="herder"]{--environment-light:#b6d17b;--environment-dark:#304631}
+.class-showcase[data-scene-class="elemis"]{--environment-light:#82b9f0;--environment-dark:#263858}
+.class-showcase[data-scene-class="strider"]{--environment-light:#a990dc;--environment-dark:#362b50}
+.class-showcase[data-scene-class="saint"]{--environment-light:#e9c486;--environment-dark:#414056}
 .class-landscape{background-size:cover;background-position:center 78%;background-repeat:no-repeat;opacity:0;transition:opacity .45s ease}
 .class-atmosphere.has-landscape .class-landscape{opacity:.48}
 .class-atmosphere.has-landscape .class-environment{z-index:1;background:linear-gradient(180deg,transparent 0%,#121a2e28 30%,#121a2e70 66%,#121a2e80 100%),radial-gradient(ellipse at 50% 75%,color-mix(in srgb,var(--environment-light) 13%,transparent),transparent 74%)}
@@ -548,10 +548,9 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 /* Unrevealed Saint path: presentation only. No new artwork or inferred gameplay. */
 .class-showcase .showcase-overline #class-codex-path-label{padding:0;color:inherit}
 .class-showcase[data-unrevealed="true"]{--environment-light:#9da7cb;--environment-dark:#1a1d31;--codex-border:#737c9b}
-.class-showcase[data-unrevealed="true"] .class-landscape{opacity:0}
-.class-showcase[data-unrevealed="true"] .class-environment{background:radial-gradient(ellipse at 72% 37%,#818bb528,transparent 47%),radial-gradient(ellipse at 24% 73%,#9692bf16,transparent 52%),linear-gradient(180deg,transparent,#16192be3 76%,#141827);z-index:1}
-.class-showcase[data-unrevealed="true"] .class-embers{opacity:.38}
-.class-showcase[data-unrevealed="true"] .class-foreground-motes{opacity:.45}
+.class-showcase[data-scene="judgment"] .class-environment{background:radial-gradient(ellipse at 72% 37%,#818bb528,transparent 47%),radial-gradient(ellipse at 24% 73%,#9692bf16,transparent 52%),linear-gradient(180deg,transparent,#16192be3 76%,#141827);z-index:1}
+.class-showcase[data-scene="judgment"] .class-embers{opacity:.38}
+.class-showcase[data-scene="judgment"] .class-foreground-motes{opacity:.45}
 .class-showcase[data-unrevealed="true"] .showcase-info{background:radial-gradient(ellipse at 50% 65%,#30344e,#191c2c 78%);box-shadow:inset 0 0 0 4px #191c2c,inset 0 0 0 5px #a3adcb40,0 12px 32px #080f2044}
 .class-showcase[data-unrevealed="true"] .showcase-info::before,.class-showcase[data-unrevealed="true"] .showcase-info::after{border-color:#191c2c}
 .class-showcase[data-unrevealed="true"] .showcase-seal{display:grid;place-items:center;color:#c3c9df;font:400 48px 'Cinzel',Georgia,serif;text-shadow:0 0 18px #b8bed875;border:1px dashed #a4aec77a;border-radius:50%;background:radial-gradient(circle,#b8bed81a,transparent 68%)}
@@ -654,9 +653,9 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 .class-showcase[data-scene="heavenly"]{--environment-light:#e9daff;--environment-dark:#343b63}
 .class-showcase[data-scene="bloodmoon"]{--environment-light:#d55c75;--environment-dark:#402438}
 .class-showcase[data-scene="judgment"]{--environment-light:#bfc1c9;--environment-dark:#23252e}
-.class-showcase[data-scene="heavenly"] .class-atmosphere.has-landscape .class-landscape{opacity:.70}
-.class-showcase[data-scene="bloodmoon"] .class-atmosphere.has-landscape .class-landscape{opacity:.79}
-.class-showcase[data-scene="judgment"] .class-atmosphere.has-landscape .class-landscape{opacity:.68;filter:grayscale(1)}
+.class-showcase[data-scene="heavenly"] .class-atmosphere.has-landscape .class-landscape{opacity:.40;filter:brightness(.80)}
+.class-showcase[data-scene="bloodmoon"] .class-atmosphere.has-landscape .class-landscape{opacity:.45;filter:brightness(.82)}
+.class-showcase[data-scene="judgment"] .class-atmosphere.has-landscape .class-landscape{opacity:.43;filter:grayscale(1) brightness(.84)}
 .class-showcase[data-scene="heavenly"] .class-atmosphere.has-landscape .class-environment{background:linear-gradient(180deg,#18213b3b 0%,#19233c5c 45%,#141d30 100%)}
 .class-showcase[data-scene="bloodmoon"] .class-atmosphere.has-landscape .class-environment{background:linear-gradient(180deg,#24121d22 0%,#24182d57 44%,#141d30 100%)}
 .class-showcase[data-scene="judgment"] .class-atmosphere.has-landscape .class-environment{background:linear-gradient(180deg,#17182024 0%,#20202a50 45%,#141d30 100%)}
@@ -675,6 +674,14 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 @keyframes mb-scene-mist{from{transform:translateX(-13%) scaleY(.78);opacity:calc(var(--alpha) * .66)}to{transform:translateX(13%) scaleY(1.15);opacity:var(--alpha)}}
 @media(max-width:760px){.class-showcase[data-scene]:not([data-scene="base"]) .class-atmosphere{--scene-height:900px}.class-showcase[data-scene]:not([data-scene="base"]) .class-landscape{background-position:center top}.scene-petal:nth-child(n+13),.scene-feather:nth-child(n+8),.scene-glint:nth-child(n+29){display:none}}
 @media(prefers-reduced-motion:reduce){.class-scene-effects .scene-feather,.class-scene-effects .scene-petal,.class-scene-effects .scene-glint{display:none}.class-scene-effects .scene-mist{animation:none;opacity:.22}}
+</style>
+<style>
+/* Fade only the scenery and ambient effects, never the character or codex. */
+.class-showcase .class-atmosphere{opacity:1;transition:opacity .7s ease-in-out}
+.class-showcase .class-landscape{transition:none}
+.class-showcase .class-foreground-motes{transition:opacity .7s ease-in-out}
+.class-showcase.environment-fading .class-atmosphere,.class-showcase.environment-fading .class-foreground-motes{opacity:0}
+@media(prefers-reduced-motion:reduce){.class-showcase .class-atmosphere,.class-showcase .class-foreground-motes{transition:none}}
 </style>
 </head>
 <body class="mythbound-login-open">
