@@ -20,6 +20,29 @@ async function speak(t){const mode=$("voice-provider").value;stopVoice();if(!t.t
 if(!local){status("Pocket TTS requires http://localhost:3000/life/ and a running local service. See README.");return}
 const c=new AbortController();speechController=c;try{status("Generating Pocket TTS audio…");const data=new FormData();data.append("text",t.slice(0,1000));data.append("voice_url",voices.includes($("voice").value)?$("voice").value:"marius");const r=await timedFetch(pocket+"/tts",{method:"POST",body:data,controller:c},90000);if(!r.ok)throw Error("Pocket TTS HTTP "+r.status);const blob=await r.blob();if(c.signal.aborted||speechController!==c)return;objectURL=URL.createObjectURL(blob);const a=$("audio");a.src=objectURL;a.hidden=false;try{await a.play();status("Playing Pocket TTS voice.")}catch{status("Voice generated. Press play on the audio control.")}}catch(e){if(speechController===c)status("Pocket TTS: "+errorText(e))}finally{if(speechController===c)speechController=null}}
 function normalize(v){if(!v||typeof v!=="object"||typeof v.dialogue!=="string")throw Error("The model did not return valid dialogue JSON.");return {dialogue:v.dialogue.slice(0,1000),emotion:moods.includes(v.emotion)?v.emotion:"neutral",action:typeof v.action==="string"?v.action.slice(0,200):"none"}}
+// JSON mode alone permits arbitrary keys. Constrain the exact response contract.
+const dialogueSchema={type:"object",properties:{dialogue:{type:"string"},emotion:{type:"string",enum:moods},action:{type:"string"}},required:["dialogue","emotion","action"],additionalProperties:false};
+function decodeDialogue(data){
+ const content=data?.message?.content;
+ if(typeof content!=="string")throw Error("Missing message content");
+ const raw=content.trim().replace(/^\x60\x60\x60(?:json)?\s*/i,"").replace(/\s*\x60\x60\x60$/,"");
+ let parsed;try{parsed=JSON.parse(raw)}catch{throw Error(data.done_reason==="length"?"Response reached its token limit":"Incomplete or invalid JSON")}
+ if(!parsed||Array.isArray(parsed)||typeof parsed.dialogue!=="string")throw Error("Missing dialogue field");
+ return normalize(parsed);
+}
+async function requestDialogue(model,messages,ctrl){
+ let issue="";
+ for(let attempt=0;attempt<2;attempt++){
+  if(ctrl.signal.aborted)throw new DOMException("Cancelled","AbortError");
+  const prompt=[{...messages[0],content:messages[0].content+"\nReturn exactly this JSON schema: "+JSON.stringify(dialogueSchema)+(attempt?"\nYour previous attempt could not be read. Return only one valid object, with the dialogue field containing your character's own words.":"")},...messages.slice(1)];
+  const r=await timedFetch(ollama+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model,messages:prompt,stream:false,think:false,format:dialogueSchema,options:{num_predict:attempt?768:384,temperature:attempt?.2:.65}}),controller:ctrl},120000);
+  if(!r.ok)throw Error("Ollama HTTP "+r.status+" — check that the selected model is installed.");
+  const data=await r.json();
+  if(ctrl.signal.aborted)throw new DOMException("Cancelled","AbortError");
+  try{return decodeDialogue(data)}catch(e){issue=e.message}
+ }
+ throw Error("Invalid AI reply after retry: "+issue+". Try again or inspect the model.");
+}
 function preview(c,eventOnly){const dialogue=eventOnly?"Hey, you're here. What's up?":c.mood==="Tired"?"Sorry, I'm a little tired. What were you saying?":c.mood==="Annoyed"?"Give me a second, okay?": "Hey. Tell me more.";return {dialogue,emotion:c.mood.toLowerCase(),action:"none (preview only)"}}
 async function respond(eventOnly){
  if(busy)return;const input=eventOnly?$("event").value.trim():$("message").value.trim();if(!input){status("Enter some dialogue or an event first.");return}
@@ -31,8 +54,7 @@ async function respond(eventOnly){
  else{status("Waiting for local LLM…");
  const instructions="You portray the fictional character Fighter in a game. Output only JSON with dialogue (string, may be empty if silence is appropriate), emotion (relaxed/excited/annoyed/tired/sad/amused/neutral), and action (short suggested action). Do not control the player or claim actions occurred. Do not invent canonical memories. Use only supplied world knowledge. Keep dialogue brief. Profile: "+JSON.stringify({personality:p.personality,style:p.style,knownMemories:p.memories});
  const messages=[{role:"system",content:instructions},...history.filter(h=>h.mode==="ollama").slice(-12).map(h=>({role:h.role,content:h.content})),{role:"user",content:JSON.stringify({world:c,input,eventOnly})}];
- const r=await timedFetch(ollama+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:p.model.trim(),messages,stream:false,think:false,format:"json",options:{num_predict:300}}),controller:ctrl},120000);
- if(!r.ok)throw Error("Ollama HTTP "+r.status+" — check that the selected model is installed.");const data=await r.json();output=normalize(JSON.parse(data.message.content));status("Live response received from "+p.model+".");
+ output=await requestDialogue(p.model.trim(),messages,ctrl);status("Live response received from "+p.model+".");
  }
  if(ctrl.signal.aborted)return;
  last={mode:p.provider,world:c,response:output};$("output").textContent=JSON.stringify(last,null,2);line(p.provider==="preview"?"preview":"fighter",output.dialogue||"(Fighter remains silent.)");
@@ -49,8 +71,8 @@ async function npcTurn(config,speaker,world,publicHistory,signal){
  const ctrl=new AbortController(),cancel=()=>ctrl.abort();if(signal.aborted)cancel();else signal.addEventListener("abort",cancel,{once:true});
  try{
  const system="You portray "+speaker+", a fictional NPC in After Hours. Speak only as this character to the other NPC or the room. Use only public conversation and your own profile; do not invent private memories or control anyone else. One or two short natural sentences, at most 200 characters. Empty dialogue ends the exchange. Output JSON with dialogue, emotion (relaxed/excited/annoyed/tired/sad/amused/neutral), and action (suggestion only). Profile: "+JSON.stringify(config.characters[speaker]);
- const r=await timedFetch(ollama+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:config.model,messages:[{role:"system",content:system},{role:"user",content:JSON.stringify({world,publicConversation:publicHistory.slice(-12),speaker})}],stream:false,think:false,format:"json",options:{num_predict:180}}),controller:ctrl},120000);
- if(!r.ok)throw Error("Ollama HTTP "+r.status+" — check local model and service.");const data=await r.json();const v=normalize(JSON.parse(data.message.content));return {...v,dialogue:v.dialogue.slice(0,240)};
+ const messages=[{role:"system",content:system},{role:"user",content:JSON.stringify({world,publicConversation:publicHistory.slice(-12),speaker,task:"Respond as "+speaker+" to the most recent public statement. Do not write dialogue for any other character."})}];
+ const v=await requestDialogue(config.model,messages,ctrl);return {...v,dialogue:v.dialogue.slice(0,240)};
  }finally{signal.removeEventListener("abort",cancel)}
 }
 function clear(){history=[];last=null;$("transcript").replaceChildren();$("output").textContent="No response yet.";status("Test conversation cleared.");stopVoice()}

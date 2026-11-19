@@ -1,0 +1,12 @@
+const {test}=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const source=fs.readFileSync(require("node:path").join(__dirname,"..","character-lab.js"),"utf8");
+const segment=source.slice(source.indexOf("function normalize("),source.indexOf("function preview("));
+function setup(replies){const calls=[];const api=new Function("moods","ollama","timedFetch",segment+";return {requestDialogue,decodeDialogue}")(["neutral","relaxed","excited","annoyed","tired","sad","amused"],"http://localhost:11434",async(url,opts)=>{calls.push(JSON.parse(opts.body));return {ok:true,json:async()=>replies.shift()}});return {api,calls}}
+const good=dialogue=>({message:{content:JSON.stringify({dialogue,emotion:"amused",action:"none"})}});
+const messages=[{role:"system",content:"Character profile"},{role:"user",content:"Public conversation"}];
+test("Valid replies and deliberate silence remain genuine",async()=>{const {api,calls}=setup([good("Hey"),good("")]);const ctrl=new AbortController();assert.equal((await api.requestDialogue("qwen3:4b",messages,ctrl)).dialogue,"Hey");assert.equal((await api.requestDialogue("qwen3:4b",messages,ctrl)).dialogue,"");assert.equal(calls.length,2);assert.deepEqual(calls[0].format.required,["dialogue","emotion","action"]);assert.equal(calls[0].think,false)});
+test("Invalid second response is retried without fabricating dialogue",async()=>{const {api,calls}=setup([good("Blame the lag!"),{message:{content:'{"Buddy":"Sure."}'}},good("Nice excuse.")]);const ctrl=new AbortController();assert.equal((await api.requestDialogue("qwen3:4b",messages,ctrl)).dialogue,"Blame the lag!");assert.equal((await api.requestDialogue("qwen3:4b",messages,ctrl)).dialogue,"Nice excuse.");assert.equal(calls.length,3);assert.equal(calls[2].options.num_predict,768);assert.ok(calls[2].messages[0].content.includes("previous attempt"));assert.equal(calls[2].messages[1].content,messages[1].content)});
+test("Repeated invalid output fails explicitly",async()=>{const {api,calls}=setup([{message:{content:"{}"}},{message:{content:"{"},done_reason:"length"}]);await assert.rejects(()=>api.requestDialogue("qwen3:4b",messages,new AbortController()),/after retry: Response reached its token limit/);assert.equal(calls.length,2)});
+test("Cancellation skips further requests",async()=>{const {api,calls}=setup([good("Hey")]);const c=new AbortController();c.abort();await assert.rejects(()=>api.requestDialogue("qwen3:4b",messages,c),{name:"AbortError"});assert.equal(calls.length,0)});
