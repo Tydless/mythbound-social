@@ -1,0 +1,59 @@
+
+/* Class codex: a soft enchanted selection glow and sparse foreground motes. */
+.class-showcase .path-option.is-current,.class-showcase .skill-icon.is-current{
+ border-color:var(--class-highlight);
+ box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--class-highlight) 40%,transparent),inset 0 0 15px color-mix(in srgb,var(--class-highlight) 12%,transparent),0 0 12px color-mix(in srgb,var(--class-highlight) 28%,transparent);
+}
+.class-showcase .path-option.is-current .path-symbol,
+.class-showcase .skill-icon.is-current .skill-symbol{
+ filter:drop-shadow(0 0 4px color-mix(in srgb,var(--class-highlight) 68%,transparent));
+}
+.class-showcase .path-option{transition:background .2s,border-color .2s,box-shadow .2s}
+.class-showcase .skill-icon{transition:background .2s,border-color .2s,transform .2s,box-shadow .2s}
+.class-showcase .class-foreground-motes{position:absolute;inset:0;z-index:8;overflow:hidden;pointer-events:none;user-select:none;mask-image:linear-gradient(180deg,transparent,#000 9%,#000 93%,transparent)}
+.class-foreground-mote{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:var(--size);border-radius:50%;background:currentColor;color:var(--class-highlight);box-shadow:0 0 5px currentColor,0 0 10px color-mix(in srgb,var(--class-highlight) 38%,transparent);opacity:0;animation:mythbound-foreground-rise var(--duration) linear var(--delay) infinite;pointer-events:none;will-change:transform,opacity}
+@keyframes mythbound-foreground-rise{
+ 0%{transform:translate(0,26px);opacity:0}
+ 22%{opacity:.48}
+ 48%{opacity:.65}
+ 78%{opacity:.24}
+ 100%{transform:translate(var(--drift),-65px);opacity:0}
+}
+@keyframes mythbound-ember{
+ 0%{transform:translate(0,16px);opacity:0}
+ 35%{opacity:.48}
+ 70%{opacity:.22}
+ 100%{transform:translate(var(--drift),-35px);opacity:0}
+}
+@media(max-width:760px){.class-foreground-mote:nth-child(n+8){display:none}}
+@media(prefers-reduced-motion:reduce){.class-showcase .class-foreground-motes{display:none}.class-showcase .path-option,.class-showcase .skill-icon{transition:none}}
+
+
+/* Shared portrait stage: all Saint paths use the same centered artwork coordinates. */
+.class-showcase .class-preview .saint-portrait-stage{
+ position:relative;width:min(100%,600px);aspect-ratio:1145/1406;flex:none;
+}
+.class-showcase .class-preview .saint-portrait-stage .saint-portrait{
+ position:absolute;display:block;inset:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;
+}
+@media(max-width:760px){
+ .class-showcase .class-preview .saint-portrait-stage{width:min(100%,464.189189px)}
+}
+
+
+/* A stationary portrait with a procedural ember-dissolve overlay. */
+.class-showcase .saint-portrait-stage{isolation:isolate}
+.class-showcase .saint-portrait-stage .portrait-previous{z-index:0;pointer-events:none}
+.class-showcase .saint-portrait-stage .portrait-incoming{z-index:1;opacity:0}
+.class-showcase .saint-portrait-stage.portrait-revealing .portrait-incoming{opacity:1}
+.class-showcase .saint-portrait-stage .portrait-burn-canvas{
+ position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;
+}
+.class-showcase .saint-portrait-stage.portrait-crossfade .portrait-incoming{
+ animation:mythbound-soft-portrait 1s ease-in-out both;
+}
+@keyframes mythbound-soft-portrait{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){
+ .class-showcase .saint-portrait-stage .portrait-incoming{opacity:1;animation:none!important}
+ .class-showcase .saint-portrait-stage .portrait-burn-canvas{display:none}
+}

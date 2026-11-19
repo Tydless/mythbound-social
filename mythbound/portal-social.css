@@ -1,0 +1,81 @@
+
+/* Social shortcuts replace the persistent sidebar. Keep the legacy nodes for existing message/presence hooks. */
+body .site-layout{display:block;max-width:1920px}
+body .site-layout>.social-rail{display:none!important}
+.mb-header-friends{position:relative;display:grid;place-items:center;width:35px;height:40px;flex:none;border:0;background:none;color:var(--gold);padding:0;border-radius:5px}
+.mb-header-friends:hover{background:#d6bf8b12;color:#ffe8b6}
+.mb-friends-indicator{position:absolute;top:6px;right:4px;border:2px solid #141e30;background:#78c6a1;width:8px;height:8px;border-radius:50%}
+body.mythbound-guest .mb-header-friends{display:none!important}
+@media(max-width:760px){.site-header .mb-header-friends{display:none!important}}
+/* Dedicated player profile — no fictional password or avatar chooser until Edit is selected. */
+.mb-player-page{max-width:1440px;margin:auto;padding:clamp(16px,4vw,60px) clamp(16px,4vw,60px) 60px}
+.mb-player-cover{position:relative;isolation:isolate;overflow:hidden;min-height:250px;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(20px,4vw,46px);border:1px solid #c8a8766b;border-radius:12px;background:#162336 url('../mythbound-home-watercolor.jpg') center 38%/cover no-repeat}
+.mb-player-cover:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#121e30ef,#152338a6 48%,#192d484d),linear-gradient(0deg,#101a2bd9,transparent 70%)}
+.mb-player-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:36px}
+.mb-player-back{color:#e2d1b4;background:transparent;border:0;font-size:12px;padding:0}
+.mb-player-back:hover{text-decoration:underline}
+.mb-player-identity{display:flex;align-items:center;gap:clamp(14px,3vw,28px)}
+.mb-own-avatar{position:relative;display:block;flex:none;width:clamp(74px,12vw,122px);aspect-ratio:1}
+.mb-own-avatar>.mb-avatar-art{width:100%;height:100%}
+.mb-own-avatar[data-presence]:after{content:"";position:absolute;width:12px;height:12px;bottom:8%;right:8%;border:3px solid #23334b;border-radius:50%;background:#75d9a1}
+.mb-player-nameblock{flex:1;min-width:0}
+.mb-player-nameblock h1{font:600 clamp(25px,4vw,48px)/1.2 'Cinzel',Georgia,serif;color:#fff0d6;margin:5px 0 7px;overflow-wrap:anywhere}
+.mb-player-nameblock p{display:flex;flex-wrap:wrap;align-items:center;gap:14px;color:#dadfee;margin:0;font-size:13px}
+.mb-player-online{display:inline-flex;align-items:center;gap:6px;color:#a7ddb9}
+.mb-player-online>span{width:6px;height:6px;border-radius:50%;background:#81d39e}
+.mb-player-level{color:#e9d0a1}
+.mb-edit-profile{flex:none;white-space:nowrap;align-self:flex-end;font-size:12px}
+.mb-player-body{padding:32px 0 0}
+.mb-player-section-heading h2{font:600 clamp(22px,3vw,32px) 'Cinzel',Georgia,serif;color:#f3dbb3;margin:5px 0 18px}
+.mb-player-content{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:20px}
+.mb-character-stage{position:relative;min-height:350px;display:flex;flex-direction:column;border:1px solid #c6ab7944;border-radius:8px;overflow:hidden;background:radial-gradient(ellipse at center,#3b4b624d,transparent 70%),linear-gradient(125deg,#1f2b40,#151e30)}
+.mb-character-stage-top{display:flex;justify-content:space-between;gap:8px;padding:15px 18px;border-bottom:1px solid #c6ab7929;font-size:11px;color:#c5cbd7}
+.mb-character-stage-top span:last-child{color:#c9b48e;text-align:right}
+.mb-character-placeholder{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:38px 20px;text-align:center;color:#c6d0df}
+.mb-character-placeholder svg{width:95px;height:95px;color:#d2b68399;margin-bottom:18px}
+.mb-character-placeholder h3{font:500 22px 'Cinzel',Georgia,serif;color:#e6d4b1;margin:0 0 8px}
+.mb-character-placeholder p{font-size:13px;margin:0}
+.mb-player-info{display:flex;flex-direction:column;gap:16px}
+.mb-player-card{padding:20px;border:1px solid #c6ab7933;border-radius:8px;background:#202b3d90}
+.mb-player-card h3{font:600 17px 'Cinzel',Georgia,serif;color:#e9d2ac;margin:0 0 13px}
+.mb-player-card dl{margin:0}
+.mb-player-card dl>div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #a9b5c51f;font-size:12px}
+.mb-player-card dt{color:#aebdd0}
+.mb-player-card dd{margin:0;color:#e7e3dc;text-align:right}
+.mb-social-links button{display:flex;width:100%;justify-content:space-between;align-items:center;gap:12px;text-align:left;padding:10px 3px;background:none;border:0;border-top:1px solid #a9b5c51f;color:#e7d3b5;font-size:13px}
+.mb-social-links button:hover{background:#d9ba8510}
+.mb-social-links small{display:block;color:#aebed0;font-size:11px;margin-top:2px}
+@media(max-width:760px){.mb-player-content{grid-template-columns:1fr}.mb-player-cover{min-height:220px}.mb-player-top{margin-bottom:24px}.mb-player-identity{flex-wrap:wrap}.mb-edit-profile{margin-left:0}.mb-character-stage{min-height:290px}.mb-player-body{padding-top:24px}}
+
+
+.mb-refresh-button{display:grid;place-items:center;width:35px;height:38px;flex:none;padding:0;color:var(--gold);background:transparent;border:0;border-radius:5px}
+.mb-refresh-button:hover{background:#d6bf8b12;color:#ffe8b6}
+.mb-refresh-button.is-refreshing svg{animation:mb-refresh-spin .9s linear infinite}
+@keyframes mb-refresh-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.mb-refresh-button.is-refreshing svg{animation:none}}
+.mb-unread-badge,.site-header .notification-count,.site-header .mobile-inbox-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#e5c18b;color:#182235;font:800 10px/1 'DM Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.site-header .notification-count{top:1px;right:-1px;box-shadow:0 0 0 2px #172033}
+.mb-inbox-tabs .mb-unread-badge{margin-left:7px;vertical-align:middle}
+.mb-inbox-tabs .is-active .mb-unread-badge{background:#26344a;color:#f4dfb5}
+.mb-inbox-row.mb-is-unread{background:linear-gradient(90deg,#d4ae681c,#d4ae6806);box-shadow:inset 2px 0 #d6b47a}
+.mb-inbox-row.mb-is-unread .mb-inbox-top strong{color:#ffdfa9;font-weight:800}
+.mb-inbox-row.mb-is-unread .mb-message-preview{color:#ebe6de;font-weight:600}
+.mb-inbox-row.mb-is-unread:hover{background:#d4ae6826}
+.mb-thread-count{flex:none}.mb-profile-inbox-end{display:flex;align-items:center;gap:9px}
+.mb-new-message-divider{display:flex;align-items:center;gap:9px;color:#efcb8d;font:700 10px/1.4 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase;margin:12px 0}
+.mb-new-message-divider:before,.mb-new-message-divider:after{content:"";height:1px;background:#d6b47a66;flex:1}
+.mb-unread-message{border-color:#d6b47a70!important}
+@media(max-width:760px){.site-header .mb-refresh-button{width:34px;height:36px}.site-header .mobile-menu-unread{top:-4px;right:-5px;width:auto;height:16px;min-width:16px;padding:0 4px;display:flex;align-items:center;justify-content:center;border-radius:9px;background:#e5c18b;color:#142034;font:800 9px/1 'DM Sans',sans-serif;box-shadow:0 0 0 2px #141e30}}
+
+
+.mb-diagonal-arrow{display:inline-block;vertical-align:-.08em;width:.85em;height:.85em;flex:none;margin-left:.18em;pointer-events:none}
+#overlay.mb-launcher-modal:not([hidden]){align-items:center;justify-content:center;padding:20px}
+#overlay.mb-launcher-modal .sheet{position:relative;width:min(100%,480px);height:auto;max-height:calc(100dvh - 40px);border:1px solid #c9ac8075;border-radius:8px;box-shadow:0 18px 65px #0009;background:#182237;overflow-y:auto}
+#overlay.mb-launcher-modal .sheet-top{position:absolute;right:12px;top:12px;padding:0;border:0;z-index:1}
+#overlay.mb-launcher-modal #sheet-kicker{display:none}
+#overlay.mb-launcher-modal .sheet-close{width:29px;height:29px}
+#overlay.mb-launcher-modal .profile-content{padding:30px 28px 28px;text-align:center}
+#overlay.mb-launcher-modal .profile-content h2{margin:6px 0 12px;line-height:1.35;font-size:clamp(19px,4vw,24px)}
+#overlay.mb-launcher-modal .profile-content p{margin:0 0 22px;line-height:1.6}
+#overlay.mb-launcher-modal #download-return{min-height:40px;margin:0}
+@media(max-width:450px){#overlay.mb-launcher-modal:not([hidden]){padding:16px}#overlay.mb-launcher-modal .profile-content{padding:29px 20px 24px}}

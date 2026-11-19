@@ -1,165 +1,20 @@
 /* Mythbound class codex: concept stats, not final balance. */
 (() => {
 "use strict";
-const DATA={
-breaker:{color:"#de9779",stats:[4,5,2,2,3],difficulty:2,play:"MELEE · TANK / BRAWLER",skills:[
-["✊","Iron Palm","Melee","2.5 m","160% ATK damage","6 sec","Strike a foe and briefly stagger them."],
-["◇","Unbroken Stance","Defense","Self","35% damage reduction","18 sec","Brace for impact for 4 seconds."],
-["➶","Shoulder Break","Melee dash","4 m","125% ATK damage","12 sec","Charge forward and interrupt the first enemy struck."],
-["✦","Fighting Spirit","Passive","Self","+12% guard","Passive","Blocking a powerful hit improves your guard."]]},
-animar:{color:"#85c4b2",stats:[4,4,4,4,3],difficulty:5,play:"HYBRID · SHAPESHIFTER / EXPERT",skills:[
-["◈","Beast Shift","Stance","Self","Change form","8 sec","Switch between protective and offensive animal forms."],
-["✦","Feral Rend","Melee","3 m","145% ATK damage","7 sec","Slash a foe with a beast-form claw."],
-["❖","Wild Echo","Support","18 m","Heal 120% WIS","14 sec","Channel restorative energy to an ally."],
-["⌁","Instinct","Passive","Self","+8% speed","Passive","Gain movement speed after transforming."]]},
-herder:{color:"#c3cf95",stats:[2,3,5,3,4],difficulty:3,play:"MOUNTED · COMPANION SUPPORT",skills:[
-["♧","Call the Flock","Summon","20 m","Summon 2 sheep","18 sec","Summon protective sheep to intercept attacks."],
-["❃","Woolguard","Shield","22 m","Shield 170% WIS","12 sec","Wrap an ally in a protective woolen ward."],
-["➵","Shepherd's Signal","Area support","12 m","+15% defense","22 sec","Command companions to bolster nearby allies."],
-["✧","Kindred Bond","Passive","Companions","+10% endurance","Passive","Strengthen the resilience of your summons."]]},
-elemis:{color:"#adc4ef",stats:[5,2,3,5,4],difficulty:4,play:"RANGED · ELEMENTAL MAGIC",skills:[
-["✳","Primal Spark","Ranged","24 m","155% MAG damage","5 sec","Launch concentrated elemental magic."],
-["≈","Tide Snare","Area","18 m","90% MAG + slow","14 sec","A small wave slows enemies."],
-["✦","Zephyr Step","Movement","Self","Dash 6 m","10 sec","Fly on a quick gust of wind."],
-["◌","Elemental Accord","Passive","Self","+8% magic","Passive","Alternating elements strengthens the next cast."]]},
-strider:{color:"#c3afe3",stats:[5,2,1,5,4],difficulty:4,play:"MELEE · PRECISION DUELIST",skills:[
-["⚔","Twin Arc","Melee","3 m","2 × 100% ATK","5 sec","Two fluid sword strikes."],
-["➳","Passing Step","Movement","7 m","70% ATK + evade","11 sec","Dash through a foe while briefly evading."],
-["✧","Opening Cut","Melee","3 m","175% ATK damage","14 sec","Strike an exposed target."],
-["◇","Duelist's Eye","Passive","Self","+9% precision","Passive","Gain precision against isolated enemies."]]},
-saint:{color:"#f3d5a5",stats:[2,4,5,2,3],difficulty:2,play:"RANGED · HEALER / PROTECTOR",skills:[
-["✥","Gentle Benediction","Healing","24 m","Heal 190% WIS","6 sec","Restore an injured ally with holy light."],
-["✧","Hallowed Veil","Shield","22 m","Shield 140% WIS","12 sec","Protect an ally with a short-lived halo."],
-["✦","Judgment Ray","Ranged","20 m","125% MAG damage","9 sec","Send a beam of sacred light at an enemy."],
-["♢","Merciful Heart","Passive","Party","+10% emergency heals","Passive","Blessings are stronger on critically wounded allies."]]}
-};
+const {DATA,statLabels,statDescriptions,SPECIALIZATIONS,SKILL_ART,SAINT_PATH_ART,SAINT_SCENES,ROLE_ICONS,CLASS_ROLES}=window.MythboundCodexData;
 const $=id=>document.getElementById(id);
 const stats=$("class-stats"),skills=$("class-skills"),detail=$("skill-detail"),preview=$("class-preview");
 if(!stats||!skills||!detail||!preview)return;
-const statLabels=["Damage","Defense","Support","Mobility","Control"];
-const statDescriptions=[
- "How much physical or magical damage a class can deal.",
- "How well a class can withstand attacks and survive incoming damage.",
- "How effectively a class can heal, protect or empower its allies.",
- "How easily a class can move, reposition and evade attacks.",
- "How effectively a class can restrict, disrupt or manipulate enemies."
-];
+
 let active="saint",gender="male",chosen=null,activePath=0;
 const isUnrevealed=()=>active==="saint"&&activePath===3;
-// Add approved specialization content here, grouped by class and path number.
-// Each entry may provide name, description, icon, skills (same format as DATA), and signatureMoves.
-const SPECIALIZATIONS={
- saint:{
-  1:{name:"Archsaint",type:"TRUE PATH",artwork:{male:"../ArchsaintMalePortrait.png",female:"../ArchsaintFemalePortrait.png"},
-   stats:[4,2,5,4,3],difficulty:4,play:"RANGED · OFFENSIVE SUPPORT / AERIAL CASTER",roles:[["ranged","Ranged"],["healer","Offensive support / aerial healer"]],
-   overviewType:"SUPPORT · AERIAL CASTER",overviewDescription:"Chosen by the heavens, Archsaints wield holy magic without a staff, taking flight to strike enemies, heal allies and restore the fallen.",
-   description:"Having been chosen by the heavens, Archsaints transcend mortal spellcasting. Channel divine power through your own body, manifest celestial weapons and perform restorative miracles. Magical attack strengthens both damage and healing, at the cost of the Saint's defensive resilience.",
-   skills:[
-    ["➶","Heaven's Arbiter","Ranged · Piercing","28 m","220% MAG damage","10 sec","Manifest a celestial bow and fire an arrow of concentrated divine energy that pierces enemies in its path."],
-    ["✷","Divine Radiance","Area control · Blind","8 m radius","100% MAG damage + 3 sec blind","18 sec","Release an overwhelming burst of heavenly light, damaging nearby enemies and temporarily blinding them."],
-    ["✧","Grace of Heaven","Healing · Single target","26 m","Heal 220% MAG","8 sec","Bestow divine grace upon an injured party member. Healing scales with your magical attack rather than Wisdom."],
-    ["✥","Heaven's Mercy","Resurrection · Signature","12 m radius","Revive allies · 80–20% HP (1–5 allies)","120 sec","Resurrect defeated party members within range. Every revived ally receives the same HP percentage, which decreases as more allies share the miracle. Choose your position carefully."]
-   ],
-   mechanics:[
-    {icon:"✦",name:"Divine Projection",type:"BASIC ATTACK · WEAPONLESS CASTING",description:"Cast magic directly through your hands. Launch blasts of concentrated holy energy without a staff; basic attacks scale with MAG. Celestial weapons are manifestations of magic, not equipped weapons."},
-    {icon:"✧",name:"Celestial Power",type:"SCALING · OFFENSIVE SUPPORT",description:"Invest in magical attack (MAG) to strengthen both offensive spells and healing. Unlike the defensive base Saint, Archsaints sacrifice durability for power and mobility."},
-    {icon:"⌁",name:"Heavenly Wings",type:"INHERENT ABILITY · FLIGHT",description:"Fly freely to evade ground-bound melee and certain hazards, but remain exposed to flying enemies and anti-air attacks. Injuries reduce flight speed and maximum altitude.",table:{headers:["Remaining HP","Flight speed","Max. altitude"],rows:[["76–100%","100%","100%"],["51–75%","85%","80%"],["26–50%","65%","50%"],["1–25%","40%","Near ground"]]}},
-    {icon:"✥",name:"A Shared Miracle",type:"HEAVEN'S MERCY · RESURRECTION",description:"Divine energy is divided among all defeated party members revived in a single cast. Concentrate the miracle on one ally or save a larger group at reduced health. Positioning and follow-up healing are essential.",table:{headers:["Allies revived","HP per ally"],rows:[["1","80%"],["2","60%"],["3","40%"],["4","25%"],["5","20%"]]},note:"Illustrative scaling for up to five revived allies; larger groups are not yet balanced."}
-   ],signatureMoves:[]},
-  2:{name:"Fallen Saint",type:"CORRUPTED PATH",artwork:{male:"../FallenSaintMalePortrait.png?v=5751506f",female:"../FallenSaintFemalePortrait.png?v=23b20526"},
-   stats:[3,4,4,2,5],difficulty:4,play:"RANGED · BLOOD MAGIC / CONTROLLER",roles:[["ranged","Ranged"],["healer","Blood magic / control support"]],
-   overviewType:"SUPPORT · BLOOD WEAVER",overviewDescription:"Forsaken by the heavens, Fallen Saints wield the Blood Moon's forbidden magic to mend allies, drain vitality and bend enemies to their will.",
-   description:"Feeling betrayed by the Holy Spirit, the Fallen Saints sought answers at the Blood Moonshrine. The Blood Moon answered: in exchange for their blood and souls, its forbidden power flowed into them. Now they weave blood into dark magic, restoring companions through sacrifice and turning the life force of their enemies against them.",
-   skills:[
-    ["❄","Blood Stillness","Control · Immobilize","20 m","Immobilize and disable · 3 sec","18 sec","Seize the blood flowing through an enemy's body, freezing them in place and briefly preventing them from acting. This is blood manipulation, not ice magic."],
-    ["✚","Crimson Covenant","Healing · Single target","24 m","Spend 10% max HP · Heal 150% of HP spent","10 sec","Offer your own blood to restore an injured ally. The sacrifice cannot defeat the caster; sufficient HP is required. This magic cannot revive defeated companions."],
-    ["◈","Sanguine Harvest","Ranged · Life drain","20 m","160% MAG damage · Heal 50% of damage dealt","12 sec","Draw blood and vitality from an enemy to replenish your own health. Healing depends on the damage actually dealt."],
-    ["✦","Marionette","Signature · Domination","22 m","Control 1–3 foes · 15/10/6 sec","90 sec","Bind up to three eligible enemies to your will and make them attack their own kind. The more enemies you control, the shorter the effect lasts. When released, they retaliate by targeting you."]
-   ],
-   mechanics:[
-    {icon:"☾",name:"The Blood Moon's Pact",type:"ORIGIN · FORBIDDEN BLOOD MAGIC",description:"At the Blood Moonshrine, the Fallen Saint traded blood and soul for an answer the heavens refused to give. Their ranged blood magic manipulates living enemies and channels vitality into restorative spells. Unlike a Saint, they have no resurrection ability."},
-    {icon:"✚",name:"The Price of Mercy",type:"HEALING · VITALITY EXCHANGE",description:"Crimson Covenant exchanges a portion of the Fallen Saint's own HP for an ally's recovery. Sanguine Harvest replenishes the caster by damaging enemies. Balance self-sacrifice and life drain to keep both yourself and your party alive.",table:{headers:["Ability","HP exchange"],rows:[["Crimson Covenant","Spend 10% max HP; ally receives 150% of HP spent"],["Sanguine Harvest","Recover 50% of damage dealt"]]},note:"The blood sacrifice requires enough HP to survive. These values are preliminary."},
-    {icon:"✦",name:"Threads of Dominion",type:"MARIONETTE · ENEMY CONTROL",description:"Select up to three eligible enemies at once. All selected enemies turn against their own kind for the same duration; spreading your control across multiple enemies shortens the effect for each one. Dominate a powerful foe for longer, or seize a group to disrupt the battlefield.",table:{headers:["Enemies controlled","Duration per enemy"],rows:[["1","15 seconds"],["2","10 seconds"],["3","6 seconds"]]},note:"Proposed balance: ordinary enemies and eligible elites can be controlled; boss immunity and resistance are not yet finalized."},
-    {icon:"◇",name:"The Price of Dominion",type:"MARIONETTE · RETALIATION",description:"When the binding breaks, surviving controlled enemies immediately turn their attention toward the Fallen Saint, seeking revenge. Controlling a larger group means more enemies may retaliate at once. Coordinate with your tank, prepare an escape or reserve defensive support before the spell expires."}
-   ],signatureMoves:[]},
-  3:{name:"Coming soon",type:"UNREVEALED PATH",artwork:{male:"../ComingSoonSaintMalePortrait.png",female:"../ComingSoonSaintFemalePortrait.png"},description:"A new path awaits those who dare to question their sacred calling. More will be revealed in a future chronicle.",skills:[],signatureMoves:[]}
- }
-};
+
 const pathData=()=>activePath===0?{name:cap(active),description:"Master the foundations of your class.",skills:DATA[active].skills,media:DATA[active].media,signatureMoves:[]}:SPECIALIZATIONS[active]?.[activePath]||{name:"Specialization "+activePath,description:"This advanced path has yet to be revealed.",skills:[],signatureMoves:[]};
 const pathCombatData=()=>{const base=DATA[active],path=pathData();return {...base,stats:path.stats||base.stats,difficulty:path.difficulty??base.difficulty,play:path.play||base.play,roles:path.roles||CLASS_ROLES[active]}};
 
-/* A fixed gender greeting plus three independent, cyclic voice previews.
-   Assets: ../VoiceSaintMaleSwitch.mp3, ../VoiceFallenSaintFemaleSwitch.mp3, etc.
-   One player at a time; missing recordings never break the codex. */
-const voiceNext=Object.create(null);
-let voicePlaying=null,musicVolume=null;
-const music=$("mythbound-theme");
-const voiceButton=document.createElement("button");
-voiceButton.type="button";voiceButton.className="class-voice-button";
-voiceButton.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></svg>';
-const voiceStatus=document.createElement("span");voiceStatus.className="class-voice-status";voiceStatus.setAttribute("role","status");
-const controls=document.createElement("div");controls.className="class-preview-controls";
-const genderSwitch=document.querySelector(".gender-switch");
-genderSwitch.before(controls);controls.append(genderSwitch,voiceButton);
-document.querySelector(".preview-toolbar").after(voiceStatus);
-const teaserNote=document.createElement("span");teaserNote.className="unrevealed-voice-note";teaserNote.textContent="Teaser voice line · Available";teaserNote.hidden=true;controls.before(teaserNote);
 const cap=s=>s[0].toUpperCase()+s.slice(1);
-const voiceClass=()=>isUnrevealed()?"ComingSoonSaint":active==="saint"&&activePath===1?"Archsaint":active==="saint"&&activePath===2?"FallenSaint":cap(active);
-const voiceClassName=()=>isUnrevealed()?"Coming Soon":voiceClass()==="FallenSaint"?"Fallen Saint":voiceClass();
-// The unrevealed path has one teaser per avatar, not the normal three-line cycle.
-const voiceKey=()=>voiceClass()+":"+gender;
-const nextVoice=()=>voiceNext[voiceKey()]||1;
-function updateVoiceButton(){
- const mystery=isUnrevealed();
- const label=mystery?"Play "+gender+" teaser voice line":"Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
- voiceButton.disabled=false;
- teaserNote.textContent="Teaser voice line · Available";
- teaserNote.hidden=!mystery;
- voiceButton.title=label;voiceButton.setAttribute("aria-label",label);
- voiceButton.classList.toggle("is-speaking",!!voicePlaying);
-}
-function restoreMusic(){
- if(music&&musicVolume!==null){try{music.volume=musicVolume}catch{}}
- musicVolume=null;
-}
-function stopVoice(clearStatus=true){
- const old=voicePlaying;voicePlaying=null;
- if(old){old.pause();old.removeAttribute("src");old.load()}
- restoreMusic();
- if(clearStatus)voiceStatus.textContent="";
- updateVoiceButton();
-}
-function playVoice(kind){
- // All preview requests on the mystery path resolve to its sole approved teaser.
- if(isUnrevealed())kind="Teaser";
- document.dispatchEvent(new Event("mythbound:class-voice-start"));
- stopVoice();
- const filename="Voice"+voiceClass()+cap(gender)+kind+".mp3";
- const audio=new Audio();audio.preload="auto";voicePlaying=audio;
- const fail=()=>{if(voicePlaying!==audio)return;stopVoice(false);voiceStatus.textContent="Voice preview unavailable — recording pending or playback blocked."};
- audio.addEventListener("playing",()=>{
-  if(voicePlaying!==audio)return;
-  if(music&&musicVolume===null){try{musicVolume=music.volume;music.volume=musicVolume*.28}catch{}}
- },{once:true});
- audio.addEventListener("ended",()=>{if(voicePlaying===audio)stopVoice()},{once:true});
- audio.addEventListener("error",fail,{once:true});
- audio.src="../"+filename;updateVoiceButton();
- try{const result=audio.play();if(result&&typeof result.catch==="function")result.catch(fail)}catch{fail()}
-}
-voiceButton.addEventListener("click",()=>{
- if(isUnrevealed()){playVoice("Teaser");return}
- const key=voiceKey(),line=nextVoice();
- voiceNext[key]=line%3+1;playVoice(String(line));
-});
 const classPage=$("page-classes");
-const voiceVisibility=new MutationObserver(()=>{
- if(classPage.hidden||document.body.classList.contains("mythbound-login-open"))stopVoice();
-});
-voiceVisibility.observe(classPage,{attributes:true,attributeFilter:["hidden"]});
-voiceVisibility.observe(document.body,{attributes:true,attributeFilter:["class"]});
-document.addEventListener("mythbound:party-voice-start",()=>stopVoice());
-document.addEventListener("visibilitychange",()=>{if(document.hidden)stopVoice()});
-window.addEventListener("pagehide",()=>stopVoice());
+const {updateVoiceButton,stopVoice,playVoice}=window.createMythboundClassVoice({$,classPage,cap,isUnrevealed,getState:()=>({active,activePath,gender})});
 
 
 function avatarArt(){
@@ -176,392 +31,12 @@ function avatarArt(){
  const dress=active==="saint"?"<path d='M143 257Q104 313 119 365Q191 384 265 359Q263 302 235 260Z' fill='#d9d5d7' stroke='#f5deb7' stroke-width='4'/>":"";
  return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 380 420' role='img' aria-label='"+gender+" "+active+" concept avatar'><circle cx='190' cy='218' r='167' fill='none' stroke='"+c.color+"' opacity='.35' stroke-dasharray='3 9'/>"+aura+wings+sheep+tail+lower+dress+blade+"<path d='M146 170Q189 143 232 168L247 276Q180 294 132 269Z' fill='"+c.color+"' stroke='#e3e0dc' stroke-width='4'/><path d='M147 176l-32 79M229 176l41 74' fill='none' stroke='"+c.color+"' stroke-width='20' stroke-linecap='round'/>"+fists+"<circle cx='189' cy='110' r='"+size+"' fill='"+skin+"' stroke='#f6dec8' stroke-width='4'/><path d='"+hairShape+"' fill='"+hair+"' stroke='#688295' stroke-width='4'/><path d='M172 119h9m19 0h9' stroke='#635b5b' stroke-width='3' stroke-linecap='round'/><path d='M184 139q7 4 13-1' fill='none' stroke='#936c70' stroke-width='2'/></svg>";
 }
-// Original transformation foley. Unlock on the selection gesture; play only when the new image is ready.
-let transformAudioContext=null, transformAudioSource=null, recordedChoir=null;
-// Choir of Voices - Single Chord, bone666138, CC0. See audio-credits.md.
-const choirSource="https://raw.githubusercontent.com/baron-elmwich/tethered-game/f23cd62702aa235f9056e1ac4d096a74cf1c5237/Assets/Audio/274121__bone666138__choir-of-voices-single-chord.wav";
-const transformBuffers=Object.create(null);
-function transformationMuted(){try{return localStorage.getItem("mythbound-music-enabled")==="false"}catch{return false}}
-function prepareTransformationAudio(){
- if(transformationMuted())return;
- try{
-  const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
-  transformAudioContext=transformAudioContext||new Audio();
-  if(transformAudioContext.state==="suspended")transformAudioContext.resume().catch(()=>{});
- }catch{}
-}
-function stopTransformationAudio(){
- if(recordedChoir){const old=recordedChoir;recordedChoir=null;old.pause();old.removeAttribute("src");old.load()}
- if(transformAudioSource){try{transformAudioSource.stop()}catch{}transformAudioSource=null}
-}
+const {prepareTransformationAudio,stopTransformationAudio,playSpecialSound,playTransformationAudio}=window.createMythboundTransformationAudio({$,classPage,isArchsaint:()=>active==="saint"&&activePath===1});
+const {revealSpecialPath,revealSaint,burnPortrait,useMobilePortraitEffects,revealMobilePath}=window.MythboundPortraitEffects;
 
-// Original choir-like and mysterious sound effects.
-function specialSound(ac,kind){
- const heaven=kind==="archsaint",duration=heaven?3.1:2.7,rate=ac.sampleRate,b=ac.createBuffer(1,Math.ceil(rate*duration),rate),data=b.getChannelData(0),tau=2*Math.PI;
- const clamp=x=>Math.max(0,Math.min(1,x)),smooth=x=>{x=clamp(x);return x*x*(3-2*x)};
- if(heaven){
-  for(const [f,g,delay] of [[146.832,.06,0],[220,.075,.05],[293.665,.075,.12],[369.994,.06,.22],[440,.055,.32],[587.33,.035,.43]]){
-   const weights=Array.from({length:8},(_,i)=>{const k=i+1,hz=f*k;return (k===1?.8:0)+(.6*Math.exp(-Math.pow((hz-720)/310,2))+.27*Math.exp(-Math.pow((hz-1250)/380,2)))/Math.sqrt(k)});
-   const sum=weights.reduce((a,b)=>a+b,0);
-   for(const detune of [-.003,.001,.004]){
-    const phase=Math.random()*tau;
-    for(let i=Math.floor(delay*rate);i<data.length;i++){
-     const t=i/rate,env=smooth((t-delay)/.52)*(1-smooth((t-1.25)/(duration-1.25)));
-     const a=tau*f*(1+detune)*(t-delay)+phase+.18*Math.sin(tau*4.4*t+phase);
-     let v=0;for(let k=0;k<weights.length;k++)v+=weights[k]*Math.sin((k+1)*a+k*.43);
-     data[i]+=g*env*v/(3*sum);
-    }
-   }
-  }
-  for(let i=0;i<data.length;i++){const t=i/rate-.7;if(t>0)data[i]+=.025*smooth(t/.2)*Math.exp(-1.8*t)*(Math.sin(tau*880*t)+.24*Math.sin(tau*1760*t))}
- }else{
-  let low=0,mid=0,fast=0;
-  for(let i=0;i<data.length;i++){
-   const t=i/rate,n=Math.random()*2-1;low+=.004*(n-low);mid+=.035*(n-mid);fast+=.15*(n-fast);
-   const env=smooth(t/.82)*(1-smooth((t-1.1)/(duration-1.1)));
-   data[i]=env*(.075*Math.sin(tau*73.416*t+.8*Math.sin(t*1.2))+.028*Math.sin(tau*110*t)+.48*(mid-low)+.08*(fast-mid))+.02*smooth((t-.5)/.6)*(1-smooth((t-1.2)/1.3))*Math.sin(tau*146.83*t);
-  }
- }
- const dry=data.slice();
- for(const [delay,g] of [[.047,.18],[.103,.14],[.181,.10],[.263,.07],[.361,.04]]){const off=Math.round(delay*rate);for(let i=off;i<data.length;i++)data[i]+=dry[i-off]*g}
- let peak=0;for(let i=0;i<data.length;i++){const tail=clamp((data.length-1-i)/(rate*.25));data[i]*=tail*tail;peak=Math.max(peak,Math.abs(data[i]))}
- if(peak>.4)for(let i=0;i<data.length;i++)data[i]*=.4/peak;
- return b;
-}
-function playRecordedChoir(){
- if(transformationMuted()||document.hidden||classPage.hidden)return;
- stopTransformationAudio();
- const audio=new Audio(choirSource);recordedChoir=audio;audio.preload="auto";audio.volume=.38;
- const fallback=()=>{if(recordedChoir!==audio)return;stopTransformationAudio();if(active==="saint"&&activePath===1&&!classPage.hidden)playSpecialSound("archsaint",true)};
- audio.addEventListener("error",fallback,{once:true});
- audio.addEventListener("ended",()=>{if(recordedChoir===audio)stopTransformationAudio()},{once:true});
- function fade(){
-  if(recordedChoir!==audio)return;
-  const t=audio.currentTime;
-  if(t>=4.8){stopTransformationAudio();return}
-  audio.volume=.38*Math.max(0,Math.min(1,(4.8-t)/1.35));
-  requestAnimationFrame(fade);
- }
- audio.addEventListener("playing",()=>requestAnimationFrame(fade),{once:true});
- try{audio.play().catch(fallback)}catch{fallback()}
-}
-function playSpecialSound(kind,forceSynth=false){
- if(kind==="archsaint"&&!forceSynth){playRecordedChoir();return}
- if(transformationMuted()||document.hidden||classPage.hidden)return;
- const ac=transformAudioContext;if(!ac||ac.state==="closed")return;
- stopTransformationAudio();
- try{const buffer=transformBuffers[kind]||(transformBuffers[kind]=specialSound(ac,kind));
- const sound=ac.createBufferSource(),gain=ac.createGain();sound.buffer=buffer;gain.gain.value=kind==="archsaint"?.72:.66;
- sound.connect(gain);gain.connect(ac.destination);transformAudioSource=sound;
- sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound)transformAudioSource=null};sound.start()}catch{}
-}
-function revealSpecialPath(stage,oldImage,picture,kind){
- const heaven=kind==="archsaint",duration=heaven?2400:2250;
- const finish=()=>{oldImage?.remove();stage.querySelector(".portrait-special-effect")?.remove();stage.classList.remove("portrait-revealing");picture.classList.remove("portrait-incoming");picture.style.removeProperty("opacity");picture.style.removeProperty("filter")};
- const layer=document.createElement("div");layer.className="portrait-special-effect "+(heaven?"heavenly-effect":"mystery-effect");layer.setAttribute("aria-hidden","true");
- const add=(cls,vars={})=>{const e=document.createElement("span");e.className=cls;for(const [k,v] of Object.entries(vars))e.style.setProperty(k,v);layer.append(e)};
- if(heaven){
-  add("heavenly-glow");add("heavenly-ring");
-  for(let i=0;i<7;i++)add("heavenly-ray",{"--angle":(-31+i*10.3)+"deg","--ray-width":(9+i%3*4)+"%","--delay":i*.025+"s"});
-  for(let i=0;i<32;i++)add(i%4===0?"heavenly-feather":"heavenly-spark",{"--x":(8+Math.random()*84)+"%","--y":(Math.random()*53)+"%","--drift":(-65+Math.random()*130)+"px","--turn":(-120+Math.random()*240)+"deg","--delay":Math.random()*.48+"s","--size":(i%4===0?6+Math.random()*8:2+Math.random()*4)+"px"});
- }else{
-  add("mystery-veil");add("mystery-seam");
-  for(let i=0;i<9;i++)add("mystery-cloud",{"--x":(10+Math.random()*66)+"%","--y":(4+i*10)+"%","--drift":(i%2?1:-1)*(70+Math.random()*90)+"px","--delay":i*.04+"s"});
-  for(let i=0;i<22;i++)add("mystery-mote",{"--x":(10+Math.random()*80)+"%","--y":(10+Math.random()*80)+"%","--drift":(-50+Math.random()*100)+"px","--delay":Math.random()*.65+"s","--size":(1+Math.random()*3)+"px"});
- }
- stage.append(layer);stage.classList.add("portrait-revealing");picture.style.opacity="0";
- let start=null;const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
- function frame(now){
-  if(!stage.isConnected)return;
-  if(start===null)start=now;
-  const p=Math.min(1,(now-start)/duration),a=smooth((p-.32)/.43);
-  if(oldImage)oldImage.style.opacity=String(1-smooth((p-.09)/.38));
-  picture.style.opacity=String(a);picture.style.filter="blur("+((heaven?4:8)*(1-a)).toFixed(2)+"px) drop-shadow(0 18px 22px #08122265)";
-  if(p<1)requestAnimationFrame(frame);else finish();
- }
- requestAnimationFrame(frame);
-}
 
-function playTransformationAudio(fallen){
- if(transformationMuted()||document.hidden)return;
- const ac=transformAudioContext;if(!ac||ac.state==="closed")return;
- stopTransformationAudio();
- try{
-  const key=fallen?"fire":"sparkle";
-  if(!transformBuffers[key]){
-   const rate=ac.sampleRate,duration=fallen?2.48:1.85;
-   const buffer=ac.createBuffer(1,Math.ceil(rate*duration),rate),data=buffer.getChannelData(0);
-   if(fallen){
-    let low=0,mid=0;
-    for(let i=0;i<data.length;i++){
-     const t=i/rate,n=Math.random()*2-1;
-     low+=.065*(n-low);mid+=.28*(n-mid);
-     const env=Math.min(1,t/.20)*Math.pow(Math.max(0,1-t/duration),.75);
-     data[i]=(low*.31+(n-mid)*.055)*env;
-    }
-    for(let k=0;k<63;k++){
-     const start=Math.floor((.09+Math.random()*(duration-.30))*rate);
-     const length=Math.floor((.007+Math.random()*.031)*rate);
-     const strength=.08+Math.random()*.27;
-     let previous=0;
-     for(let i=0;i<length&&start+i<data.length;i++){
-      const n=Math.random()*2-1,env=Math.exp(-i/(length*.21))*Math.min(1,i/Math.max(1,rate*.001));
-      data[start+i]+=(.67*n+.33*previous)*strength*env;previous=n;
-     }
-    }
-   }else{
-    // A single breathing, luminous chord, not a sequence of bell notes.
-    // Layered soft vowel-like harmonics and a diffuse high-frequency shimmer.
-    const tau=2*Math.PI;
-    const voices=[
-     {f:220,g:.070},{f:329.6276,g:.060},{f:440,g:.052},{f:554.3653,g:.026}
-    ];
-    const harmonics=[1,.30,.20,.075,.045];
-    for(const voice of voices){
-     for(const detune of [-.0018,.0018]){
-      const phase=Math.random()*tau;
-      for(let i=0;i<data.length;i++){
-       const t=i/rate,q=t/duration;
-       const attack=Math.sin(Math.PI*.5*Math.min(1,t/.45))**2;
-       const release=Math.cos(Math.PI*.5*Math.max(0,(q-.37)/.63))**2;
-       const angle=tau*voice.f*(1+detune)*t+phase+.10*Math.sin(tau*1.7*t+phase);
-       let vowel=0;
-       for(let k=0;k<harmonics.length;k++)vowel+=harmonics[k]*Math.sin(angle*(k+1)+k*.4);
-       data[i]+=voice.g*.5*vowel*attack*release;
-      }
-     }
-    }
-    let slow=0,fast=0;
-    for(let i=0;i<data.length;i++){
-     const t=i/rate,q=t/duration,n=Math.random()*2-1;
-     slow+=.025*(n-slow);fast+=.26*(n-fast);
-     const air=Math.sin(Math.PI*q)**2;
-     const shimmer=Math.sin(tau*1318.510*t+.45*Math.sin(tau*.9*t))*.010+
-       Math.sin(tau*1760*t+.35*Math.sin(tau*1.3*t))*.007;
-     data[i]+=air*((fast-slow)*.040+shimmer);
-    }
-    // A very quiet diffuse tail gives the swell a spacious, chapel-like decay.
-    const dry=data.slice();
-    for(const [delay,level] of [[.063,.13],[.117,.095],[.173,.065],[.247,.04]]){
-     const offset=Math.round(delay*rate);
-     for(let i=offset;i<data.length;i++)data[i]+=dry[i-offset]*level;
-    }
-    for(let i=0;i<data.length;i++){
-     const tail=Math.min(1,(data.length-1-i)/(rate*.18));
-     data[i]*=tail*tail;
-    }
-   }
-   transformBuffers[key]=buffer;
-  }
-  const sound=ac.createBufferSource(),gain=ac.createGain();sound.buffer=transformBuffers[key];
-  gain.gain.value=fallen?.65:.72;sound.connect(gain);gain.connect(ac.destination);
-  transformAudioSource=sound;
-  sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound)transformAudioSource=null};
-  sound.start();
- }catch{}
-}
-document.addEventListener("visibilitychange",()=>{if(document.hidden)stopTransformationAudio()});
-window.addEventListener("pagehide",stopTransformationAudio);
-$("music-toggle")?.addEventListener("click",()=>{if(transformationMuted())stopTransformationAudio()});
-const transformVisibility=new MutationObserver(()=>{if(classPage.hidden||document.body.classList.contains("mythbound-login-open"))stopTransformationAudio()});
-transformVisibility.observe(classPage,{attributes:true,attributeFilter:["hidden"]});transformVisibility.observe(document.body,{attributes:true,attributeFilter:["class"]});
-document.addEventListener("mythbound:party-voice-start",stopTransformationAudio);
 
-// Divine manifestation: a broad feathered gradient rising over the old image,
-// with little star-shaped glints that appear along its moving boundary.
-function revealSaint(stage,oldImage,picture){
- const finish=()=>{
-  oldImage.remove();stage.querySelector(".portrait-burn-canvas")?.remove();
-  stage.classList.remove("portrait-revealing","portrait-crossfade");picture.classList.remove("portrait-incoming");
- };
- try{
-  const b=stage.getBoundingClientRect();
-  if(!b.width||!b.height){finish();return}
-  const canvas=document.createElement("canvas");
-  canvas.className="portrait-burn-canvas";canvas.setAttribute("aria-hidden","true");
-  canvas.style.zIndex="3";
-  const w=canvas.width=Math.min(720,Math.ceil(b.width*1.3)),h=canvas.height=Math.round(w*b.height/b.width);
-  const ctx=canvas.getContext("2d");
-  if(!ctx){stage.classList.add("portrait-crossfade");setTimeout(finish,1050);return}
-  const masked=window.CSS&&(CSS.supports("mask-image","linear-gradient(black,transparent)")||CSS.supports("-webkit-mask-image","linear-gradient(black,transparent)"));
-  oldImage.style.zIndex="2";stage.append(canvas);stage.classList.add("portrait-revealing");
-  const duration=1420;
-  const stars=Array.from({length:43},(_,i)=>({
-   born:.12+Math.random()*.72,x:(.09+Math.random()*.82)*w,
-   drift:(Math.random()-.5)*w*.095,dy:(.025+Math.random()*.075)*h,
-   life:.32+Math.random()*.42,size:1.1+Math.random()*3.4,
-   cross:i%3===0,seed:Math.random()*Math.PI*2
-  }));
-  let start=null;
-  function tick(now){
-   if(!stage.isConnected)return;
-   if(start===null)start=now;
-   const elapsed=now-start,p=Math.min(1,elapsed/duration),smooth=p*p*(3-2*p);
-   // Mask fades from the bottom upward, dissolving through a soft 38% band.
-   const edge=119-138*smooth,lo=edge-19,hi=edge+19;
-   if(masked){
-    const mask="linear-gradient(to bottom, #000 "+lo+"%, transparent "+hi+"%)";
-    oldImage.style.maskImage=mask;oldImage.style.webkitMaskImage=mask;
-   }else oldImage.style.opacity=String(1-smooth);
-   if(p===1)oldImage.style.visibility="hidden";
-   ctx.clearRect(0,0,w,h);
-   const cy=edge*h/100,light=Math.sin(Math.PI*p);
-   if(p<1){
-    const gradient=ctx.createRadialGradient(w*.5,cy,0,w*.5,cy,w*.46);
-    gradient.addColorStop(0,"rgba(255,229,164,"+(.16*light)+")");
-    gradient.addColorStop(.45,"rgba(255,222,148,"+(.065*light)+")");gradient.addColorStop(1,"rgba(255,222,148,0)");
-    ctx.save();ctx.translate(0,cy);ctx.scale(1,.36);ctx.translate(0,-cy);
-    ctx.fillStyle=gradient;ctx.fillRect(0,cy-w*.5,w,w);ctx.restore();
-   }
-   for(const s of stars){
-    const age=elapsed/1000-s.born*duration/1000;
-    if(age<0||age>s.life)continue;
-    const q=age/s.life,at=s.born*s.born*(3-2*s.born);
-    const x=s.x+s.drift*q,y=(1.19-1.38*at)*h-s.dy*q;
-    const fade=Math.sin(Math.PI*q)*(.77+.23*Math.cos(s.seed+q*8));
-    const r=s.size*(.5+.8*Math.sin(Math.PI*q));
-    ctx.globalAlpha=fade*.65;
-    const halo=ctx.createRadialGradient(x,y,0,x,y,r*4.5);halo.addColorStop(0,"#fff2b9");halo.addColorStop(1,"rgba(255,220,140,0)");
-    ctx.fillStyle=halo;ctx.fillRect(x-r*4.5,y-r*4.5,r*9,r*9);
-    ctx.globalAlpha=fade*.95;ctx.fillStyle="#fffbea";ctx.beginPath();
-    if(s.cross){
-     ctx.moveTo(x,y-r*2.2);ctx.quadraticCurveTo(x+r*.24,y-r*.24,x+r*1.35,y);
-     ctx.quadraticCurveTo(x+r*.24,y+r*.24,x,y+r*2.2);ctx.quadraticCurveTo(x-r*.24,y+r*.24,x-r*1.35,y);ctx.quadraticCurveTo(x-r*.24,y-r*.24,x,y-r*2.2);
-    }else ctx.arc(x,y,r*.52,0,Math.PI*2);
-    ctx.fill();
-   }
-   ctx.globalAlpha=1;
-   if(elapsed<duration+420)requestAnimationFrame(tick);else finish();
-  }
-  requestAnimationFrame(tick);
- }catch{
-  oldImage.style.zIndex="";oldImage.style.maskImage="";oldImage.style.webkitMaskImage="";oldImage.style.opacity="";oldImage.style.visibility="";
-  stage.querySelector(".portrait-burn-canvas")?.remove();stage.classList.remove("portrait-revealing");stage.classList.add("portrait-crossfade");setTimeout(finish,1050);
- }
-}
 
-function burnPortrait(stage,oldImage,picture,isFallen){
- const finish=()=>{stage.classList.remove("portrait-revealing","portrait-crossfade");picture.classList.remove("portrait-incoming");oldImage.remove();stage.querySelector(".portrait-burn-canvas")?.remove()};
- const fallback=()=>{stage.querySelector(".portrait-burn-canvas")?.remove();stage.classList.add("portrait-crossfade");setTimeout(finish,1050)};
- try{
-  const bounds=stage.getBoundingClientRect();
-  if(!bounds.width||!bounds.height){finish();return}
-  const canvas=document.createElement("canvas");canvas.className="portrait-burn-canvas";canvas.setAttribute("aria-hidden","true");
-  const w=canvas.width=Math.min(540,Math.ceil(bounds.width*1.15)),h=canvas.height=Math.round(w*bounds.height/bounds.width);
-  const ctx=canvas.getContext("2d"),source=document.createElement("canvas");source.width=w;source.height=h;
-  const sc=source.getContext("2d",{willReadFrequently:true});if(!ctx||!sc){fallback();return}
-  const scale=Math.min(w/oldImage.naturalWidth,h/oldImage.naturalHeight);
-  const dw=oldImage.naturalWidth*scale,dh=oldImage.naturalHeight*scale;
-  sc.drawImage(oldImage,(w-dw)/2,(h-dh)/2,dw,dh);
-  const original=sc.getImageData(0,0,w,h),frame=ctx.createImageData(w,h),src=original.data,dst=frame.data;
-  const field=new Float32Array(w*h);
-  const layers=[{s:44,a:.15},{s:16,a:.065},{s:6,a:.025}].map(({s,a})=>{const cols=Math.ceil(w/s)+2,rows=Math.ceil(h/s)+2;return {s,a,cols,grid:Float32Array.from({length:cols*rows},()=>Math.random())}});
-  const smooth=t=>t*t*(3-2*t);
-  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-   let n=0;
-   for(const L of layers){const gx=x/L.s,gy=y/L.s,ix=Math.floor(gx),iy=Math.floor(gy),u=smooth(gx-ix),v=smooth(gy-iy),i=iy*L.cols+ix;const a=L.grid[i]*(1-u)+L.grid[i+1]*u,b=L.grid[i+L.cols]*(1-u)+L.grid[i+L.cols+1]*u;n+=(a*(1-v)+b*v-.5)*L.a}
-   field[y*w+x]=.78*(1-y/h)+.10*x/w+n+.11;
-  }
-  const particles=[];
-  // A continuous temperature ramp: glowing gold/rose at the consuming edge,
-  // through crimson and wine into smoky violet. Blend two ramps across the field.
-  const warm=[[255,232,181],[255,151,107],[225,53,67],[109,28,64],[42,19,52]];
-  const cool=[[255,213,230],[240,120,173],[173,50,116],[87,34,101],[35,21,56]];
-  const palette=new Uint8Array(32*128*3);
-  for(let u=0;u<32;u++)for(let k=0;k<128;k++){
-   const v=k/127*4,i=Math.min(3,Math.floor(v)),t=smooth(v-i),mix=u/31,j=(u*128+k)*3;
-   for(let ch=0;ch<3;ch++)palette[j+ch]=Math.round((warm[i][ch]*(1-t)+warm[i+1][ch]*t)*(1-mix)+(cool[i][ch]*(1-t)+cool[i+1][ch]*t)*mix);
-  }
-  const hue=new Uint8Array(w*h);
-  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-   const i=y*w+x,variation=.5+.29*Math.sin(x/w*6.1+y/h*3.2)+.15*Math.sin(x/w*12.4-y/h*4.5);
-   hue[i]=Math.max(0,Math.min(31,Math.round(31*variation)));
-  }
-  const emberColors=[[255,224,173],[255,138,109],[240,87,127],[222,124,203],[174,108,233]];
-  const emberGlows=["#d67947","#c33153","#ac295f","#a03f9b","#6e3d9a"];
-  stage.append(canvas);ctx.putImageData(original,0,0);stage.classList.add("portrait-revealing");oldImage.style.visibility="hidden";
-  let begin=0,last=0;const duration=2300;
-  function tick(now){
-   if(!stage.isConnected)return;
-   if(!begin){begin=now;last=now}
-   const elapsed=now-begin,dt=Math.min(40,now-last)/1000;last=now;
-   const p=Math.min(1,elapsed/duration),threshold=-.12+1.24*(.60*p+.40*p*p*(3-2*p));
-   for(let i=0,j=0;i<field.length;i++,j+=4){
-    const d=field[i]-threshold,a=Math.max(0,Math.min(1,d/.035));
-    if(d<=0){dst[j+3]=0;continue}
-    if(d>=.112){dst[j]=src[j];dst[j+1]=src[j+1];dst[j+2]=src[j+2];dst[j+3]=src[j+3];continue}
-    const heat=Math.max(0,Math.min(127,Math.round((d-.008)/.104*127)));
-    const index=(hue[i]*128+heat)*3;
-    const edge=a*(1-smooth(Math.max(0,Math.min(1,(d-.018)/.094))));
-    dst[j]=src[j]*(1-edge)+palette[index]*edge;dst[j+1]=src[j+1]*(1-edge)+palette[index+1]*edge;dst[j+2]=src[j+2]*(1-edge)+palette[index+2]*edge;dst[j+3]=src[j+3]*a;
-   }
-   ctx.putImageData(frame,0,0);
-   if(p>.04&&p<.96)for(let k=0;k<100;k++){const i=Math.floor(Math.random()*field.length);if(src[i*4+3]>160&&Math.abs(field[i]-threshold)<.018&&particles.length<85){particles.push({x:i%w,y:Math.floor(i/w),vx:(Math.random()-.5)*45,vy:-22-Math.random()*65,age:0,life:.38+Math.random()*.65,r:.6+Math.random()*1.6,color:Math.floor(Math.random()*emberColors.length)})}}
-   ctx.globalCompositeOperation="lighter";
-   for(let i=particles.length-1;i>=0;i--){const s=particles[i];s.age+=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;if(s.age>=s.life){particles.splice(i,1);continue}const a=Math.sin(Math.PI*s.age/s.life);ctx.globalAlpha=a*.75;ctx.fillStyle="rgb("+emberColors[s.color].join(",")+")";ctx.shadowColor=emberGlows[s.color];ctx.shadowBlur=6;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill()}
-   ctx.globalAlpha=1;ctx.shadowBlur=0;ctx.globalCompositeOperation="source-over";
-   if(elapsed<duration+700)requestAnimationFrame(tick);else finish();
-  }
-  requestAnimationFrame(tick);
- }catch(e){oldImage.style.visibility="";stage.classList.remove("portrait-revealing");fallback()}
-}
-
-// Touch devices use small, ordinary CSS particles instead of canvas, blend modes,
-// animated image filters and masked full-portrait overlays. iPad desktop mode included.
-function useMobilePortraitEffects(){
- return window.matchMedia("(max-width: 760px), (hover: none) and (pointer: coarse)").matches||
-  /iPad|iPhone|iPod/.test(navigator.userAgent)||
-  (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
-}
-function revealMobilePath(stage,oldImage,picture,kind){
- // Keep the old image in place until the already-loaded new one dissolves in.
- // Use ordinary opacity animations and transparent gradients, not filters,
- // blend modes, masks, or large white flash surfaces.
- const duration=kind==="archsaint"?2400:kind==="mystery"?2250:kind==="fallen"?2400:1850;
- const layer=document.createElement("div");
- layer.className="portrait-mobile-effect mobile-effect-"+kind;
- layer.setAttribute("aria-hidden","true");
- layer.style.setProperty("--reveal-duration",duration+"ms");
- stage.style.setProperty("--reveal-duration",duration+"ms");
- function add(cls,vars={}){
-  const item=document.createElement("span");item.className=cls;
-  for(const [k,v] of Object.entries(vars))item.style.setProperty(k,v);
-  layer.append(item);return item;
- }
- add("mobile-reveal-aura");
- if(kind==="archsaint"){
-  add("mobile-heaven-halo");
-  for(let i=0;i<5;i++)add("mobile-heaven-ray",{"--angle":(-26+i*13)+"deg","--delay":i*.045+"s"});
- }else if(kind==="fallen"){
-  for(let i=0;i<5;i++)add("mobile-fire-tongue",{"--px":(8+i*21)+"%","--delay":i*.09+"s"});
- }else if(kind==="mystery"){
-  for(let i=0;i<3;i++)add("mobile-mist-wisp",{"--py":(25+i*24)+"%","--delay":i*.12+"s","--dx":(i%2?55:-55)+"px"});
- }else add("mobile-base-ring");
- const amount=kind==="fallen"?25:20;
- for(let i=0;i<amount;i++){
-  add("mobile-reveal-particle",{
-   "--px":(8+(i*37.13)%84)+"%",
-   "--py":(kind==="archsaint"?5+(i*23.71)%56:kind==="fallen"?45+(i*23.71)%48:15+(i*23.71)%70)+"%",
-   "--dx":((i%7)-3)*16+"px",
-   "--dy":((kind==="archsaint"?95:-95)-(i%4)*12)+"px",
-   "--delay":((i%9)*.075)+"s",
-   "--size":(5+i%4*2)+"px"
-  });
- }
- stage.append(layer);
- picture.style.removeProperty("opacity");
- picture.style.removeProperty("filter");
- stage.classList.remove("portrait-revealing","portrait-crossfade");
- if(oldImage)stage.classList.add("mobile-portrait-dissolve");
- else picture.classList.remove("portrait-incoming");
- // Clean up even if iOS delays animationend or the visitor switches again.
- setTimeout(()=>{
-  oldImage?.remove();layer.remove();
-  picture.classList.remove("portrait-incoming");
-  stage.classList.remove("mobile-portrait-dissolve");
-  stage.style.removeProperty("--reveal-duration");
- },duration+100);
-}
 function renderPreview(allowTransformation=false){
  // Real artwork for both Saint appearances, with the old concept silhouette
  // as a fallback until the two image files have been uploaded to GitHub.
@@ -747,27 +222,7 @@ function renderStats(){
  radarDismiss=()=>{pinned=hovered=focused=null;showTip()};
  stats.replaceChildren(svg);
 }
-// Shared ability inspector. A path may supply media keyed by the exact entry name:
-// media: {"Marionette": {video:"../video.mp4",poster:"../poster.png"}}
-const SKILL_ART={
- "Gentle Benediction":'<path d="M32 9v46M9 32h46M18 18l28 28M46 18L18 46"/><path class="ink" d="M32 18l5 9 9 5-9 5-5 9-5-9-9-5 9-5Z"/><circle cx="32" cy="32" r="4" />',
- "Hallowed Veil":'<path class="ink" d="M32 9 51 17v16c0 12-11 20-19 24-8-4-19-12-19-24V17Z"/><path d="M32 17v29M22 29h20"/><ellipse cx="32" cy="14" rx="15" ry="5"/>',
- "Judgment Ray":'<path d="m12 51 36-36M21 51l30-30M12 42l30-30"/><path class="ink" d="m46 5 3 9 10 4-10 3-3 10-4-10-9-3 9-4Z"/><path d="M10 54h16"/>',
- "Merciful Heart":'<path class="ink" d="M32 52 12 33C-2 18 22 7 32 23 42 7 66 18 52 33Z"/><path d="M32 27v15m-8-7h16"/>',
- "Divine Projection":'<path d="M8 48 23 34l8 2 7-4m-22 17 10-7 12 1 10-10M15 38l-7 7"/><path class="ink" d="m43 7 4 12 12 4-12 4-4 12-4-12-12-4 12-4Z"/><path d="m22 12 3 6m-12 5 8 2"/>',
- "Celestial Power":'<circle cx="32" cy="32" r="21"/><path class="ink" d="m32 5 6 20 21 7-21 6-6 21-6-21-21-6 21-7Z"/><path d="m17 17 4 4m22 22 4 4m0-30-4 4M21 43l-4 4"/>',
- "Heavenly Wings":'<path class="ink" d="M30 49C13 43 8 26 6 9c11 13 23 11 24 30Zm4 0C51 43 56 26 58 9 47 22 35 20 34 39Z"/><path d="m10 23 16 17m-11-6 13 12m26-23L38 40m11-6L36 46M32 45v12"/>',
- "Heaven's Arbiter":'<path d="M14 10Q57 11 54 50L14 10m0 0 2 42 38-2M10 54 53 11"/><path class="ink" d="m51 5 8 0 0 8-7-3-4 4-4-4 4-4Z"/><path d="m10 45 2 7 7 2"/>',
- "Divine Radiance":'<circle class="ink" cx="32" cy="32" r="11"/><path d="M32 4v12m0 32v12M4 32h12m32 0h12M12 12l9 9m22 22 9 9m0-40-9 9M21 43l-9 9"/><circle cx="32" cy="32" r="4"/>',
- "Grace of Heaven":'<path class="ink" d="M47 7C23 9 10 28 15 46 34 46 53 25 47 7Z"/><path d="M12 56 44 13M22 42l-1-13m9 4V20m-4 18 14-4m-8-7 13-6"/><path d="M52 39v14m-7-7h14"/>',
- "Heaven's Mercy":'<path d="M32 7v37m-9-10 9-11 9 11M11 49h42M18 55h28"/><path class="ink" d="M27 43C10 41 5 23 8 15c9 12 17 10 19 28Zm10 0c17-2 22-20 19-28-9 12-17 10-19 28Z"/><path d="m12 29 12 10m28-10L40 39"/><ellipse cx="32" cy="12" rx="10" ry="4"/>',
- "The Blood Moon's Pact":'<path class="ink" d="M44 9C13-2 1 36 21 51c14 10 31 1 34-11C29 52 16 23 44 9Z"/><path d="M44 16v16m-8-8h16"/><path class="ink" d="M42 38q-11 13 0 16 11-3 0-16Z"/>',
- "The Price of Mercy":'<path class="ink" d="M32 5C26 18 13 29 13 41a19 19 0 0 0 38 0C51 29 38 18 32 5Z"/><path d="M32 26v21m-10-10h20"/>',
- "Blood Stillness":'<path d="M32 9v46M12 20l40 24m0-24L12 44"/><path class="ink" d="M32 22q-17 15 0 21 17-6 0-21Z"/><path d="M25 9h14M25 55h14M8 26l8-12m32 36 8-12M8 38l8 12m32-36 8 12"/>',
- "Crimson Covenant":'<path class="ink" d="M32 9Q18 24 18 31a14 14 0 0 0 28 0Q46 24 32 9Z"/><path d="M6 42q9-5 17 4l9 7 9-7q8-9 17-4M6 49l10 5m42-5-10 5M32 23v17m-8-8h16"/>',
- "Sanguine Harvest":'<path d="M12 19q18-16 38 0l-8 2m8-2-3-8M52 45q-18 16-38 0l8-2m-8 2 3 8"/><path class="ink" d="M32 12Q16 30 16 38a16 16 0 0 0 32 0Q48 30 32 12Z"/><path d="M24 39q2 8 10 8"/>',
- "Marionette":'<path d="M9 9h46M32 5v9M13 10l9 24M51 10l-9 24M32 10v14"/><circle class="ink" cx="32" cy="30" r="6"/><path d="m22 34 10 9 10-9M32 36v11m-9 10 9-10 9 10"/><path class="ink" d="M32 3 36 9 32 15 28 9Z"/>'
-};
+
 function abilityEntries(path){
  const entries=[];
  const core=path.mechanics||[];
@@ -887,7 +342,7 @@ function renderSkills(){
  const selected=entries.find(e=>e.name===chosen);
  if(selected)select(selected);else skillDetail(path,null);
 }
-const SAINT_PATH_ART={1:{name:"Archsaint",emblem:"◇"},2:{name:"FallenSaint",emblem:"✧"}};
+
 function renderPathPresentation(){
  const host=$("class-details"),mystery=isUnrevealed(),path=pathData(),wasSpecial=host.dataset.unrevealed==="true"||host.dataset.customPathHeader==="true";
  if(mystery)host.dataset.unrevealed="true";else delete host.dataset.unrevealed;
@@ -967,11 +422,7 @@ if(typeof ResizeObserver==="function"){
  for(const node of [sceneHost,sceneHost.querySelector(".showcase-columns"),sceneHost.querySelector(".showcase-overline")])if(node)sceneObserver.observe(node);
 }else window.addEventListener("resize",sizeBaseSaintScene);
 let environmentRequest=0,environmentKey=null,environmentFadeTimer=0;
-const SAINT_SCENES={
- 1:{id:"heavenly",src:"../HeavenlyRealmBackground.png"},
- 2:{id:"bloodmoon",src:"../BloodMoonshrineBackground.png"},
- 3:{id:"judgment",src:"../HallOfJudgmentGrayscaleBackground.png"}
-};
+
 function fillSceneEffects(layer,scene){
  if(layer.dataset.scene===scene)return;
  layer.dataset.scene=scene;layer.replaceChildren();
@@ -1064,19 +515,7 @@ function drawEnvironment(){
   }
  }
 }
-const ROLE_ICONS={
- melee:'<path d="m5 19 3-3m-4-2 6 6M8 16 20 4l-2 7L10 19M4 4l5 1 4 4"/>',
- ranged:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>',
- tank:'<path d="M12 3 20 6v6c0 5-8 9-8 9s-8-4-8-9V6z"/>',
- healer:'<path d="M9 4h6v5h5v6h-5v5H9v-5H4V9h5z"/>',
- hybrid:'<path d="M3 7h17l-4-4m4 14H3l4 4M20 7l-4 4M3 17l4-4"/>',
- beast:'<path d="M5 4 8 9l4-2 4 2 3-5 1 10-8 7-8-7zM8 13h1m6 0h1m-6 4h4"/>',
- mounted:'<path d="M5 20v-6l4-5 1-6 4 3 4 1 3 6-4 3-4-3-3 7zM15 10h1"/>',
- companion:'<path d="M7 15c1-3 3-5 5-5s4 2 5 5c2 4-2 6-5 4-3 2-7 0-5-4z"/><circle cx="5" cy="9" r="2"/><circle cx="10" cy="5" r="2"/><circle cx="15" cy="5" r="2"/><circle cx="19" cy="9" r="2"/>',
- magic:'<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>',
- duelist:'<path d="m4 20 4-4m-4-3 7 7m-3-4L20 3l-2 8-8 7"/>'
-};
-const CLASS_ROLES={breaker:[["melee","Melee"],["tank","Tank / brawler"]],animar:[["hybrid","Hybrid"],["beast","Shapeshifter / expert"]],herder:[["mounted","Mounted"],["companion","Companion support"]],elemis:[["ranged","Range"],["magic","Elemental magic"]],strider:[["melee","Melee"],["duelist","Precision duelist"]],saint:[["ranged","Range"],["healer","Healer"]]};
+
 function closeRoleTooltips(){
  document.querySelectorAll(".class-role-icon.is-tooltip-open").forEach(icon=>{icon.classList.remove("is-tooltip-open");icon.setAttribute("aria-expanded","false")});
 }

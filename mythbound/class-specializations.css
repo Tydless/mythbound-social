@@ -1,0 +1,206 @@
+
+/* Unrevealed Saint path: presentation only. No new artwork or inferred gameplay. */
+.class-showcase .showcase-overline #class-codex-path-label{padding:0;color:inherit}
+.class-showcase[data-unrevealed="true"]{--environment-light:#9da7cb;--environment-dark:#1a1d31;--codex-border:#737c9b}
+.class-showcase[data-scene="judgment"] .class-environment{background:radial-gradient(ellipse at 72% 37%,#818bb528,transparent 47%),radial-gradient(ellipse at 24% 73%,#9692bf16,transparent 52%),linear-gradient(180deg,transparent,#16192be3 76%,#141827);z-index:1}
+.class-showcase[data-scene="judgment"] .class-embers{opacity:.38}
+.class-showcase[data-scene="judgment"] .class-foreground-motes{opacity:.45}
+.class-showcase[data-unrevealed="true"] .showcase-info{background:radial-gradient(ellipse at 50% 65%,#30344e,#191c2c 78%);box-shadow:inset 0 0 0 4px #191c2c,inset 0 0 0 5px #a3adcb40,0 12px 32px #080f2044}
+.class-showcase[data-unrevealed="true"] .showcase-info::before,.class-showcase[data-unrevealed="true"] .showcase-info::after{border-color:#191c2c}
+.class-showcase[data-unrevealed="true"] .showcase-seal{display:grid;place-items:center;color:#c3c9df;font:400 48px 'Cinzel',Georgia,serif;text-shadow:0 0 18px #b8bed875;border:1px dashed #a4aec77a;border-radius:50%;background:radial-gradient(circle,#b8bed81a,transparent 68%)}
+.class-showcase .path-option.is-unrevealed-path .path-symbol{font-family:'Cinzel',Georgia,serif;color:#c3c9df;border:1px dashed #8992b15c;border-radius:50%;text-shadow:0 0 12px #c3c9df55}
+.class-showcase[data-unrevealed="true"] .path-overview{background:linear-gradient(145deg,#25293be8,#181b2ce8);border-color:#8790ae69}
+.class-showcase[data-unrevealed="true"] .class-meta .unrevealed-meta-label,.class-showcase[data-unrevealed="true"] .class-meta .unrevealed-difficulty{font-size:10px;letter-spacing:.12em;font-weight:700;color:#c6ccdf;background:#222738;border:1px dashed #a1aaca70;border-radius:4px;padding:7px 10px;white-space:nowrap}
+.class-showcase[data-unrevealed="true"] .class-meta .unrevealed-difficulty{font-size:14px;letter-spacing:.18em;line-height:1}
+.class-showcase[data-unrevealed="true"] .unrevealed-radar{color:#b8bed8}
+.unrevealed-radar-question{fill:#d5d9e8;font:600 20px Georgia,serif}
+.unrevealed-radar-center{fill:#dfe2f1;font:400 43px 'Cinzel',Georgia,serif}
+.unrevealed-radar-caption{fill:#b8bed8;font:700 8px 'DM Sans',sans-serif;letter-spacing:.15em}
+.unrevealed-radar-seal{animation:unrevealed-breathe 5s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes unrevealed-breathe{0%,100%{opacity:.62}50%{opacity:1;filter:drop-shadow(0 0 9px #aeb8df55)}}
+.unrevealed-voice-note{display:block;text-align:right;padding:0 0 8px;color:#b0b7cc;font-size:10px;font-style:italic;letter-spacing:.025em}
+.class-showcase[data-unrevealed="true"] .class-voice-button:disabled{opacity:.45;cursor:not-allowed}
+.class-showcase[data-unrevealed="true"] .skill-detail{background:#191d2c77;border:1px dashed #a4aec366;min-height:155px}
+.unrevealed-sealed-panel,.unrevealed-signature{display:flex;min-height:125px;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:7px;color:#c7ccdf;padding:14px}
+.unrevealed-lock svg{display:block;width:32px;height:32px;color:#bdc5dd}
+.unrevealed-sealed-panel strong,.unrevealed-signature strong{font-size:10px;letter-spacing:.17em;font-weight:800}
+.unrevealed-sealed-panel p,.unrevealed-signature p{font-size:12px;color:#aeb5ca;line-height:1.6;margin:0}
+.unrevealed-signature{min-height:155px;border:1px dashed #a4aec355;border-radius:7px;background:radial-gradient(ellipse at center,#737c9e15,transparent 68%),#191d2c77}
+.unrevealed-signature-mark{font:400 36px 'Cinzel',Georgia,serif;color:#b8bed8;line-height:1;text-shadow:0 0 16px #aeb8df55}
+.class-showcase .saint-portrait-stage .unrevealed-portrait-reveal{animation:unrevealed-appear 1s ease-out both}
+@keyframes unrevealed-appear{from{opacity:0;filter:blur(6px) drop-shadow(0 18px 22px #08122265)}to{opacity:1;filter:blur(0) drop-shadow(0 18px 22px #08122265)}}
+@media(prefers-reduced-motion:reduce){.unrevealed-radar-seal,.class-showcase .saint-portrait-stage .unrevealed-portrait-reveal{animation:none}}
+
+
+.class-showcase .saint-portrait-stage .portrait-special-effect{position:absolute;inset:0;overflow:hidden;z-index:3;pointer-events:none;isolation:isolate;mask-image:radial-gradient(ellipse at center,#000 60%,transparent 100%)}
+.portrait-special-effect span{position:absolute;display:block;pointer-events:none}
+.heavenly-glow{inset:-8% -15%;background:radial-gradient(ellipse at 50% 8%,#fff8dcbb,transparent 49%),radial-gradient(ellipse at 50% 48%,#d5efff55,transparent 61%),radial-gradient(ellipse at 45% 55%,#ffe0ef44,transparent 62%);animation:mb-heaven-glow 2.4s ease-in-out both;mix-blend-mode:screen}
+.heavenly-ray{top:-9%;left:50%;height:118%;width:var(--ray-width);transform-origin:50% 0;background:linear-gradient(180deg,#fff7ddbb,#d9efff75 36%,#f9e9ff22 78%,transparent);clip-path:polygon(44% 0,56% 0,100% 100%,0 100%);filter:blur(3px);mix-blend-mode:screen;animation:mb-heaven-ray 2.2s var(--delay) ease-in-out both}
+.heavenly-ring{left:50%;top:24%;width:36%;height:10%;border:1px solid #fff2c7;border-radius:50%;box-shadow:0 0 17px #e5efff88,inset 0 0 12px #fff2b366;animation:mb-heaven-ring 1.7s .15s ease-out both}
+.heavenly-feather,.heavenly-spark{left:var(--x);top:var(--y);width:var(--size);height:calc(var(--size)*1.8);background:#fff9e7;box-shadow:0 0 8px #e5efff;animation:mb-heaven-particle 1.85s var(--delay) ease-in-out both}
+.heavenly-feather{border-radius:100% 10% 100% 15%;background:linear-gradient(100deg,#e4f4ff,#fff9e8 50%,#bcd8ef)}
+.heavenly-spark{clip-path:polygon(50% 0,65% 40%,100% 50%,65% 60%,50% 100%,35% 60%,0 50%,35% 40%)}
+@keyframes mb-heaven-glow{0%,100%{opacity:0}38%{opacity:1}70%{opacity:.65}}
+@keyframes mb-heaven-ray{0%{opacity:0;transform:translateX(-50%) rotate(var(--angle)) scaleY(.3)}40%{opacity:.65}100%{opacity:0;transform:translateX(-50%) rotate(var(--angle)) scaleY(1)}}
+@keyframes mb-heaven-ring{0%{opacity:0;transform:translate(-50%,-50%) scale(.45)}38%{opacity:.8}100%{opacity:0;transform:translate(-50%,-50%) scale(1.65)}}
+@keyframes mb-heaven-particle{0%{opacity:0;transform:translate(0,-15px) rotate(0deg)}30%{opacity:.9}100%{opacity:0;transform:translate(var(--drift),290px) rotate(var(--turn))}}
+.mystery-veil{inset:-10%;background:radial-gradient(ellipse at center,#111522ee 0%,#1c233bd9 38%,#22273b75 62%,transparent 78%);animation:mb-mystery-veil 2.25s ease-in-out both}
+.mystery-cloud{left:var(--x);top:var(--y);width:75%;height:29%;border-radius:50%;background:radial-gradient(ellipse,#8390b16b 0%,#4a526c77 35%,#20263c4f 52%,transparent 73%);filter:blur(13px);animation:mb-mystery-cloud 1.85s var(--delay) ease-in-out both}
+.mystery-seam{left:-12%;top:78%;width:124%;height:20%;background:radial-gradient(ellipse,#c6cee555,transparent 68%);filter:blur(9px);animation:mb-mystery-seam 1.65s .35s ease-in-out both}
+.mystery-mote{left:var(--x);top:var(--y);width:var(--size);height:var(--size);border-radius:50%;background:#c7d3ef;box-shadow:0 0 9px #aebddc;animation:mb-mystery-mote 1.5s var(--delay) ease-out both}
+@keyframes mb-mystery-veil{0%,100%{opacity:0}32%,47%{opacity:1}75%{opacity:.55}}
+@keyframes mb-mystery-cloud{0%{opacity:0;transform:translate(-50%,0) scale(.7)}35%{opacity:.85}100%{opacity:0;transform:translate(calc(-50% + var(--drift)),-42px) scale(1.35)}}
+@keyframes mb-mystery-seam{0%{opacity:0;transform:translateY(10%)}44%{opacity:.75}100%{opacity:0;transform:translateY(-380%)}}
+@keyframes mb-mystery-mote{0%{opacity:0;transform:translate(0,0)}42%{opacity:.65}100%{opacity:0;transform:translate(var(--drift),-55px)}}
+@media(prefers-reduced-motion:reduce){.portrait-special-effect{display:none!important}}
+
+
+/* Feather the heavenly light on all four edges, independently of the portrait rectangle. */
+.class-showcase .saint-portrait-stage .portrait-special-effect.heavenly-effect{
+ inset:-14% -16%;overflow:visible;
+ -webkit-mask-image:radial-gradient(ellipse closest-side at 50% 47%,#000 39%,#000d 58%,#0005 81%,transparent 100%);
+ mask-image:radial-gradient(ellipse closest-side at 50% 47%,#000 39%,#000d 58%,#0005 81%,transparent 100%);
+}
+.heavenly-effect .heavenly-glow{inset:0;background:radial-gradient(ellipse at 50% 26%,#fff8dcad,transparent 45%),radial-gradient(ellipse at 50% 48%,#d5efff46,transparent 57%),radial-gradient(ellipse at 45% 55%,#ffe0ef32,transparent 55%)}
+.heavenly-effect .heavenly-ray{top:9%;height:86%;filter:blur(7px);background:linear-gradient(180deg,transparent 0%,#fff7dd91 12%,#d9efff70 36%,#f9e9ff20 73%,transparent 96%)}
+.heavenly-effect .heavenly-ring{top:31%;width:27%;height:8%}
+
+
+/* All Saint paths share the same portrait and codex coordinates. */
+#page-classes{overflow-anchor:none}
+.class-showcase .preview-toolbar{align-items:center;flex-wrap:nowrap}
+.class-showcase .preview-toolbar .class-preview-controls{flex:none;flex-wrap:nowrap}
+.class-showcase .preview-toolbar .unrevealed-voice-note{flex:1;min-width:0;margin-right:auto;padding:0;text-align:right;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.class-showcase[data-environment="saint"] .showcase-heading{min-height:90px}
+.class-showcase[data-environment="saint"] .class-meta-icons{min-height:38px}
+.class-showcase[data-unrevealed="true"] .showcase-seal{margin-inline:4.5px}
+@media(max-width:760px){.class-showcase[data-environment="saint"] .class-meta-icons{min-height:34px}}
+@media(max-width:650px){.class-showcase[data-environment="saint"] .showcase-heading{min-height:70px}.class-showcase[data-unrevealed="true"] .showcase-seal{margin-inline:3px;font-size:38px}}
+
+
+/* Shared specialization mechanics: below the existing ability and artwork layout. */
+.path-mechanics[hidden]{display:none!important}
+.path-mechanics{margin-top:30px;padding-top:16px;border-top:1px solid color-mix(in srgb,var(--class-highlight) 30%,transparent)}
+.path-mechanics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:stretch}
+.path-mechanic-card{min-width:0;padding:clamp(14px,2vw,22px);border:1px solid color-mix(in srgb,var(--class-highlight) 28%,#384458);border-radius:8px;background:linear-gradient(140deg,color-mix(in srgb,#202b40 94%,var(--class-highlight) 6%),#162033ba)}
+.path-mechanic-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.path-mechanic-symbol{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:50%;border:1px solid color-mix(in srgb,var(--class-highlight) 60%,transparent);color:var(--class-highlight);font-size:27px;background:#172235;box-shadow:inset 0 0 14px color-mix(in srgb,var(--class-highlight) 12%,transparent)}
+.path-mechanic-head h4{font:600 clamp(16px,1.6vw,20px) 'Cinzel',Georgia,serif;color:var(--class-highlight);margin:4px 0 0;line-height:1.3}
+.path-mechanic-head .eyebrow{font-size:9px;letter-spacing:.075em;color:#c1c9d8;overflow-wrap:anywhere}
+.path-mechanic-card p{font-size:13px;line-height:1.7;color:#c5cfdd;margin:0 0 12px}
+.path-mechanic-card p:last-child{margin-bottom:0}
+.path-mechanic-table{width:100%;border-collapse:collapse;margin-top:15px;font-size:12px;text-align:left;line-height:1.45;font-variant-numeric:tabular-nums}
+.path-mechanic-table th,.path-mechanic-table td{padding:8px 6px;border-bottom:1px solid #98a3b326;vertical-align:middle}
+.path-mechanic-table thead th{font-size:10px;letter-spacing:.04em;font-weight:600;color:var(--class-highlight)}
+.path-mechanic-table tbody th{font-weight:500;color:#c3cddd}
+.path-mechanic-table td{color:#e3d3b5}
+.path-mechanic-note,.path-mechanic-card .path-mechanic-note{font-size:11px;color:#acb9cc;font-style:italic;margin-top:12px;line-height:1.6}
+@media(max-width:760px){.path-mechanics-grid{grid-template-columns:1fr}.path-mechanics{margin-top:24px}.path-mechanics .showcase-section-title{flex-wrap:wrap;gap:5px}}
+
+
+/* Specialization atmospheres are decorative, behind the codex and portrait stage. */
+.class-scene-effects{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none;display:none}
+.class-showcase[data-scene]:not([data-scene="base"]) .class-atmosphere{--scene-height:max(760px,58vw);mask-image:linear-gradient(to bottom,transparent 0%,#000 80px,#000 calc(100% - 85px),transparent);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 80px,#000 calc(100% - 85px),transparent)}
+.class-showcase[data-scene]:not([data-scene="base"]) .class-landscape{bottom:auto;height:var(--scene-height);background-position:center top;background-size:cover;mask-image:linear-gradient(to bottom,#000 0%,#000 74%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 74%,transparent 100%)}
+.class-showcase[data-scene]:not([data-scene="base"]) .class-scene-effects{display:block;bottom:auto;height:var(--scene-height);mask-image:linear-gradient(to bottom,transparent,#000 9%,#000 82%,transparent);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 9%,#000 82%,transparent)}
+.class-showcase[data-scene]:not([data-scene="base"]) .class-embers,.class-showcase[data-scene]:not([data-scene="base"]) .class-foreground-motes{display:none}
+.class-showcase[data-scene="heavenly"]{--environment-light:#e9daff;--environment-dark:#343b63}
+.class-showcase[data-scene="bloodmoon"]{--environment-light:#d55c75;--environment-dark:#402438}
+.class-showcase[data-scene="judgment"]{--environment-light:#bfc1c9;--environment-dark:#23252e}
+.class-showcase[data-scene="heavenly"] .class-atmosphere.has-landscape .class-landscape{opacity:.40;filter:brightness(.80)}
+.class-showcase[data-scene="bloodmoon"] .class-atmosphere.has-landscape .class-landscape{opacity:.45;filter:brightness(.82)}
+.class-showcase[data-scene="judgment"] .class-atmosphere.has-landscape .class-landscape{opacity:.43;filter:grayscale(1) brightness(.84)}
+.class-showcase[data-scene="heavenly"] .class-atmosphere.has-landscape .class-environment{background:linear-gradient(180deg,#18213b3b 0%,#19233c5c 45%,#141d30 100%)}
+.class-showcase[data-scene="bloodmoon"] .class-atmosphere.has-landscape .class-environment{background:linear-gradient(180deg,#24121d22 0%,#24182d57 44%,#141d30 100%)}
+.class-showcase[data-scene="judgment"] .class-atmosphere.has-landscape .class-environment{background:linear-gradient(180deg,#17182024 0%,#20202a50 45%,#141d30 100%)}
+.scene-fx{position:absolute;pointer-events:none}
+.scene-petal,.scene-feather{top:0;bottom:0;left:var(--x);width:var(--size);opacity:0;animation:mb-scene-fall var(--duration) linear var(--delay) infinite}
+.scene-petal svg,.scene-feather svg{display:block;width:100%;height:auto;transform-origin:center;animation:mb-scene-flutter 4s ease-in-out var(--delay) infinite alternate}
+.scene-petal{color:#de526b}
+.scene-petal svg{filter:hue-rotate(var(--hue)) drop-shadow(0 0 4px #ff527944)}
+.scene-feather svg{filter:drop-shadow(0 0 5px #fff3d877)}
+@keyframes mb-scene-fall{0%{opacity:0;transform:translate(0,-9%)}12%{opacity:var(--alpha)}84%{opacity:var(--alpha)}100%{opacity:0;transform:translate(var(--drift),105%)}}
+@keyframes mb-scene-flutter{0%{transform:translateX(-14px) rotate(calc(var(--turn) * -.65)) scaleX(.72)}100%{transform:translateX(14px) rotate(var(--turn)) scaleX(1)}}
+.scene-glint{left:var(--x);top:var(--y);width:var(--size);height:var(--size);border-radius:50%;background:currentColor;color:#fff2cc;box-shadow:0 0 8px currentColor,0 0 15px currentColor;animation:mb-scene-glint var(--duration) ease-in-out var(--delay) infinite}
+[data-scene="bloodmoon"] .scene-glint{color:#ff627d}
+@keyframes mb-scene-glint{0%,100%{opacity:0;transform:translate(0,15px) scale(.7)}40%{opacity:.85;transform:translate(var(--drift),-12px) scale(1.1)}}
+.scene-mist{left:-34%;width:168%;top:var(--y);height:clamp(130px,16vw,280px);background:radial-gradient(ellipse at 23% 56%,#d5d7db88,transparent 46%),radial-gradient(ellipse at 63% 48%,#eef0f477,transparent 51%),radial-gradient(ellipse at 85% 61%,#b0b3be88,transparent 43%);filter:blur(21px);opacity:var(--alpha);animation:mb-scene-mist var(--duration) ease-in-out var(--delay) infinite alternate}
+@keyframes mb-scene-mist{from{transform:translateX(-13%) scaleY(.78);opacity:calc(var(--alpha) * .66)}to{transform:translateX(13%) scaleY(1.15);opacity:var(--alpha)}}
+@media(max-width:760px){.class-showcase[data-scene]:not([data-scene="base"]) .class-atmosphere{--scene-height:900px}.class-showcase[data-scene]:not([data-scene="base"]) .class-landscape{background-position:center top}.scene-petal:nth-child(n+13),.scene-feather:nth-child(n+8),.scene-glint:nth-child(n+29){display:none}}
+@media(prefers-reduced-motion:reduce){.class-scene-effects .scene-feather,.class-scene-effects .scene-petal,.class-scene-effects .scene-glint{display:none}.class-scene-effects .scene-mist{animation:none;opacity:.22}}
+
+
+/* Fade only the scenery and ambient effects, never the character or codex. */
+.class-showcase .class-atmosphere{opacity:1;transition:opacity .7s ease-in-out}
+.class-showcase .class-landscape{transition:none}
+.class-showcase .class-foreground-motes{transition:opacity .7s ease-in-out}
+.class-showcase.environment-fading .class-atmosphere,.class-showcase.environment-fading .class-foreground-motes{opacity:0}
+@media(prefers-reduced-motion:reduce){.class-showcase .class-atmosphere,.class-showcase .class-foreground-motes{transition:none}}
+
+
+/* Keep the same slots for the finished, already-framed subclass emblems. */
+.class-showcase .path-symbol.class-art-host{width:48px;height:48px;min-width:48px;min-height:48px}
+.class-showcase .path-symbol.class-art-host>.class-art-image{max-width:100%;max-height:100%;object-fit:contain}
+.class-showcase .showcase-seal.class-art-host[data-art-src="../IconArchsaint.png"],.class-showcase .showcase-seal.class-art-host[data-art-src="../IconFallenSaint.png"]{width:86px;height:90px}
+@media(max-width:650px){.class-showcase .showcase-seal.class-art-host[data-art-src="../IconArchsaint.png"],.class-showcase .showcase-seal.class-art-host[data-art-src="../IconFallenSaint.png"]{width:66px;height:70px}}
+
+
+/* Compact skill catalogue, single inspector and video-ready gameplay stage. */
+.path-ability-layout{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(18px,2.4vw,38px);align-items:start}
+.ability-groups{display:grid;gap:12px}
+.ability-groups[hidden],.ability-video-placeholder[hidden]{display:none!important}
+.ability-group{display:grid;grid-template-columns:minmax(96px,126px) minmax(0,1fr);gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid #a9b9d321}
+.ability-group-head h4{font:600 15px 'Cinzel',Georgia,serif;color:#e5d9c3;margin:0;line-height:1.4}
+.ability-group-ultimate .ability-group-head h4{color:var(--class-highlight)}
+.ability-group-icons{display:flex;gap:9px;flex-wrap:wrap;align-items:flex-start;min-width:0}
+.class-showcase .path-ability-layout .ability-tile{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;background:transparent;border:1px solid transparent;padding:7px 5px;min-height:0;width:clamp(75px,7vw,104px);max-width:100%;border-radius:7px;box-shadow:none;transform:none}
+.class-showcase .path-ability-layout .ability-tile:hover{background:#ffffff0a;border-color:#a89a785b}
+.class-showcase .path-ability-layout .ability-tile.is-current{background:color-mix(in srgb,var(--class-highlight) 11%,transparent);border-color:var(--class-highlight);box-shadow:inset 0 0 16px #e5c68f0d}
+.ability-art{--ability-ink:#f8dc9e;--ability-deep:#765628;display:grid;place-items:center;flex:none;width:58px;height:58px;box-sizing:border-box;border-radius:11px;border:1px solid color-mix(in srgb,var(--ability-ink) 66%,#364153);color:var(--ability-ink);background:radial-gradient(ellipse at 50% 35%,color-mix(in srgb,var(--ability-deep) 72%,#263143),#151d2d 85%);box-shadow:inset 0 0 0 2px #ffffff0e,inset 0 0 13px #05090c55;font-size:27px;line-height:1}
+.ability-art svg{width:86%;height:86%;filter:drop-shadow(0 0 3px color-mix(in srgb,var(--ability-ink) 42%,transparent))}
+.ability-art svg .ink{fill:color-mix(in srgb,var(--ability-ink) 25%,transparent)}
+.class-showcase[data-unrevealed="true"] .ability-art{--ability-ink:#bec5d5}
+.class-showcase[data-skill-theme="archsaint"] .ability-art{--ability-ink:#fff0ce;--ability-deep:#596f9c}
+.class-showcase[data-skill-theme="fallensaint"] .ability-art{--ability-ink:#ffc0bd;--ability-deep:#842b45}
+.ability-group-ultimate .ability-art{border:2px solid #dfbd7f;box-shadow:inset 0 0 14px #e2ba6740,0 0 8px #e2ba672b}
+.class-showcase .path-ability-layout .ability-tile .skill-name{font-size:10px;letter-spacing:0;line-height:1.35;text-align:center;color:#c9d2df}
+.ability-group-empty{margin:0;padding:7px 0;color:#98a5b9;font-size:12px;font-style:italic}
+.class-showcase .path-ability-layout .skill-detail{margin-top:18px;padding:clamp(14px,2vw,24px);min-height:0}
+.ability-detail-header{display:flex;align-items:center;gap:14px}
+.ability-detail-header .ability-art{width:65px;height:65px}
+.ability-detail-heading{min-width:0}
+.ability-category-label{font-size:9px;text-transform:uppercase;letter-spacing:.15em;color:#a7b2c6}
+.ability-detail-heading h4{font:600 clamp(17px,1.7vw,24px) 'Cinzel',Georgia,serif;color:var(--class-highlight);margin:3px 0;line-height:1.25}
+.ability-detail-type{font-size:11px;color:#b8c3d5}
+.class-showcase .skill-detail>p,.ability-mechanic p{font-size:13px;line-height:1.7;color:#c5cfdd;margin:12px 0}
+.ability-mechanic{margin-top:13px;padding-top:12px;border-top:1px solid #a5b2c32e}
+.ability-mechanic h4{font:600 15px 'Cinzel',Georgia,serif;color:var(--class-highlight);margin:0 0 6px}
+.ability-mechanic p.path-mechanic-note{font-size:11px;font-style:italic;color:#aeb9ca}
+.ability-video-frame{position:relative;aspect-ratio:16/9;overflow:hidden;border:1px solid #9dacc445;border-radius:8px;background:radial-gradient(ellipse at center,#34425a66,transparent 72%),#101827}
+.ability-video-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:15px;color:#aeb9c9}
+.ability-video-placeholder strong{color:#d8dce4;font:600 clamp(12px,1.4vw,18px) 'Cinzel',Georgia,serif}
+.ability-video-placeholder>span:last-child{font-size:11px;color:#99a8bc}
+.ability-video-play{width:48px;height:48px;color:#ad9d7c;opacity:.65}
+.ability-video-play svg{width:100%;height:100%}
+.ability-video{width:100%;height:100%;object-fit:contain;background:#0b101a;display:block}
+.ability-video-caption{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 2px;color:#c7d1e0}
+.ability-video-caption strong{font:600 15px 'Cinzel',Georgia,serif;color:var(--class-highlight)}
+.ability-video-caption span{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#a5b0c2;text-align:right}
+@media(max-width:950px){.ability-group{grid-template-columns:1fr;gap:5px}.ability-group-icons{gap:6px}}
+@media(max-width:760px){.path-ability-layout{grid-template-columns:1fr}.ability-group{grid-template-columns:1fr}.class-showcase .path-ability-layout .ability-tile{width:88px}.ability-video-caption{flex-wrap:wrap}}
+
+
+/* Only the base Saint scenery stops at the top of the ability inspector. */
+.class-showcase[data-scene-class="saint"][data-scene="base"] .class-atmosphere{
+ bottom:auto;height:var(--base-saint-scene-height,max(760px,58vw));
+ mask-image:linear-gradient(to bottom,transparent 0%,#000 80px,#000 calc(100% - 100px),transparent 100%);
+ -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 80px,#000 calc(100% - 100px),transparent 100%);
+}
+.class-showcase[data-scene-class="saint"][data-scene="base"] .class-landscape{
+ background-position:center 78%;
+ mask-image:linear-gradient(to bottom,#000 0%,#000 74%,transparent 100%);
+ -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 74%,transparent 100%);
+}
+.class-showcase[data-scene-class="saint"][data-scene="base"] .class-foreground-motes{
+ bottom:auto;height:var(--base-saint-scene-height,max(760px,58vw));
+}

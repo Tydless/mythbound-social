@@ -1,0 +1,140 @@
+
+.logo-host .official-mythbound-logo{display:none;object-fit:contain;width:100%;height:auto}
+.logo-host.logo-ready .official-mythbound-logo{display:block}
+.logo-host.logo-ready .logo-fallback{display:none}
+.logo-host .logo-fallback{display:flex;align-items:center;gap:5px}
+.site-header .brand.logo-ready{flex:none;width:clamp(135px,16vw,235px);align-items:center}
+.site-header .brand .official-mythbound-logo{width:100%;height:74px;object-fit:contain}
+.mb-login-brand.logo-ready{margin:0 auto 16px;max-width:290px;width:100%}
+.mb-login-brand .official-mythbound-logo{max-height:150px;object-fit:contain}
+@media(max-width:650px){.site-header .brand.logo-ready{width:135px}.site-header .brand .official-mythbound-logo{height:64px}.mb-login-brand.logo-ready{max-width:230px}.mb-login-brand .official-mythbound-logo{max-height:118px}}
+@media(max-width:360px){.site-header .brand.logo-ready{width:115px}.site-header .brand .official-mythbound-logo{height:55px}}
+
+/* Main hero title: official transparent logo in place of the headline. */
+.hero-copy .hero-title-logo{width:min(100%,620px);margin:0 0 24px}
+.hero-copy .hero-title-logo .official-mythbound-logo{width:100%;height:auto;max-height:340px;object-fit:contain;object-position:left center;filter:drop-shadow(0 5px 14px rgba(8,15,32,.38))}
+@media(max-width:650px){.hero-copy .hero-title-logo{width:min(100%,430px);margin:0 0 18px}.hero-copy .hero-title-logo .official-mythbound-logo{max-height:250px}}
+
+
+/* Compact horizontal wordmark in navigation and footer; full emblem stays on the hero. */
+.site-header .brand.wordmark-host.logo-ready{width:clamp(190px,17vw,285px)}
+.site-header .brand.wordmark-host .official-mythbound-logo{height:auto;width:100%;max-height:58px;object-fit:contain;object-position:left center}
+.footer-brand.wordmark-host{width:min(100%,240px);margin:0 0 14px}
+.footer-brand.wordmark-host .official-mythbound-logo{width:100%;height:auto}
+@media(max-width:1000px){.site-header .brand.wordmark-host.logo-ready{width:205px}}
+@media(max-width:650px){.site-header .brand.wordmark-host.logo-ready{width:clamp(190px,60vw,250px)}.site-header .brand.wordmark-host .official-mythbound-logo{height:auto;max-height:54px}.footer-brand.wordmark-host{width:188px}}
+
+
+/* Mobile-specific navigation and title-screen layout. Desktop stays unchanged. */
+.mobile-menu-toggle,.mobile-menu-item,.mobile-hero-download,.mobile-landscape-layer{display:none}
+@media(max-width:760px){
+ .site-header{display:flex;flex-wrap:nowrap;justify-content:space-between;gap:8px;min-height:64px;padding:8px 12px;border-bottom:1px solid #d8b78255}
+ .site-header .brand.wordmark-host,.site-header .brand.wordmark-host.logo-ready{flex:0 1 auto;width:clamp(125px,43vw,220px);min-width:0}
+ .site-header .brand.wordmark-host .official-mythbound-logo{width:100%;height:auto;max-height:48px;object-position:left center}
+ .site-header .brand .logo-fallback{font-size:12px;gap:2px}
+ .site-header .brand .logo-fallback small{display:none}
+ .site-header .header-actions{flex:none;display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-end;gap:6px}
+ .site-header .music-toggle{display:grid;place-items:center;min-width:36px;width:36px;height:36px;min-height:36px;padding:0;border-radius:50%}
+ .site-header .music-state{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .site-header .music-note{font-size:22px;line-height:1}
+ .site-header .music-toggle[aria-pressed="false"] .music-note{opacity:.45;text-decoration:line-through}
+ .site-header .account-chip{display:flex;align-items:center;padding:0;gap:0;min-width:36px;min-height:36px;justify-content:center}
+ .site-header .account-chip:not(.mb-guest-login) .account-label{display:none!important}
+ .site-header .account-sigil.mb-account-portrait{width:36px;height:37px}
+ .site-header #header-whisper,.site-header #download-button,.site-header .mb-session-action,#floating-whisper{display:none!important}
+ .site-header .mobile-menu-toggle{position:relative;display:grid;place-items:center;flex:none;width:36px;height:36px;padding:0;color:#f0d6a8;background:transparent;border:0;border-radius:5px}
+ .mobile-menu-toggle[aria-expanded="true"]{background:#34415a}
+ .mobile-menu-unread{position:absolute;right:1px;top:1px;width:8px;height:8px;border-radius:50%;background:#edbf7d;box-shadow:0 0 0 2px #141e30}
+ .site-header .main-nav{display:none;position:absolute;top:100%;right:10px;left:10px;width:auto;max-height:calc(100dvh - 85px);overflow:auto;margin:0;padding:8px;order:initial;flex-direction:column;gap:0;background:#182236;border:1px solid #bfa37266;border-radius:0 0 10px 10px;box-shadow:0 14px 35px #0008}
+ .site-header.mobile-nav-open .main-nav{display:flex}
+ .site-header .main-nav .nav-item{display:flex;align-items:center;justify-content:space-between;text-align:left;min-height:44px;padding:12px 14px;font-size:14px;border-radius:4px}
+ .site-header .main-nav .nav-item.is-active{background:#bfa37220;color:#f5d5a6}
+ .site-header .main-nav .nav-item.is-active:after{display:none}
+ .site-header .main-nav #mobile-inbox{border-top:1px solid #a5b2ca35;margin-top:6px}
+ .mobile-inbox-count{background:#e8c38d;color:#19253a;padding:0 7px;border-radius:10px;font-size:11px}
+ body.mythbound-guest .mobile-social-item,body.mythbound-guest .mobile-menu-unread{display:none!important}
+ .hero{min-height:0;display:block;margin:10px 10px 0;border-radius:12px;background-color:#142039}
+ .hero::before{inset:6px;border-radius:8px}
+ .hero.has-watercolor-landscape{background-image:none;background-color:#142039}
+ .hero.has-watercolor-landscape::after{background:none}
+ /* Fade at the actual bottom of the landscape, not at a viewport-based estimate. */
+ .hero.has-watercolor-landscape .mobile-landscape-layer{display:block;position:absolute;inset:0 0 auto;pointer-events:none;z-index:0}
+ .mobile-landscape-layer img{display:block;width:100%;height:auto}
+ .mobile-landscape-layer::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,32,57,0) 0%,rgba(20,32,57,.04) 25%,rgba(20,32,57,.19) 45%,rgba(20,32,57,.48) 65%,rgba(20,32,57,.83) 84%,#142039 100%)}
+ .hero-copy{width:100%;max-width:none;padding:clamp(110px,35vw,245px) 20px 24px;text-align:center}
+ .hero-copy .hero-title-logo{width:min(100%,430px);margin:0 auto 18px;text-align:center}
+ .hero-copy .hero-title-logo .official-mythbound-logo{max-height:none;width:100%;height:auto;object-position:center;display:none}
+ .hero-copy .hero-title-logo.logo-ready .official-mythbound-logo{display:block}
+ .hero-copy .hero-title-logo .logo-fallback{justify-content:center}
+ .hero-copy .hero-title-logo.logo-ready .logo-fallback{display:none}
+ .hero-copy .mobile-hero-download{display:inline-flex;justify-content:center;align-items:center;gap:7px;min-height:44px;width:min(100%,245px);font-size:15px;padding:11px 17px;margin:0 auto 22px}
+ .hero-copy p{max-width:450px;margin:0 auto;font-size:14px;line-height:1.7}
+ .hero-buttons{justify-content:center;gap:9px;margin-top:20px}
+ .hero-buttons button{font-size:12px;padding:9px 12px}
+ .hero-edition{position:relative;left:auto;bottom:auto;display:block;text-align:center;padding:0 14px 21px;font-size:9px}
+}
+@media(max-width:360px){.site-header{gap:4px;padding-inline:8px}.site-header .header-actions{gap:4px}.site-header .brand.wordmark-host.logo-ready{width:clamp(110px,42vw,155px)}}
+
+
+/* Official homepage dispatches, community links and newsletter. */
+.hub-section{padding:55px clamp(22px,5vw,90px);border-top:1px solid #cfb38733}
+.hub-heading{text-align:center;margin-bottom:28px}
+.hub-heading h2{font-size:clamp(25px,3vw,38px);margin:8px 0 10px}
+.hub-heading p{color:var(--muted);margin:0}
+.home-news{background:radial-gradient(ellipse at 20% 20%,#80634229,transparent 72%),#141e30}
+.home-news-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.featured-news-card{display:block;width:100%;padding:0;border:1px solid #dcc49b80;background:#1c2a42;overflow:hidden;text-align:left;color:#f3e8d6}
+.featured-news-art{position:relative;aspect-ratio:16/9;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse,#7097a0,#2c3d5b 65%,#17233a);font-size:90px;color:#f2d5a0}
+.featured-news-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.featured-news-caption{position:relative;padding:15px 42px 15px 16px;display:grid;gap:4px}
+.featured-news-caption strong{font:600 clamp(16px,2vw,22px) 'Cinzel',Georgia,serif}
+.featured-news-arrow{position:absolute;right:15px;bottom:18px;color:#e9c78b}
+.featured-news-dots{display:flex;gap:10px;justify-content:center;padding:14px}
+.featured-news-dots button{background:transparent;border:1px solid #d4b986;border-radius:50%;width:11px;height:11px;padding:0}
+.featured-news-dots button.is-active{background:#ecd0a0}
+.home-news-list-title{font:600 19px 'Cinzel',Georgia,serif;color:#efd2a5;padding-bottom:12px;border-bottom:1px solid #e2c39866}
+.home-news-row{display:flex;width:100%;gap:12px;justify-content:space-between;align-items:center;text-align:left;background:none;border:0;border-bottom:1px solid #8493a333;color:#f0e9df;padding:13px 0}
+.home-news-row span{min-width:0;display:grid;gap:3px}
+.home-news-row strong{font-size:13px;line-height:1.5}
+.home-news-row small{font-size:9px;letter-spacing:.11em;color:#b3d9d3}
+.home-news-row time{flex:none;font-size:10px;color:#a7b6c9}
+.home-news-row:hover strong{color:#f3cf97}
+.news-more{width:100%;margin-top:17px}
+.news-entry{scroll-margin-top:95px}
+.news-editorial-art{background-size:cover;background-position:center;min-height:170px}
+.article-read{margin-top:13px;font-size:12px;padding:7px 12px}
+.news-article-body{margin-top:16px;border-top:1px solid #d2bc9555;padding-top:14px}
+.news-article-body p{white-space:normal;line-height:1.8}
+.community-hub{background:radial-gradient(ellipse at 50% 0,#35486155,transparent 72%),#141d2f}
+.community-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.community-link{display:flex;align-items:center;gap:13px;padding:20px 15px;border:1px solid #cdb18455;background:#22304966;text-decoration:none;color:#edd3a7}
+.community-link:hover{border-color:#edd3a7;background:#36435b}
+.community-link>span:nth-child(2){display:grid;gap:3px;min-width:0;flex:1}
+.community-link strong{font-size:15px}
+.community-link small{font-size:11px;color:#bbc7d6}
+.community-icon{width:30px;height:30px;flex:none}
+.community-icon svg{width:100%;height:100%}
+.community-arrow{font-size:25px}
+.newsletter-hub{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:35px;align-items:start;background:linear-gradient(135deg,#1c293d,#151e30)}
+.newsletter-copy h2{font-size:clamp(24px,3vw,35px);margin:10px 0}
+.newsletter-copy p{color:#bfcbdc}
+.newsletter-form{display:grid;gap:12px}
+.newsletter-form>label:first-child{font-size:13px;font-weight:700;color:#ead5b6}
+.newsletter-form>input{font:inherit;color:#d6e1ec;background:#121c2d;border:1px solid #8594a566;border-radius:5px;padding:12px;min-width:0;width:100%}
+.newsletter-consent{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:#c3cddd}
+.newsletter-consent input{flex:none;accent-color:#e2c18d;margin-top:4px}
+.newsletter-form .solid-action{width:100%}
+.newsletter-form small{color:#9daec3;font-size:10px;line-height:1.5}
+#newsletter-status{margin:0;color:#a8dccc;font-size:13px}
+#newsletter-status:empty{display:none}
+@media(max-width:760px){
+ .hub-section{padding:36px 23px}
+ .hub-heading{margin-bottom:20px}.hub-heading p{font-size:13px}
+ .home-news-layout,.newsletter-hub{grid-template-columns:1fr;gap:20px}
+ .home-news-row strong{font-size:12px}.home-news-row time{font-size:10px}
+ .community-links{grid-template-columns:1fr;gap:0;border-top:1px solid #d4bb9066}
+ .community-link{border:0;border-bottom:1px solid #d4bb903d;background:transparent;padding:15px 8px}
+ .community-icon{width:25px;height:25px}
+ .newsletter-copy p{font-size:14px;margin-bottom:0}
+ .news-entry{scroll-margin-top:78px}
+}
