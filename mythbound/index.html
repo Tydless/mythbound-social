@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-atlas-labels49";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-atlas-ocean50";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css","gameplay.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -219,12 +219,6 @@
                     <radialGradient id="mw-sea"><stop stop-color="#405e65"/><stop offset="1" stop-color="#21343e"/></radialGradient>
                     <filter id="mw-coast-shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#111d29" flood-opacity=".45"/></filter>
                   </defs>
-                  <rect width="960" height="550" fill="url(#mw-sea)"/><rect width="960" height="550" fill="url(#mw-sea-grid)"/>
-                  <g fill="none" stroke="#b1c4be" stroke-opacity=".16" stroke-width="1.3">
-                    <path d="M46 290Q72 275 100 290M53 304Q80 289 107 304M787 455Q819 443 851 455M780 468Q812 456 844 468M369 60Q405 44 441 60M378 72Q408 58 438 72"/>
-                    <path d="M84 433Q104 424 124 433M832 215Q858 199 884 215M832 228Q858 212 884 228"/>
-                    <circle cx="480" cy="275" r="255" stroke-dasharray="2 8"/>
-                  </g>
                   <g class="mw-land" filter="url(#mw-coast-shadow)" stroke="#b6b18a" stroke-width="2" stroke-linejoin="round">
                     <path data-terrain="fable" d="M123 186 104 147 142 107 187 88 221 103 260 83 306 105 334 144 373 158 380 207 323 243 269 238 230 283 178 259 145 218Z" fill="#4d795c"/>
                     <path data-terrain="wondrous" d="M306 105 346 80 399 91 447 75 493 98 545 93 580 123 624 124 652 160 611 200 555 211 514 190 460 218 413 194 380 207 373 158 334 144Z" fill="#77749a"/>
@@ -242,7 +236,6 @@
                     <g stroke="#f0c3c3" stroke-opacity=".45" stroke-width="1.7"><path d="m685 206 13-21 12 21h-25Zm20 10 12-19 12 19Zm54 79 7-12 8 12m-4-1v12m-17 0v-12"/><path d="M736 246a16 16 0 1 1 16-22 12 12 0 0 0-16 22Z"/></g>
                     <g stroke="#f2d8a0" stroke-opacity=".6" stroke-width="1.8"><path d="M260 398q19-15 38 0t38 0m-68 13q22-12 44 0m255 9q23-19 46 0t46 0m-76 11q22-13 44 0"/><path d="m478 421 12-18 12 18m-24 0h24"/></g>
                   </g>
-                  <g transform="translate(72 73)" stroke="#e2c891" fill="none" opacity=".82"><circle r="28" stroke-width=".8"/><path d="M0-25 5-5 25 0 5 5 0 25-5 5-25 0-5-5Z" fill="#dcc79435"/><path d="M0-25V25M-25 0H25"/><text x="0" y="-34" fill="#e2c891" stroke="none" text-anchor="middle" font-size="11" font-family="Georgia">N</text></g>
                 </svg>
                 <div id="mw-map-markers" class="mw-map-markers" role="group" aria-label="Select a region"></div>
                 <span class="mw-map-corner nw">FIELD ATLAS · 01</span><span class="mw-map-corner se">ILLUSTRATIVE GEOGRAPHY</span>
