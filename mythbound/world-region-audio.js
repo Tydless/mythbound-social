@@ -25,7 +25,7 @@ case "dunes":wind(350,1400,.14);notes[id].forEach((f,i)=>tone(f,.45+i*.3,1.2,.04
 case "heavenly":notes[id].forEach((f,i)=>{tone(f*.997,i*.1,3,.036);tone(f*1.003,i*.1,3,.036);tone(f*2,i*.1,2.8,.012,"triangle")});break}
 setTimeout(()=>{if(ticket===epoch)stop()},3700);
 }catch{if(ticket===epoch)stop()}}
-function play(id){if(!Object.prototype.hasOwnProperty.call(notes,id))return;stop();if(!enabled())return;const ticket=epoch;window.MythboundAudio?.duck("region",.45);
+function play(id){if(!Object.prototype.hasOwnProperty.call(notes,id))return;stop();if(!enabled())return;const ticket=epoch;window.MythboundAudio?.duck("region",.12,.075*(recordingGain[id]??1));
 try{const C=window.AudioContext||window.webkitAudioContext;if(C){ctx=ctx||new C();if(ctx.state==="suspended")ctx.resume().catch(()=>{})}}catch{}
 if(!recordings[id]){synth(id,ticket);return}
 const audio=new Audio(recordings[id]),trim=recordingGain[id]??1;
