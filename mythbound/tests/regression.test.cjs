@@ -339,26 +339,19 @@ test("Header portrait optical alignment moves the presence marker with the artwo
  assert.ok(html.includes('id="account-button" class="account-chip"'));
 });
 
-test("Atlas region selection keeps all panels and location tabs mounted",()=>{
- const code=read("world-atlas.js"),style=read("world-atlas.css");
- const choose=code.slice(code.indexOf("function choose("),code.indexOf("function initStableDetails("));
- assert.ok(!choose.includes("replaceChildren"));
- assert.ok(choose.includes('entry.classList.toggle("is-current",on)'));
- assert.ok(choose.includes('entry.setAttribute("aria-hidden",String(!on))'));
- assert.ok(code.includes("initStableDetails();"));
- assert.ok(style.includes("grid-area:1/1;visibility:hidden"));
- assert.ok(style.includes(".is-current{visibility:visible"));
-});
-
-test("Atlas preview and sound are exclusive to map pins; directory scrolls and location tabs are neutral",()=>{
- const code=read("world-atlas.js"),style=read("world-atlas.css");
+test("World encyclopedia replaces disconnected sections without changing map pin interactions",()=>{
+ const code=read("world-atlas.js"),style=read("portal-atlas.css");
  assert.ok(!html.includes('id="mw-region-detail"'));
- assert.ok(!code.includes('$("mw-region-detail")'));
+ assert.ok(!html.includes('id="mw-locations"'));
+ assert.ok(!html.includes('id="mw-chronicles"'));
+ assert.ok(!html.includes('class="mw-jump"'));
+ assert.ok(html.includes('id="mw-region-interface"'));
+ for(const tab of ["region","locations","inhabitants","journal"])assert.ok(html.includes('data-region-tab="'+tab+'"'));
  assert.ok(code.includes('pin.addEventListener("click",()=>openPreview(r.id,pin,{sound:true}))'));
- assert.ok(code.includes('button.addEventListener("click",()=>{closePreview();choose(r.id,{scroll:true})})'));
- assert.ok(!code.includes("openPreview(path.dataset.terrain"));
- assert.ok(style.includes(".mw-location-tab{color:#c2cddd;border-color:#7c8a9b55}"));
- assert.ok(style.includes('.mw-location-tab:hover,#page-discover .mw-location-tab.is-active{color:var(--region-accent)'));
+ assert.ok(code.includes('showTab("region");moveTo($("mw-regions"))'));
+ assert.ok(code.includes('if(sound)window.MythboundRegionAudio?.play(id)'));
+ assert.ok(code.includes('btn.style.setProperty("--region-accent",r.color)'));
+ assert.ok(style.includes(".mw-codex-select"));
 });
 
 test("Announced subclass roster has ten released and two upcoming entries, with no invented mechanics",()=>{

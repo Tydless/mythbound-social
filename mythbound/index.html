@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-subclass-roster25";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-world-codex26";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -180,13 +180,13 @@
       </section>
 
       <section id="page-discover" class="page" aria-labelledby="discover-title" hidden>
-        <header class="mw-hero">
-          <div><span class="eyebrow">MYTHBOUND ONLINE / WORLD ATLAS</span><h1 id="discover-title">The World</h1><div class="mw-ornament" aria-hidden="true">✧</div><p>Beyond the familiar paths, an entire world awaits.<br>Every journey begins with the unknown.</p></div>
-        </header>
-        <div class="mw-shell">
-          <nav class="mw-jump" aria-label="World sections">
-            <button type="button" data-world-target="mw-atlas">World map</button><button type="button" data-world-target="mw-regions">Regions</button><button type="button" data-world-target="mw-locations">Locations</button><button type="button" data-world-target="mw-chronicles">Lore</button>
-          </nav>
+        <div class="mw-shell mw-world-shell">
+          <header class="mw-world-intro">
+            <h1 id="discover-title">The World of Mythbound</h1>
+            <div class="mw-ornament" aria-hidden="true">✧</div>
+            <p>In Mythbound, the wonders of fables, myths and legends take shape in a world waiting to be explored. From the welcoming meadows of the GreatFields to the enchanted woods, impossible landscapes and the realm above the clouds, every land holds its own stories, creatures and mysteries.</p>
+            <p>Follow the roads that call to you, discover what lies beyond the familiar, and find the legend you will become.</p>
+          </header>
           <section class="mw-section" id="mw-atlas" aria-labelledby="mw-atlas-title">
             <div class="mw-section-head"><div><span class="mw-kicker">I · Cartography</span><h2 id="mw-atlas-title">The World Atlas</h2></div><p>Discover the lands beyond your doorstep.</p></div>
             <div class="mw-atlas">
@@ -228,40 +228,30 @@
                 <span class="mw-map-corner nw">FIELD ATLAS · 01</span><span class="mw-map-corner se">ILLUSTRATIVE GEOGRAPHY</span>
               </div>
               <div class="mw-atlas-bottom"><div class="mw-legend" aria-label="Map legend"><span><b>◇</b>Region</span><span><b>✦</b>Starting region</span><span><b>○</b>Realm</span></div><span>Choose a region to explore its entry.</span></div>
-              <div id="mw-region-preview" class="mw-region-preview" popover="manual" role="dialog" aria-labelledby="mw-preview-title"><div id="mw-preview-landscape" class="mw-preview-landscape"></div><button id="mw-preview-close" class="mw-preview-close" type="button" aria-label="Close region preview">×</button><div class="mw-preview-body"><span id="mw-preview-type" class="mw-kicker"></span><h2 id="mw-preview-title"></h2><p id="mw-preview-description"></p><div class="mw-preview-meta"><div><span class="mw-preview-label">Area difficulty <small>· provisional</small></span><strong id="mw-preview-difficulty"></strong></div><div id="mw-preview-dots" class="mw-preview-dots" aria-hidden="true"></div></div><button id="mw-preview-guide" class="outline-action" type="button">View location guide</button></div></div>
+              <div id="mw-region-preview" class="mw-region-preview" popover="manual" role="dialog" aria-labelledby="mw-preview-title"><div id="mw-preview-landscape" class="mw-preview-landscape"></div><button id="mw-preview-close" class="mw-preview-close" type="button" aria-label="Close region preview">×</button><div class="mw-preview-body"><span id="mw-preview-type" class="mw-kicker"></span><h2 id="mw-preview-title"></h2><p id="mw-preview-description"></p><div class="mw-preview-meta"><div><span class="mw-preview-label">Area difficulty <small>· provisional</small></span><strong id="mw-preview-difficulty"></strong></div><div id="mw-preview-dots" class="mw-preview-dots" aria-hidden="true"></div></div><button id="mw-preview-guide" class="outline-action" type="button">Explore region</button></div></div>
             </div>
           </section>
-          <section class="mw-section" id="mw-regions" aria-labelledby="mw-regions-title">
-            <div class="mw-section-head"><div><span class="mw-kicker">II · Beyond the horizon</span><h2 id="mw-regions-title">Regions of Mythbound</h2></div><p>New landscapes, new stories, new adventures.</p></div>
-            <div class="mw-region-grid" id="mw-region-directory"></div>
-          </section>
-          <section class="mw-section" id="mw-locations" aria-labelledby="mw-locations-title">
-            <div class="mw-section-head"><div><span class="mw-kicker">III · The adventurer's guide</span><h2 id="mw-locations-title">Places to Discover</h2></div><p>From peaceful settlements to the perils of a raid.</p></div>
-            <div id="mw-location-region" class="mw-location-region"></div>
-            <div class="mw-features">
-              <article class="mw-feature"><span class="mw-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9h5v4h3V5h2v8h3V9h5v12M2 21h20M10 21v-5h4v5M3 9V5h2v2h3V5M16 5v4m5-4v4m-5-2h5"/></svg></span><div class="mw-feature-copy"><h3>Cities & Settlements</h3><p>Discover places to meet other travelers, trade, rest and prepare for the next adventure.</p><span class="mw-kicker">Location entries forthcoming</span></div></article>
-              <article class="mw-feature"><span class="mw-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V9l9-6 9 6v12H3Zm5 0v-8a4 4 0 0 1 8 0v8M3 9h18M12 3v4"/></svg></span><div class="mw-feature-copy"><h3>Dungeons & Raids</h3><p>A future guide to encounters, recommended levels, party sizes and rewards.</p><span class="mw-kicker">Encounter entries forthcoming</span></div></article>
-              <article class="mw-feature"><span class="mw-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2c0 6-4 10-10 10 6 0 10 4 10 10 0-6 4-10 10-10-6 0-10-4-10-10Z"/><path d="M19 3v4m-2-2h4"/></svg></span><div class="mw-feature-copy"><h3>Points of Interest</h3><p>Landmarks, hidden paths and discoveries worth making a detour for.</p><span class="mw-kicker">Landmark entries forthcoming</span></div></article>
-              <article class="mw-feature"><span class="mw-feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19 18 6l3-3-1 5L7 21M4 14l6 6M3 21l2-2m10-9 5 5"/></svg></span><div class="mw-feature-copy"><h3>World Events</h3><p>A future calendar of special encounters, celebrations and adventures across the world.</p><span class="mw-kicker">Event schedule forthcoming</span></div></article>
+          <section class="mw-section mw-region-codex" id="mw-regions" aria-labelledby="mw-regions-title">
+            <div class="mw-codex-heading"><h2 id="mw-regions-title">Regions of Mythbound</h2><p>Choose a land and discover its stories.</p></div>
+            <div id="mw-region-directory" class="mw-codex-select mw-location-tabs" role="group" aria-label="Choose a region"></div>
+            <div id="mw-region-interface" class="mw-region-interface">
+              <div class="mw-codex-banner">
+                <div id="mw-codex-landscape" class="mw-codex-landscape"></div>
+                <div class="mw-codex-banner-copy"><span id="mw-codex-type" class="mw-kicker"></span><h3 id="mw-codex-name"></h3><p id="mw-codex-difficulty"></p></div>
+              </div>
+              <div class="mw-codex-tabs" id="mw-codex-tabs" role="tablist" aria-label="Regional encyclopedia">
+                <button type="button" role="tab" id="mw-tab-region" data-region-tab="region" aria-controls="mw-codex-panel" aria-selected="true">Region</button>
+                <button type="button" role="tab" id="mw-tab-locations" data-region-tab="locations" aria-controls="mw-codex-panel" aria-selected="false" tabindex="-1">Locations</button>
+                <button type="button" role="tab" id="mw-tab-inhabitants" data-region-tab="inhabitants" aria-controls="mw-codex-panel" aria-selected="false" tabindex="-1">Inhabitants</button>
+                <button type="button" role="tab" id="mw-tab-journal" data-region-tab="journal" aria-controls="mw-codex-panel" aria-selected="false" tabindex="-1">Story Beats</button>
+              </div>
+              <div id="mw-codex-panel" class="mw-codex-panel" role="tabpanel" aria-labelledby="mw-tab-region" tabindex="0"></div>
             </div>
-          </section>
-          <section class="mw-section mw-chronicle" id="mw-chronicles" aria-labelledby="mw-chronicles-title">
-            <div class="mw-ornament" aria-hidden="true">✧</div><span class="mw-kicker">IV · The chronicles</span><h2 id="mw-chronicles-title">The world remembers.</h2><p>Its stories have not all been told. Discover the history, legends and mysteries of Mythbound as the chronicles unfold.</p>
-            <div class="mw-ornament" aria-hidden="true">✧</div>
           </section>
         </div>
-        <script>
-        (function(){
-          const world=document.getElementById("page-discover");
-          world.querySelectorAll("[data-world-target]").forEach(button=>button.addEventListener("click",()=>{
-            const target=document.getElementById(button.dataset.worldTarget);
-            if(target)target.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
-          }));
-        })();
-        </script>
       </section>
 
-      <section id="page-news" class="page" aria-labelledby="news-title" hidden>
+            <section id="page-news" class="page" aria-labelledby="news-title" hidden>
         <div class="inner-hero coral"><span class="eyebrow">NEWS / CHRONICLE BOARD</span><h1 id="news-title">What's new in Mythbound?</h1><p>From the world beyond the gates.</p></div>
         <div class="news-filters" role="group" aria-label="Filter news by category"><button class="news-filter is-active" type="button" data-news-filter="all" aria-pressed="true" aria-controls="news-list">ALL</button><button class="news-filter" type="button" data-news-filter="cosmetics" aria-pressed="false" aria-controls="news-list">COSMETICS</button><button class="news-filter" type="button" data-news-filter="patch-notes" aria-pressed="false" aria-controls="news-list">PATCH NOTES</button><button class="news-filter" type="button" data-news-filter="announcement" aria-pressed="false" aria-controls="news-list">ANNOUNCEMENT</button><button class="news-filter" type="button" data-news-filter="community" aria-pressed="false" aria-controls="news-list">COMMUNITY</button><button class="news-filter" type="button" data-news-filter="developer-diary" aria-pressed="false" aria-controls="news-list">DEVELOPER DIARY</button></div><p class="news-filter-status" id="news-filter-status" role="status" aria-live="polite" hidden>No news in this category yet.</p><div class="news-list" id="news-list"><article class="news-entry" id="news-wardrobe" data-news-category="cosmetics"><div class="news-image news-editorial-art" style="background-image:linear-gradient(135deg,#17233b22,#17233b88),url('../BannerSaint.png')"></div><div><button type="button" class="eyebrow news-category-tag" data-news-tag="cosmetics" aria-label="Filter news: COSMETICS" aria-controls="news-list">COSMETICS</button><h2>Saint wardrobe spotlight</h2><p>A little more light in your wardrobe.</p><span class="news-meta">Nov 17, 2026</span><br><button class="outline-action article-read" type="button" data-news-toggle="wardrobe" aria-expanded="false" aria-controls="article-wardrobe">Read more →</button><div class="news-article-body" id="article-wardrobe" hidden><p>The Wardrobe Team is preparing a collection inspired by the sanctuaries of Mythbound. Expect floral accents, flowing fabrics and far more gold than a reasonable healer needs. As always, looking fabulous does not increase your healing output. We checked.</p></div></div></article><article class="news-entry" id="news-patch" data-news-category="patch-notes"><div class="news-image news-editorial-art" style="background-image:linear-gradient(135deg,#17233b22,#17233b88),url('../mythbound-home-watercolor.jpg')"></div><div><button type="button" class="eyebrow news-category-tag" data-news-tag="patch-notes" aria-label="Filter news: PATCH NOTES" aria-controls="news-list">PATCH NOTES</button><h2>Update 1.4.2 — The companion situation</h2><p>A small update with a surprisingly large number of sheep.</p><span class="news-meta">Nov 15, 2026</span><br><button class="outline-action article-read" type="button" data-news-toggle="patch" aria-expanded="false" aria-controls="article-patch">Read more →</button><div class="news-article-body" id="article-patch" hidden><p>Fixed an issue where Herder companions could occupy chairs during party meetings. Resolved a rare issue causing Saints to face the wrong direction while casting a blessing. Improved the visibility of Breaker impact effects. Known issue: some players remain convinced that standing in hostile ground effects is a valid strategy. This is not a bug.</p></div></div></article><article class="news-entry" id="news-avatars" data-news-category="announcement"><div class="news-image news-editorial-art">✦</div><div><button type="button" class="eyebrow news-category-tag" data-news-tag="announcement" aria-label="Filter news: ANNOUNCEMENT" aria-controls="news-list">ANNOUNCEMENT</button><h2>New feature: class profile pictures</h2><p>Give your adventure a face.</p><span class="news-meta">Nov 13, 2026</span><br><button class="outline-action article-read" type="button" data-news-toggle="avatars" aria-expanded="false" aria-controls="article-avatars">Read more →</button><div class="news-article-body" id="article-avatars" hidden><p>Six new class-inspired profile pictures are now available. Change yours from your player profile at any time. Your friends list and whispers will reflect your new look automatically.</p></div></div></article><article class="news-entry" id="news-contest" data-news-category="community"><div class="news-image news-editorial-art">❃</div><div><button type="button" class="eyebrow news-category-tag" data-news-tag="community" aria-label="Filter news: COMMUNITY" aria-controls="news-list">COMMUNITY</button><h2>Design the Legend — community spotlight</h2><p>Every legend deserves a little personal style.</p><span class="news-meta">Nov 10, 2026</span><br><button class="outline-action article-read" type="button" data-news-toggle="contest" aria-expanded="false" aria-controls="article-contest">Read more →</button><div class="news-article-body" id="article-contest" hidden><p>Show off your favorite character outfits, share your color combinations and celebrate the creativity of fellow adventurers. Please remember that the wardrobe contest is not a competitive combat mode. No matter how strongly your guild feels about matching capes.</p></div></div></article><article class="news-entry" id="news-devlog" data-news-category="developer-diary"><div class="news-image news-editorial-art" style="background-image:linear-gradient(135deg,#17233b22,#17233b88),url('../mythbound-home-watercolor.jpg')"></div><div><button type="button" class="eyebrow news-category-tag" data-news-tag="developer-diary" aria-label="Filter news: DEVELOPER DIARY" aria-controls="news-list">DEVELOPER DIARY</button><h2>Letters from the Threshold — developer diary</h2><p>A glimpse into the next chapter.</p><span class="news-meta">Nov 7, 2026</span><br><button class="outline-action article-read" type="button" data-news-toggle="devlog" aria-expanded="false" aria-controls="article-devlog">Read more →</button><div class="news-article-body" id="article-devlog" hidden><p>Our team is exploring new paths, environments and character appearances for the world beyond the gates. We look forward to sharing more glimpses of our work in future dispatches. Thank you for adventuring with us.</p></div></div></article></div>
       </section>
