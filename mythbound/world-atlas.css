@@ -148,3 +148,17 @@
  #page-discover .mw-city-overview .mw-npc-gallery{gap:14px 10px}
 }
 @media(max-width:350px){#page-discover .mw-creature-row{grid-template-columns:82px minmax(0,1fr);gap:10px}}
+
+/* Alternate the creature illustrations; present the unrevealed boss as a centered vertical teaser. */
+#page-discover .mw-creature-row:nth-child(2):not(.mw-boss-row){grid-template-columns:minmax(0,1fr) minmax(0,155px);grid-template-areas:"copy art"}
+#page-discover .mw-creature-row:nth-child(2):not(.mw-boss-row) .mw-creature-art{grid-area:art}
+#page-discover .mw-creature-row:nth-child(2):not(.mw-boss-row) .mw-creature-copy{grid-area:copy;text-align:left}
+#page-discover .mw-boss-row{grid-template-columns:minmax(0,1fr);justify-items:center;gap:12px;text-align:center;padding:22px 16px 24px;background:radial-gradient(ellipse at 50% 38%,color-mix(in srgb,var(--region-accent) 7%,#101b2c),#101b2c 75%)}
+#page-discover .mw-boss-row .mw-creature-art{width:min(175px,100%);aspect-ratio:1.2}
+#page-discover .mw-boss-row .mw-creature-copy{text-align:center}
+@media(max-width:760px){
+ #page-discover .mw-creature-row:nth-child(2):not(.mw-boss-row){grid-template-columns:minmax(0,1fr) minmax(0,106px)}
+ #page-discover .mw-boss-row{padding:18px 12px 20px;gap:9px}
+ #page-discover .mw-boss-row .mw-creature-art{width:min(132px,100%)}
+}
+@media(max-width:350px){#page-discover .mw-creature-row:nth-child(2):not(.mw-boss-row){grid-template-columns:minmax(0,1fr) 82px}}
