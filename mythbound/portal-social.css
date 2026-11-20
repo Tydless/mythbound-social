@@ -79,3 +79,49 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 #overlay.mb-launcher-modal .profile-content p{margin:0 0 22px;line-height:1.6}
 #overlay.mb-launcher-modal #download-return{min-height:40px;margin:0}
 @media(max-width:450px){#overlay.mb-launcher-modal:not([hidden]){padding:16px}#overlay.mb-launcher-modal .profile-content{padding:29px 20px 24px}}
+
+/* Shared character profile language for every friend and the local player. */
+.mb-unified-profile{--profile-accent:#e4c894;color:#d6dfeb;background:#182337;min-width:0}
+.mb-self-profile{border:1px solid #c8a87655;border-radius:8px;overflow:hidden;max-width:960px;margin:auto}
+.mb-profile-banner{position:relative;isolation:isolate;display:flex;align-items:flex-end;min-height:170px;padding:24px 22px;background:var(--profile-banner,linear-gradient(125deg,#263c51,#1a2941 60%,#344057)) center 38%/cover no-repeat;border-bottom:1px solid #c8a87655}
+.mb-profile-banner::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#101a2be8,transparent 90%),linear-gradient(90deg,#121c2c77,transparent)}
+.mb-profile-identity{display:flex;gap:15px;align-items:center;width:100%;min-width:0}
+.mb-profile-identity .mb-social-avatar.is-large,.mb-profile-identity .mb-own-avatar{width:clamp(72px,18vw,102px);height:auto;aspect-ratio:1;flex:none}
+.mb-profile-identity .mb-social-fallback{width:85%;height:85%}
+.mb-profile-name{flex:1;min-width:0}
+.mb-profile-name h1,.mb-profile-name h2{font:600 clamp(23px,5vw,35px)/1.18 'Cinzel',Georgia,serif;color:#fff0d6;margin:0 0 6px;overflow-wrap:anywhere}
+.mb-profile-presence{font-size:12px;color:#d0dae9;margin:0}
+.mb-profile-main{padding:20px 22px 30px}
+.mb-profile-overview{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.92fr);gap:clamp(10px,3vw,22px);align-items:stretch}
+.mb-profile-facts{margin:0;display:grid;align-content:space-evenly;min-width:0}
+.mb-profile-facts>div{padding:11px 0;border-bottom:1px solid #b5c5d324}
+.mb-profile-facts>div:last-child{border:0}
+.mb-profile-facts dt,.mb-profile-extras dt{font-size:11px;color:#aebed0;letter-spacing:.02em}
+.mb-profile-facts dd,.mb-profile-extras dd{font:600 16px/1.3 'Cinzel',Georgia,serif;color:var(--profile-accent);margin:4px 0 0;overflow-wrap:anywhere}
+.mb-profile-facts dd.mb-profile-unknown{font:400 12px/1.4 'DM Sans',sans-serif;color:#aab8ca}
+.mb-profile-model{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;min-height:215px;border:1px solid #c8a87644;border-radius:5px;background:radial-gradient(ellipse at 50% 72%,#35476199,transparent 70%),#111d30;padding:12px 6px}
+.mb-profile-model-art{width:min(100%,125px);color:var(--profile-accent);opacity:.65}
+.mb-profile-model-art svg{display:block;width:100%;height:auto}
+.mb-profile-model-label{font-size:10px;color:#c6b99e;text-align:center;line-height:1.3;margin-top:8px}
+.mb-profile-availability{display:flex;gap:12px;align-items:center;justify-content:space-between;border-block:1px solid #c8a87640;margin:20px 0;padding:16px 0}
+.mb-profile-availability h2,.mb-profile-availability h3,.mb-profile-bio h3{font:600 16px/1.3 'Cinzel',Georgia,serif;color:#ead2ab;margin:0}
+.mb-profile-status,.mb-profile-availability select{max-width:70%;font:600 12px/1.4 'DM Sans',sans-serif;color:#e5d5b7;background:#233147;border:1px solid #c8a87670;border-radius:5px;padding:9px 12px}
+.mb-profile-status[data-availability="Inbox Open"]{color:#a7ddb9;border-color:#75d9a166}
+.mb-profile-status[data-availability="Don’t disturb"]{color:#e9aaa9;border-color:#d78a8766}
+.mb-profile-status[data-availability="Only in-game"]{color:#e7c991}
+.mb-profile-availability select{min-height:40px;cursor:pointer;color-scheme:dark}
+.mb-profile-availability select:focus-visible{outline:2px solid #f4d49e;outline-offset:3px}
+.mb-profile-bio .profile-quote{margin:0 0 20px}
+.mb-profile-bio p:not(.profile-quote){font-size:13px;color:#bdcadc;line-height:1.65;margin:9px 0 15px}
+.mb-profile-extras{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+.mb-profile-extras>div{background:#26334a;padding:10px;min-width:0}
+.mb-profile-extras dd{font:600 12px/1.4 'DM Sans',sans-serif;color:#e9e4d9}
+.mb-profile-local-note{color:#aebed0;font-size:11px;margin:12px 0 0}
+.mb-friend-profile .mb-mutual-note{margin:18px 0}
+#overlay .sheet-top{position:sticky;top:0;background:#182237;z-index:5}
+#overlay .sheet-close{display:grid;place-items:center;padding:0;line-height:1;flex:none}
+#overlay.mb-launcher-modal .sheet-top{position:absolute;background:transparent}
+.mb-self-profile .mb-profile-overview{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.mb-self-profile .mb-profile-model{min-height:280px}
+@media(min-width:761px){.mb-self-profile .mb-profile-banner{min-height:240px;padding:32px}.mb-self-profile .mb-profile-main{padding:28px 32px}.mb-self-profile .mb-profile-model-art{width:150px}.mb-self-profile .mb-profile-facts dd{font-size:20px}}
+@media(max-width:480px){.mb-profile-banner{padding:20px 16px;min-height:150px}.mb-profile-main{padding:16px 16px 24px}.mb-profile-overview{gap:10px}.mb-profile-model{min-height:190px}.mb-self-profile .mb-profile-model{min-height:215px}.mb-self-profile .mb-profile-identity{flex-wrap:wrap}.mb-self-profile .mb-edit-profile{margin-left:auto}.mb-profile-facts dd{font-size:15px}.mb-profile-status,.mb-profile-availability select{padding:7px 9px}}
