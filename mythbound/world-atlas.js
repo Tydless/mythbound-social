@@ -355,8 +355,7 @@ for(const r of regions){
  const pin=make("button","mw-map-pin");pin.type="button";pin.dataset.atlasRegion=r.id;
  pin.style.setProperty("--pin-x",r.x+"%");pin.style.setProperty("--pin-y",r.y+"%");pin.style.setProperty("--region-accent",r.color);
  pin.setAttribute("aria-haspopup","dialog");pin.setAttribute("aria-expanded","false");pin.setAttribute("aria-controls","mw-region-preview");pin.setAttribute("aria-label","Explore "+r.name);pin.setAttribute("aria-pressed","false");
- const symbol=make("span","mw-pin-symbol",r.symbol);symbol.setAttribute("aria-hidden","true");
- const label=make("span","mw-pin-label",r.name);pin.append(symbol,label);pin.addEventListener("click",()=>openPreview(r.id,pin,{sound:true}));markers.append(pin);
+ const label=make("span","mw-pin-label",r.name);pin.append(label);pin.addEventListener("click",()=>openPreview(r.id,pin,{sound:true}));markers.append(pin);
  const terrain=terrainById.get(r.id);
  if(!terrain)continue;
  terrain.style.setProperty("--region-accent",r.color);
@@ -372,6 +371,6 @@ for(const r of regions){
  // the SVG land shape use the exact same behavior and marker-anchored preview.
  terrain.addEventListener("click",()=>openPreview(r.id,pin,{sound:true}));
 }
-// Both map surfaces and marker buttons open the preview and play the regional cue.
+// Both map surfaces and floating name buttons open the preview and play the regional cue.
 choose(selected);
 })();
