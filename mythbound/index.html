@@ -10,7 +10,7 @@
   <script>
   // Decide before first paint; the intro runs once per tab session, not on internal navigation.
   (function(){
-    try{if(sessionStorage.getItem("mb-whimble-intro-v3")==="seen")return}catch{}
+    try{const root=document.documentElement,reduce=localStorage.getItem("mythbound-reduce-motion")==="true"||matchMedia("(prefers-reduced-motion: reduce)").matches;root.classList.toggle("mb-reduce-motion",reduce);root.classList.toggle("mb-no-visual-effects",localStorage.getItem("mythbound-visual-effects")==="false");root.classList.toggle("mb-no-helper",localStorage.getItem("mythbound-helper-enabled")==="false");if(reduce||sessionStorage.getItem("mb-whimble-intro-v3")==="seen")return}catch{}
     document.documentElement.classList.add("mb-intro-active");
   })();
   </script>
@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-mobile-quick-mute43";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-settings-menu44";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css","gameplay.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -549,7 +549,16 @@
     <div class="conversation"><p class="timestamp">JUST NOW</p><div class="received-message">Yo, I've got time. You in for a raid?</div></div>
     <form id="reply-form" class="reply-form"><label for="reply-message">Your reply</label><textarea id="reply-message" rows="2" placeholder="Write a reply…" maxlength="500"></textarea><p class="reply-hint">Continuing opens Dreamjourney in a <strong>new tab</strong>. This preview does not send messages itself.</p><button type="submit" class="solid-action wide">Send / Continue in Dreamjourney <svg class="mb-diagonal-arrow" viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5 4h7v7"/></svg></button><p id="reply-status" class="reply-status" aria-live="polite"></p></form>
   </template>
-  <button type="button" class="music-toggle floating-sfx" id="sfx-toggle" aria-label="Sound effects volume" aria-pressed="true" title="Sound effects volume"><svg class="sfx-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z M16 9a4 4 0 0 1 0 6 M18.5 6a8 8 0 0 1 0 12"/><path class="sfx-slash" d="M3 3l18 18" stroke-width="2"/></svg></button>
+  <button type="button" id="mb-settings-expand" aria-label="Show extra settings" aria-controls="sfx-toggle mb-settings-advanced" aria-expanded="false" title="More settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+  <button type="button" class="music-toggle floating-sfx" id="sfx-toggle" hidden aria-label="Sound effects volume" aria-pressed="true" title="Sound effects volume"><svg class="sfx-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z M16 9a4 4 0 0 1 0 6 M18.5 6a8 8 0 0 1 0 12"/><path class="sfx-slash" d="M3 3l18 18" stroke-width="2"/></svg></button>
+  <button type="button" id="mb-settings-advanced" aria-label="Advanced settings" aria-haspopup="dialog" title="Advanced settings" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="6" cy="8" r="2.6"/><circle cx="18" cy="8" r="2.6"/><circle cx="12" cy="17" r="2.6"/></svg></button>
+  <dialog id="mb-advanced-settings" aria-labelledby="mb-settings-title">
+  <button type="button" id="mb-settings-close" aria-label="Close settings"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg></button>
+  <h2 id="mb-settings-title">Settings</h2><p class="mb-settings-intro">Make Mythbound your own. Your preferences are saved on this device.</p>
+  <fieldset><legend>Audio</legend><label class="mb-setting-row"><span class="mb-setting-copy">Soundtrack</span><input type="checkbox" id="mb-pref-music-enabled" role="switch"></label><div class="mb-setting-volume"><input type="range" id="mb-pref-music-volume" min="0" max="100" step="1" aria-label="Soundtrack volume"><output id="mb-pref-music-value" for="mb-pref-music-volume"></output></div><label class="mb-setting-row"><span class="mb-setting-copy">Sound effects</span><input type="checkbox" id="mb-pref-sfx-enabled" role="switch"></label><div class="mb-setting-volume"><input type="range" id="mb-pref-sfx-volume" min="0" max="100" step="1" aria-label="Sound effects volume"><output id="mb-pref-sfx-value" for="mb-pref-sfx-volume"></output></div><label class="mb-setting-row"><span class="mb-setting-copy">Automatic soundtrack<small>Start music on future visits when the browser allows it.</small></span><input type="checkbox" id="mb-pref-autoplay" role="switch"></label></fieldset>
+  <fieldset><legend>Visuals &amp; accessibility</legend><label class="mb-setting-row"><span class="mb-setting-copy">Reduce animations<small>Limit transitions, movement and automatic news rotation. Your system preference is respected.</small></span><input type="checkbox" id="mb-pref-motion" role="switch"></label><label class="mb-setting-row"><span class="mb-setting-copy">Visual effects<small>Show decorative particles and class transformation effects.</small></span><input type="checkbox" id="mb-pref-effects" role="switch"></label></fieldset>
+  <fieldset><legend>Companion</legend><label class="mb-setting-row"><span class="mb-setting-copy">Fluffball helper<small>Preference for the upcoming help companion.</small></span><input type="checkbox" id="mb-pref-helper" role="switch"></label></fieldset>
+  </dialog>
   <div class="audio-volume-panel" id="music-volume-panel" hidden>
     <div class="audio-volume-heading"><label for="music-volume">Music</label><output id="music-volume-value" for="music-volume">30%</output></div>
     <input type="range" min="0" max="100" step="1" value="30" id="music-volume" aria-label="Music volume">
@@ -560,8 +569,8 @@
     <input type="range" min="0" max="100" step="1" value="100" id="sfx-volume" aria-label="Sound effects volume">
     <button type="button" class="audio-volume-mute" id="sfx-volume-mute">Mute</button>
   </div>
-  <audio id="mythbound-theme" src="../mythbound-theme.mp3" preload="auto" autoplay loop aria-hidden="true"></audio>
-  <script>/* Apply saved soundtrack preference before deferred scripts load. */(function(){const a=document.getElementById("mythbound-theme");try{const raw=localStorage.getItem("mythbound-music-volume"),v=raw===null?.3:Number(raw);a.volume=Number.isFinite(v)?Math.max(0,Math.min(1,v)):.3;if(localStorage.getItem("mythbound-music-enabled")==="false"||v===0){a.autoplay=false;a.pause();a.muted=true}}catch{}})();</script>
+  <audio id="mythbound-theme" src="../mythbound-theme.mp3" preload="auto" loop aria-hidden="true"></audio>
+  <script>/* Apply saved soundtrack preference before deferred scripts load. */(function(){const a=document.getElementById("mythbound-theme");try{const raw=localStorage.getItem("mythbound-music-volume"),v=raw===null?.3:Number(raw);a.volume=Number.isFinite(v)?Math.max(0,Math.min(1,v)):.3;if(localStorage.getItem("mythbound-music-enabled")==="false"||v===0){a.autoplay=false;a.pause();a.muted=true}else if(localStorage.getItem("mythbound-autoplay")!=="false"){a.autoplay=true;a.play()?.catch(()=>{})}}catch{}})();</script>
   <span id="music-announcement" class="screen-reader-only" role="status" aria-live="polite"></span>
 
 <script>
@@ -602,7 +611,8 @@ document.addEventListener("DOMContentLoaded",()=>{
  const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
  let paused=false,gesture=null,suppressClickUntil=0;
  const interval=5000;
- function canRotate(){return !paused&&!gesture&&!document.hidden&&!home.hidden}
+ function reducedMotion(){return window.MythboundPreferences?.reduced()??reduced.matches}
+ function canRotate(){return !paused&&!gesture&&!document.hidden&&!home.hidden&&!reducedMotion()}
  function schedule(){
   clearTimeout(timer);timer=0;
   if(canRotate())timer=setTimeout(()=>{timer=0;if(canRotate())showFeatured((index+1)%items.length,true,1);schedule()},interval);
@@ -616,7 +626,7 @@ document.addEventListener("DOMContentLoaded",()=>{
  function showFeatured(i,animate=false,direction=i>index?1:-1){
   if(i===index&&animate)return;
   finishSlide();
-  const moving=animate&&!reduced.matches;
+  const moving=animate&&!reducedMotion();
   if(moving){
    // Preserve the old artwork and caption until the new page has slid into place.
    outgoing=slide.cloneNode(true);
@@ -646,6 +656,7 @@ document.addEventListener("DOMContentLoaded",()=>{
  // Only deliberately pausing, leaving Home or hiding the browser tab stops rotation.
  // Hover and retained button focus must not stall the slideshow.
  document.addEventListener("visibilitychange",schedule);
+ document.addEventListener("mythbound:preferences-change",e=>{if(e.detail?.key==="motion"){finishSlide();schedule()}});
  new MutationObserver(schedule).observe(home,{attributes:true,attributeFilter:["hidden"]});
  updatePause();
  function filterNews(category){
