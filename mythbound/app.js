@@ -27,6 +27,16 @@ function navigate(page,replace=false){
 }
 navButtons.forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.page)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.go)));
+/* Stay on Home; account for the actual sticky header height at any viewport. */
+document.getElementById("home-whats-new")?.addEventListener("click",()=>{
+ const target=document.getElementById("home-newsletter");
+ if(!target)return;
+ const header=document.querySelector(".site-header");
+ const offset=header?Math.max(0,header.getBoundingClientRect().bottom):0;
+ const top=Math.max(0,window.scrollY+target.getBoundingClientRect().top-offset-12);
+ document.getElementById("newsletter-title")?.focus({preventScroll:true});
+ window.scrollTo({top,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+});
 /* An empty trailer source deliberately displays a non-interactive placeholder. */
 (function(){
  const video=document.getElementById("home-trailer-video"),placeholder=document.getElementById("home-trailer-placeholder"),status=document.getElementById("home-trailer-status");

@@ -98,3 +98,9 @@
 #page-home .home-release-link{display:flex;gap:8px;align-items:center;color:var(--release-tone);font-size:12px;font-weight:600;margin-top:9px}
 @media(max-width:650px){#page-home .home-trailer .hub-heading{margin-bottom:18px}#page-home>.home-class-releases{gap:10px;padding-inline:23px;padding-bottom:40px}#page-home .home-class-release{min-height:210px;padding:16px 9px 19px;gap:10px}#page-home .home-release-label{font-size:9px;letter-spacing:.06em}#page-home .home-release-copy strong{font-size:clamp(16px,4.9vw,24px)}#page-home .home-release-copy small{font-size:10px}#page-home .home-release-link{font-size:10px;gap:4px}}
 @media(max-width:340px){#page-home>.home-class-releases{grid-template-columns:1fr}}
+
+/* Home hero: secondary in-page action sits below the world link. */
+#page-home .hero-buttons{flex-direction:column;align-items:flex-start}
+#page-home #home-whats-new{display:inline-flex;align-items:center;justify-content:space-between;gap:12px;border-color:#d5c8b94d;color:#e4d5b8}
+#page-home #home-whats-new:hover{border-color:#e6c994;color:#f7d79c}
+@media(max-width:760px){#page-home .hero-buttons{align-items:center}}

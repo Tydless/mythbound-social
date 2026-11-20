@@ -384,7 +384,9 @@ test("The visitor journey leads from Home to World to Gameplay to Classes",()=>{
  const nav=html.slice(html.indexOf('<nav id="primary-navigation"'),html.indexOf('</nav>',html.indexOf('<nav id="primary-navigation"')));
  assert.deepEqual([...nav.matchAll(/data-page="([^"]+)"/g)].map(m=>m[1]),["home","news","discover","gameplay","classes"]);
  const hero=html.match(/<div class="hero-buttons">([\s\S]*?)<\/div>/)[1];
- assert.equal((hero.match(/<button\b/g)||[]).length,1);
+ assert.equal((hero.match(/<button\b/g)||[]).length,2);
+ assert.equal((hero.match(/data-go=/g)||[]).length,1);
+ assert.match(hero,/id="home-whats-new"/);
  assert.match(hero,/data-go="discover"/);
  const world=html.slice(html.indexOf('<section id="page-discover"'),html.indexOf('<section id="page-news"'));
  assert.ok(world.indexOf('class="mw-gameplay-invitation"')>world.indexOf('id="mw-codex-panel"'));
@@ -402,4 +404,20 @@ test("Home trailer awaits a real source and release cards target their exact cla
  assert.equal(w.MythboundCodexData.SPECIALIZATIONS.strider[3].name,"Djinnblade");
  assert.match(read("class-showcase.js"),/activePath=Number.isInteger\(requested\)&&SPECIALIZATIONS\[family\]\?\.\[requested\]\?requested:0/);
  assert.match(read("app.js"),/if\(!source\)return;/);
+});
+
+test("Home What's new button scrolls to the newsletter without changing routes",()=>{
+ const hero=html.match(/<div class="hero-buttons">([\s\S]*?)<\/div>/)[1];
+ assert.ok(hero.indexOf('data-go="discover"')<hero.indexOf('id="home-whats-new"'));
+ assert.match(hero,/What is new\? <span aria-hidden="true">↓/);
+ assert.match(html,/<section id="home-newsletter" class="hub-section newsletter-hub"/);
+ const code=read("app.js");
+ const start=code.indexOf('document.getElementById("home-whats-new")');
+ const end=code.indexOf("\n});",start)+4;
+ let click,scroll,focused=false;
+ const doc={getElementById:id=>({"home-whats-new":{addEventListener:(k,f)=>{click=f}},"home-newsletter":{getBoundingClientRect:()=>({top:600})},"newsletter-title":{focus:()=>{focused=true}}})[id],querySelector:()=>({getBoundingClientRect:()=>({bottom:80})})};
+ const win={scrollY:100,scrollTo:p=>{scroll=p},matchMedia:()=>({matches:false})};
+ new Function("document","window",code.slice(start,end))(doc,win);click();
+ assert.deepEqual(scroll,{top:608,behavior:"smooth"});assert.ok(focused);
+ win.matchMedia=()=>({matches:true});click();assert.equal(scroll.behavior,"instant");
 });
