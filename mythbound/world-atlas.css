@@ -82,3 +82,29 @@
 #page-discover .mw-location-stack .mw-location-current{align-self:stretch}
 #page-discover .mw-location-tabs .mw-location-tab{box-sizing:border-box;min-height:32px;line-height:1.4;border-width:1px;font-size:11px;font-weight:400;transform:none}
 #page-discover .mw-location-tabs .mw-location-tab:hover,#page-discover .mw-location-tabs .mw-location-tab:focus-visible,#page-discover .mw-location-tabs .mw-location-tab.is-active{border-width:1px;font-weight:400;transform:none}
+
+/* Regional NPC portrait gallery. The name is revealed on hover or keyboard focus. */
+#page-discover .mw-npc-gallery{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(12px,2.4vw,28px);margin:22px 0 12px;align-items:start}
+#page-discover .mw-npc-tile{position:relative;display:grid;justify-items:center;min-width:0;padding:0 0 26px;background:none;border:0;color:var(--region-accent);cursor:pointer}
+.mw-npc-portrait{display:grid;place-items:center;position:relative;width:100%;max-width:128px;aspect-ratio:1;border-radius:50%;border:1px solid var(--npc-accent,var(--region-accent,#d7b67d));background:radial-gradient(circle at 50% 25%,#354558,#162234 75%);box-shadow:inset 0 0 0 4px #e7c89512,0 5px 14px #080e1970;overflow:hidden}
+.mw-npc-portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mw-npc-silhouette{display:grid;place-items:center;width:61%;color:var(--npc-accent,var(--region-accent,#d7b67d));opacity:.4}
+.mw-npc-silhouette[hidden]{display:none}
+.mw-npc-silhouette svg{width:100%;height:auto}
+#page-discover .mw-npc-tile:hover .mw-npc-portrait,#page-discover .mw-npc-tile:focus-visible .mw-npc-portrait{box-shadow:0 0 16px color-mix(in srgb,var(--region-accent) 36%,transparent),inset 0 0 0 4px #e7c89520}
+#page-discover .mw-npc-name{position:absolute;top:calc(100% - 24px);left:50%;transform:translateX(-50%);width:max-content;max-width:min(190px,calc(100vw - 40px));padding:4px 8px;border:1px solid color-mix(in srgb,var(--region-accent) 40%,transparent);background:#152235;color:var(--region-accent);font:600 12px/1.35 'Cinzel',Georgia,serif;text-align:center;opacity:0;pointer-events:none;z-index:2;transition:opacity .15s;overflow-wrap:anywhere}
+#page-discover .mw-npc-tile:hover .mw-npc-name,#page-discover .mw-npc-tile:focus-visible .mw-npc-name{opacity:1}
+#page-discover .mw-npc-empty{margin:0;text-align:center;font-size:13px;color:#a8b6c6}
+@media(max-width:760px){#page-discover .mw-npc-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 14px}#page-discover .mw-npc-tile{padding-bottom:6px}#page-discover .mw-npc-name{top:100%}}
+.mw-npc-dialog{position:fixed;inset:0;margin:auto;width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 36px);box-sizing:border-box;overflow:auto;padding:32px 24px 26px;border:1px solid var(--npc-accent,#d7b67d);border-radius:8px;background:radial-gradient(ellipse at 50% 0,#2a3a50,#172335 65%);color:#d5dfeb;box-shadow:0 20px 65px #0009}
+.mw-npc-dialog::backdrop{background:#060b16b8;backdrop-filter:blur(3px)}
+.mw-npc-close{position:absolute;right:12px;top:12px;width:36px;height:36px;display:grid;place-items:center;padding:0;border:1px solid var(--npc-accent);border-radius:50%;color:var(--npc-accent);background:#172335;cursor:pointer}
+.mw-npc-close svg{display:block;flex:none}
+.mw-npc-content{text-align:center;display:grid;justify-items:center;gap:9px}
+.mw-npc-content .mw-npc-portrait{width:116px;max-width:none;margin-bottom:8px}
+.mw-npc-kicker{color:var(--npc-accent);font-size:11px;text-transform:uppercase;letter-spacing:.13em}
+.mw-npc-content h2{color:var(--npc-accent);font:600 24px/1.25 'Cinzel',Georgia,serif;margin:0}
+.mw-npc-content p{margin:0;line-height:1.65}
+.mw-npc-role{color:#e6d3b2;font-size:13px}
+.mw-npc-details{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;text-align:left;width:100%;margin:8px 0 0;padding-top:14px;border-top:1px solid #d7b67d40}
+.mw-npc-details dt{color:var(--npc-accent)}.mw-npc-details dd{margin:0;overflow-wrap:anywhere}
