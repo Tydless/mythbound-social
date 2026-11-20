@@ -7,13 +7,16 @@ function read(key,fallback){try{const v=localStorage.getItem(key);return v===nul
 function save(key,v){try{localStorage.setItem(key,String(v))}catch{}}
 function readLevel(kind,fallback){const v=Number(read("mythbound-"+kind+"-volume",fallback));return Number.isFinite(v)?clamp(v):fallback}
 const levels={music:readLevel("music",.3),sfx:readLevel("sfx",1)};
-for(const kind of ["music","sfx"]){if(read("mythbound-"+kind+"-enabled","true")==="false"){levels[kind]=0;save("mythbound-"+kind+"-volume",0)}save("mythbound-"+kind+"-enabled","true")}
+const defaults={music:.3,sfx:1};
+const active={music:read("mythbound-music-enabled","true")!=="false"&&levels.music>0,sfx:read("mythbound-sfx-enabled","true")!=="false"&&levels.sfx>0};
+const mobile=matchMedia("(max-width: 760px)");
+const effective=kind=>active[kind]?levels[kind]:0;
 const ducks=new Map();
 const audio=$("mythbound-theme");
 let musicContext=null,musicGain=null;
 
-function sfxVolume(){return levels.sfx}
-function effectiveMusic(){return levels.music*Math.min(1,...ducks.values())}
+function sfxVolume(){return effective("sfx")}
+function effectiveMusic(){return effective("music")*Math.min(1,...ducks.values())}
 function applyMusic(){
  if(!audio)return;
  const v=effectiveMusic();
@@ -38,20 +41,33 @@ document.addEventListener("keydown",unlockMusic,true);
 document.addEventListener("click",unlockMusic,true);
 function sync(){
  for(const kind of ["music","sfx"]){
-  const input=$(kind+"-volume"),toggle=$(kind+"-toggle");
-  const percent=Math.round(levels[kind]*100);
+  const input=$(kind+"-volume"),toggle=$(kind+"-toggle"),out=$(kind+"-volume-value"),mute=$(kind+"-volume-mute");
+  const percent=Math.round((mobile.matches?effective(kind):levels[kind])*100);
+  const on=effective(kind)>0;
   if(input){input.value=String(percent);input.style.setProperty("--audio-percent",percent+"%")}
-  if(toggle){toggle.setAttribute("aria-pressed",String(percent>0));toggle.setAttribute("aria-label",(kind==="music"?"Soundtrack":"Sound effects")+" volume: "+percent+"%");toggle.title=(kind==="music"?"Soundtrack":"Sound effects")+" volume: "+percent+"%"}
+  if(out)out.value=percent+"%";
+  if(mute)mute.textContent=on?"Mute":"Unmute";
+  if(toggle){toggle.setAttribute("aria-pressed",String(on));const name=kind==="music"?"Soundtrack":"Sound effects";toggle.setAttribute("aria-label",mobile.matches?name+" volume: "+percent+"%":(on?"Mute ":"Enable ")+name);toggle.title=mobile.matches?name+" volume: "+percent+"%":(on?"Mute ":"Enable ")+name}
  }
 }
-function setEnabled(next){setLevel("sfx",next?(levels.sfx||1):0)}
-function setLevel(kind,value){
- if(!(kind in levels))return;
- levels[kind]=clamp(value);save("mythbound-"+kind+"-volume",levels[kind]);sync();
+function changed(kind){
+ save("mythbound-"+kind+"-volume",levels[kind]);save("mythbound-"+kind+"-enabled",active[kind]);sync();
  if(kind==="music"){applyMusic();document.dispatchEvent(new Event("mythbound:music-change"))}else document.dispatchEvent(new Event("mythbound:sfx-change"));
 }
-window.MythboundSFX={enabled:()=>levels.sfx>0,volume:sfxVolume,setEnabled};
-window.MythboundAudio={level:kind=>levels[kind],setLevel,applyMusic,duck(owner,ratio){ducks.set(owner,clamp(ratio));applyMusic()},release(owner){ducks.delete(owner);applyMusic()}};
+function setEnabled(kind,next){
+ active[kind]=Boolean(next);
+ if(active[kind]&&levels[kind]===0)levels[kind]=defaults[kind];
+ changed(kind);
+}
+function setLevel(kind,value){
+ if(!(kind in levels))return;
+ levels[kind]=clamp(value);
+ if(mobile.matches)active[kind]=levels[kind]>0;
+ changed(kind);
+}
+window.MythboundSFX={enabled:()=>effective("sfx")>0,volume:sfxVolume,setEnabled:next=>setEnabled("sfx",next)};
+window.MythboundAudio={level:effective,setLevel,applyMusic,duck(owner,ratio){ducks.set(owner,clamp(ratio));applyMusic()},release(owner){ducks.delete(owner);applyMusic()}};
+mobile.addEventListener("change",sync);
 
 let open=null,closeTimer=0;
 function hide(){clearTimeout(closeTimer);for(const k of ["music","sfx"]){const p=$(k+"-volume-panel"),b=$(k+"-toggle");if(p)p.hidden=true;b?.setAttribute("aria-expanded","false")}open=null}
@@ -64,7 +80,14 @@ for(const kind of ["music","sfx"]){
  toggle.addEventListener("pointerenter",e=>{if(e.pointerType!=="touch"&&e.pointerType!=="pen")show(kind)});
  toggle.addEventListener("pointerleave",later);
  toggle.addEventListener("focus",()=>show(kind));toggle.addEventListener("blur",later);
- toggle.addEventListener("click",e=>{show(kind);if(e.detail===0)input.focus()});
+ toggle.addEventListener("click",e=>{
+  show(kind);
+  if(mobile.matches){if(e.detail===0)input.focus();return}
+  // A blocked soundtrack receives a playback attempt from app.js, not a mute.
+  if(kind==="music"&&effective(kind)>0&&audio?.paused)return;
+  setEnabled(kind,effective(kind)===0);
+ });
+ $(kind+"-volume-mute")?.addEventListener("click",()=>setEnabled(kind,effective(kind)===0));
  toggle.addEventListener("keydown",e=>{if(e.key==="ArrowUp"||e.key==="ArrowDown"){e.preventDefault();show(kind);input.focus()}});
  panel.addEventListener("pointerenter",()=>clearTimeout(closeTimer));panel.addEventListener("pointerleave",later);
  panel.addEventListener("focusin",()=>clearTimeout(closeTimer));panel.addEventListener("focusout",later);
