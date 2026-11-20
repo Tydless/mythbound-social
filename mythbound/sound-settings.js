@@ -10,6 +10,19 @@ const levels={music:readLevel("music",.3),sfx:readLevel("sfx",1)};
 const defaults={music:.3,sfx:1};
 const active={music:read("mythbound-music-enabled","true")!=="false"&&levels.music>0,sfx:read("mythbound-sfx-enabled","true")!=="false"&&levels.sfx>0};
 const mobile=matchMedia("(max-width: 760px)");
+const systemMotion=matchMedia("(prefers-reduced-motion: reduce)");
+const keys={autoplay:"mythbound-autoplay",motion:"mythbound-reduce-motion",effects:"mythbound-visual-effects",helper:"mythbound-helper-enabled"};
+const prefs={autoplay:read(keys.autoplay,"true")!=="false",motion:read(keys.motion,"false")==="true",effects:read(keys.effects,"true")!=="false",helper:read(keys.helper,"true")!=="false"};
+function prefSync(){
+ const root=document.documentElement;
+ root.classList.toggle("mb-reduce-motion",prefs.motion||systemMotion.matches);
+ root.classList.toggle("mb-no-visual-effects",!prefs.effects);
+ root.classList.toggle("mb-no-helper",!prefs.helper);
+ for(const key of Object.keys(prefs)){const input=$("mb-pref-"+key);if(input)input.checked=prefs[key]}
+}
+function prefChange(key,value){prefs[key]=Boolean(value);save(keys[key],prefs[key]);prefSync();document.dispatchEvent(new CustomEvent("mythbound:preferences-change",{detail:{key,value:prefs[key]}}))}
+window.MythboundPreferences={get:key=>prefs[key],reduced:()=>prefs.motion||systemMotion.matches,visualEffects:()=>prefs.effects,helperEnabled:()=>prefs.helper};
+systemMotion.addEventListener("change",()=>{prefSync();document.dispatchEvent(new CustomEvent("mythbound:preferences-change",{detail:{key:"motion",value:prefs.motion||systemMotion.matches}}))});
 const effective=kind=>active[kind]?levels[kind]:0;
 const ducks=new Map();
 const audio=$("mythbound-theme");
@@ -74,6 +87,8 @@ function sync(){
   const on=effective(kind)>0;
   if(input){input.value=String(percent);input.style.setProperty("--audio-percent",percent+"%")}
   if(out)out.value=percent+"%";
+  const av=$("mb-pref-"+kind+"-volume"),ao=$("mb-pref-"+kind+"-value"),ae=$("mb-pref-"+kind+"-enabled");
+  if(av)av.value=String(Math.round(levels[kind]*100));if(ao)ao.value=Math.round(levels[kind]*100)+"%";if(ae)ae.checked=on;
   if(mute)mute.textContent=on?"Mute":"Unmute";
   if(toggle){toggle.setAttribute("aria-pressed",String(on));const name=kind==="music"?"Soundtrack":"Sound effects";toggle.setAttribute("aria-label",mobile.matches?name+" volume: "+percent+"%":(on?"Mute ":"Enable ")+name);toggle.title=mobile.matches?name+" volume: "+percent+"%":(on?"Mute ":"Enable ")+name}
  }
@@ -131,5 +146,19 @@ for(const kind of ["music","sfx"]){
 }
 document.addEventListener("pointerdown",e=>{if(open&&!$(open+"-volume-panel")?.contains(e.target)&&!e.target.closest("#music-toggle,#sfx-toggle"))hide()},true);
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&open){const kind=open;const hadFocus=$(kind+"-volume-panel")?.contains(document.activeElement);if(hadFocus)$(kind+"-toggle")?.focus();hide()}});
-sync();applyMusic();
+const expand=$("mb-settings-expand"),advanced=$("mb-settings-advanced"),dialog=$("mb-advanced-settings");
+let expanded=false;
+function expandSettings(next){expanded=!!next;hide();expand.setAttribute("aria-expanded",String(expanded));expand.setAttribute("aria-label",expanded?"Hide extra settings":"Show extra settings");$("sfx-toggle").hidden=!expanded;advanced.hidden=!expanded}
+expand.addEventListener("click",()=>expandSettings(!expanded));
+advanced.addEventListener("click",()=>{hide();prefSync();sync();if(!dialog.open){dialog.showModal();$("mb-settings-close").focus({preventScroll:true})}});
+$("mb-settings-close").addEventListener("click",()=>dialog.close());
+dialog.addEventListener("cancel",e=>e.preventDefault());
+dialog.addEventListener("close",()=>advanced.focus({preventScroll:true}));
+for(const key of Object.keys(prefs))$("mb-pref-"+key).addEventListener("change",e=>prefChange(key,e.target.checked));
+for(const kind of ["music","sfx"]){
+ $("mb-pref-"+kind+"-enabled").addEventListener("change",e=>setEnabled(kind,e.target.checked));
+ $("mb-pref-"+kind+"-volume").addEventListener("input",e=>{levels[kind]=clamp(Number(e.target.value)/100);active[kind]=levels[kind]>0;changed(kind)});
+}
+document.addEventListener("pointerdown",e=>{if(expanded&&!dialog.open&&!e.target.closest("#music-toggle,#sfx-toggle,#mb-settings-expand,#mb-settings-advanced,.audio-volume-panel"))expandSettings(false)},true);
+prefSync();expandSettings(false);sync();applyMusic();
 })();
