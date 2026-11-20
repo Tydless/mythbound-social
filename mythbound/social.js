@@ -15,9 +15,9 @@
   function unreadCount(thread){return incoming.filter(m=>(!thread||m.thread===thread)&&!readIds.has(m.id)).length}
   const unreadLabel=n=>n+" unread message"+(n===1?"":"s");
   const people={
-    fighter:{name:"Fighter",file:"ProfileSaintFemale.png",glyph:"✥",info:"Saint · Lv. 84",status:"Online",online:true},
-    chaotic:{name:"Chaotic Buddy",file:"ProfileAnimar.png",glyph:"◈",info:"Animar · Lv. 118",status:"Online",online:true},
-    responsible:{name:"Responsible Buddy",glyph:"",info:"Lv. 12",status:"Last online 39 days ago",online:false}
+    fighter:{name:"Fighter",file:"ProfileSaintFemale.png",glyph:"✥",info:"Saint · Lv. 84",status:"Online",online:true,level:84,className:"Saint",banner:"../BannerSaint.png",accent:"#e8c895",availability:"Inbox Open",quote:"I have enough heals. You, apparently, don't have enough brain cells.",about:"Perfect dye combinations. Beautiful armor. Good healing rotations. I know what I'm doing, so please stop running into the boss.",playstyle:"Raid support",favorite:"Outfit collecting"},
+    chaotic:{name:"Chaotic Buddy",file:"ProfileAnimar.png",glyph:"◈",info:"Animar · Lv. 118",status:"Online",online:true,level:118,className:"Animar",accent:"#90d2d0",availability:"Only in-game",quote:"If it has a health bar, I can fight it.",about:"Animar main. Professional loot enjoyer. The party's best source of questionable decisions."},
+    responsible:{name:"Responsible Buddy",glyph:"",info:"Lv. 12",status:"Last online 39 days ago",online:false,level:12,accent:"#b3bfd0",availability:"Don’t disturb",quote:"I was forced to do this."}
   };
   const oldChats=[
     {name:"MoonMoth",file:"ProfileElemis.png",preview:"You're good, honestly. We should run that again...",date:"2 days ago"},
@@ -95,7 +95,7 @@
     overlay.classList.remove("mb-launcher-modal");
     content.replaceChildren(...nodes);
     $("sheet-kicker").textContent=kicker;
-    overlay.hidden=false;document.body.classList.add("sheet-open");$("sheet-close").focus();
+    overlay.hidden=false;document.body.classList.add("sheet-open");content.closest(".sheet").scrollTop=0;$("sheet-close").focus({preventScroll:true});
   }
   function friendRow(id){
     const p=people[id],button=make("button","mb-inbox-row mb-social-friend");button.type="button";
@@ -148,16 +148,31 @@
   }
   function openFriend(id){
     if(window.MythboundAccount?.isSignedIn()===false)return;
-    if(id==="fighter"){openProfile();return}
     const p=people[id];if(!p)return;
-    const head=heading(p.name,p.info+(p.online?"":" · "+p.status));head.prepend(avatar(p,true));
-    const body=make("div","mb-buddy-profile");
-    body.append(make("p","profile-quote",id==="responsible"?"I was forced to do this.":"If it has a health bar, I can fight it."));
-    if(id==="chaotic"){
-      body.append(make("h3","","About my character"),make("p","","Animar main. Professional loot enjoyer. The party's best source of questionable decisions."));
+    const profile=make("article","mb-unified-profile mb-friend-profile");profile.style.setProperty("--profile-accent",p.accent);
+    const banner=make("header","mb-profile-banner");
+    if(p.banner)banner.style.setProperty("--profile-banner",'url("'+p.banner+'")');
+    const identity=make("div","mb-profile-identity"),photo=avatar(p,true),name=make("div","mb-profile-name");
+    const title=make("h2","",p.name);title.id="sheet-title";
+    name.append(title,make("p","mb-profile-presence",p.status));identity.append(photo,name);banner.append(identity);
+    const wrap=make("div","mb-profile-main");
+    const overview=make("div","mb-profile-overview"),details=make("dl","mb-profile-facts");
+    for(const [label,value] of [["Level",String(p.level)],["Class",p.className],["Current region",p.region],["Guild",p.guild]]){
+      const item=make("div");item.append(make("dt","",label),make("dd",value?"":"mb-profile-unknown",value||"Not revealed"));details.append(item);
     }
-    body.append(make("p","mb-social-note","2 mutual friends"));
-    display([back("Back to friends",openFriends),head,body],"MYTHBOUND · PLAYER PROFILE");
+    const stage=make("section","mb-profile-model");stage.setAttribute("aria-label","3D character preview coming soon");
+    const art=make("div","mb-profile-model-art");art.innerHTML='<svg viewBox="0 0 100 150" fill="none" aria-hidden="true"><ellipse cx="50" cy="130" rx="38" ry="12" stroke="currentColor" stroke-width="1.5"/><ellipse cx="50" cy="130" rx="29" ry="7" stroke="currentColor" stroke-dasharray="2 4"/><circle cx="50" cy="40" r="12" stroke="currentColor" stroke-width="1.5"/><path d="M50 53v42M31 72l19-10 19 10M50 95l-17 30M50 95l17 30" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 130V20h76v110" stroke="currentColor" stroke-dasharray="2 5" opacity=".4"/></svg>';
+    stage.append(art,make("span","mb-profile-model-label","3D viewer · Coming soon"));overview.append(details,stage);wrap.append(overview);
+    const availability=make("section","mb-profile-availability");
+    availability.append(make("h3","","Status"),make("span","mb-profile-status",p.availability));
+    availability.lastChild.dataset.availability=p.availability;wrap.append(availability);
+    const bio=make("section","mb-profile-bio");bio.append(make("p","profile-quote","“"+p.quote+"”"));
+    if(p.about)bio.append(make("h3","","About my character"),make("p","",p.about));
+    if(p.playstyle||p.favorite){const extras=make("dl","mb-profile-extras");for(const [label,value] of [["Playstyle",p.playstyle],["Favorite thing",p.favorite]])if(value){const item=make("div");item.append(make("dt","",label),make("dd","",value));extras.append(item)}bio.append(extras)}
+    wrap.append(bio,make("p","mb-mutual-note","✧ You and "+p.name+" have 2 mutual friends."));
+    if(id==="fighter"){const message=make("button","solid-action wide","Open Fighter’s whisper ↗");message.type="button";message.addEventListener("click",openWhisper);wrap.append(message)}
+    profile.append(banner,wrap);
+    display([back("Back to friends",openFriends),profile],"MYTHBOUND · PLAYER PROFILE");
   }
   // Only supplied, successfully loaded recordings appear in the fictional archive.
   // Files live at the repository root. No microphone access or synthesized speech.
