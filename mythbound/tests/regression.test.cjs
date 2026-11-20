@@ -426,7 +426,8 @@ test("The nine Whimble Chronicles are upcoming Developer Diary posts, not fake p
  const entries=[["pinterest","It All Started on Pinterest"],["vision","From Vision to Reality"],["inspirations","A Love Letter to Fantasy"],["two-pixels","The Art of Two Pixels"],["navigation","A Website That Tells a Story"],["many-paths","The Many Paths We Walk"],["voice","Giving Legends a Voice"],["chatgpt","My Unexpected Development Partner"],["dream-game","The Game I Wish Existed"]];
  const cards=[...html.matchAll(/<article class="news-entry diary-upcoming"[^>]*>([\s\S]*?)<\/article>/g)];
  assert.equal(cards.length,9);
- entries.forEach(([id,title],i)=>{
+ entries.forEach(([id,title])=>{
+  const i=cards.findIndex(c=>c[0].includes('id="news-diary-'+id+'"'));assert.ok(i>=0);
   assert.ok(cards[i][0].includes('id="news-diary-'+id+'"'));
   assert.ok(cards[i][0].includes('data-news-category="developer-diary"'));
   assert.ok(cards[i][0].includes('data-diary-status="planned"'));
@@ -436,3 +437,5 @@ test("The nine Whimble Chronicles are upcoming Developer Diary posts, not fake p
  });
  assert.ok(html.includes('id="news-devlog"'));
 });
+
+test("Every planned milestone is present in reverse chronological order",()=>{const history=[...html.matchAll(/<article class="news-entry news-history-entry" id="news-([^"]+)"/g)].map(m=>m[1]);assert.deepEqual(history,["next-paths-confirmed","patch-09","patch-08","holiday-cosmetics","three-new-paths-release","website-update","animar-showcase","three-new-paths-teaser","patch-07","sixth-class-teaser","favorite-class-cosmetic","favorite-class-poll","patch-06","holiday-global-event","elemis-herder-true-release","wondrous-lands","elemis-herder-true-tease","social-milestone","guilds-confirmed","patch-05","dark-paths","blood-moonshire","patch-04","three-path-teasers","elemis-herder","first-hairstyles","patch-03","global-event","fable-woods","elemis-choice","holiday-greetings","patch-02","heavenly-realm","first-true-paths","class-poll","patch-01","first-regions","first-classes","global-launch"]);assert.equal(history.filter(id=>id.startsWith("patch-")).length,9);assert.equal((html.match(/class="news-entry diary-upcoming"/g)||[]).length,9);});
