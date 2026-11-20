@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-settings-menu44";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-unified-profiles45";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css","gameplay.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -480,27 +480,20 @@
       </section>
 
       <section id="page-profile" class="page mb-player-page" aria-labelledby="own-profile-name" hidden>
-        <div class="mb-player-cover">
-          <div class="mb-player-top"><button type="button" data-go="home" class="mb-player-back">‹ Back to Mythbound</button><span class="eyebrow">PLAYER PROFILE</span></div>
-          <div class="mb-player-identity">
-            <span class="mb-own-avatar" id="own-profile-avatar" data-presence="online" role="img" aria-label="Online"></span>
-            <div class="mb-player-nameblock"><span class="eyebrow">YOUR ADVENTURE</span><h1 id="own-profile-name">Traveler</h1><p><span class="mb-player-online"><span></span>Online</span><span class="mb-player-level">Lv. 50</span></p></div>
-            <button type="button" class="outline-action mb-edit-profile" id="own-edit-profile">Edit profile <span aria-hidden="true">✎</span></button>
-          </div>
-        </div>
-        <div class="mb-player-body">
-          <div class="mb-player-section-heading"><div><span class="eyebrow">YOUR JOURNEY</span><h2>Character overview</h2></div></div>
-          <div class="mb-player-content">
-            <section class="mb-character-stage" aria-labelledby="mb-character-title">
-              <div class="mb-character-stage-top"><span>Character preview</span><span>3D viewer · Coming soon</span></div>
-              <div class="mb-character-placeholder"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><circle cx="50" cy="50" r="38"/><circle cx="50" cy="50" r="30" stroke-dasharray="1 5"/><path d="M50 7v86M7 50h86M50 20l7 23 23 7-23 7-7 23-7-23-23-7 23-7z"/></svg><h3 id="mb-character-title">Your character</h3><p>Character models have yet to be revealed.</p></div>
-            </section>
-            <div class="mb-player-info">
-              <section class="mb-player-card"><h3>Adventurer details</h3><dl><div><dt>Player level</dt><dd>50</dd></div><div><dt>Profile portrait</dt><dd id="own-profile-portrait-label">—</dd></div><div><dt>Character class</dt><dd>Not yet revealed</dd></div></dl></section>
-              <section class="mb-player-card"><h3>Social</h3><div class="mb-social-links"><button id="own-profile-friends" type="button"><span>Friends<small>2 of 3 online</small></span><span aria-hidden="true">›</span></button><button id="own-profile-inbox" type="button"><span>Inbox<small>Whispers &amp; party chat</small></span><span class="mb-profile-inbox-end"><span class="mb-unread-badge" id="own-profile-inbox-count" hidden>0</span><span aria-hidden="true">›</span></span></button></div></section>
+        <div class="mb-player-top"><button type="button" data-go="home" class="mb-player-back">‹ Back to Mythbound</button><span class="eyebrow">PLAYER PROFILE</span></div>
+        <article class="mb-unified-profile mb-self-profile">
+          <header class="mb-profile-banner" style="--profile-banner:url('../mythbound-home-watercolor.jpg')">
+            <div class="mb-profile-identity"><span class="mb-own-avatar" id="own-profile-avatar" data-presence="online" role="img" aria-label="Online"></span><div class="mb-profile-name"><h1 id="own-profile-name">Traveler</h1><p class="mb-profile-presence">Online</p></div><button type="button" class="outline-action mb-edit-profile" id="own-edit-profile">Edit profile ✎</button></div>
+          </header>
+          <div class="mb-profile-main">
+            <div class="mb-profile-overview">
+              <dl class="mb-profile-facts"><div><dt>Level</dt><dd>50</dd></div><div><dt>Class</dt><dd class="mb-profile-unknown">Not revealed</dd></div><div><dt>Current region</dt><dd class="mb-profile-unknown">Not revealed</dd></div><div><dt>Guild</dt><dd class="mb-profile-unknown">Not revealed</dd></div></dl>
+              <section class="mb-profile-model" aria-label="3D character preview coming soon"><div class="mb-profile-model-art"><svg viewBox="0 0 100 150" fill="none" aria-hidden="true"><ellipse cx="50" cy="130" rx="38" ry="12" stroke="currentColor" stroke-width="1.5"/><ellipse cx="50" cy="130" rx="29" ry="7" stroke="currentColor" stroke-dasharray="2 4"/><circle cx="50" cy="40" r="12" stroke="currentColor" stroke-width="1.5"/><path d="M50 53v42M31 72l19-10 19 10M50 95l-17 30M50 95l17 30" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 130V20h76v110" stroke="currentColor" stroke-dasharray="2 5" opacity=".4"/></svg></div><span class="mb-profile-model-label">3D viewer · Coming soon</span></section>
             </div>
+            <section class="mb-profile-availability"><h2><label for="own-profile-status">Status</label></h2><select id="own-profile-status"><option>Inbox Open</option><option>Don’t disturb</option><option>Only in-game</option></select></section>
+            <section class="mb-player-card mb-profile-social-card"><h3>Social</h3><div class="mb-social-links"><button id="own-profile-friends" type="button"><span>Friends<small>2 of 3 online</small></span><span aria-hidden="true">›</span></button><button id="own-profile-inbox" type="button"><span>Inbox<small>Whispers &amp; party chat</small></span><span class="mb-profile-inbox-end"><span class="mb-unread-badge" id="own-profile-inbox-count" hidden>0</span><span aria-hidden="true">›</span></span></button></div><p class="mb-profile-local-note">Your status is saved on this device for the fictional profile.</p></section>
           </div>
-        </div>
+        </article>
       </section>
 
       <footer class="site-footer"><div class="footer-brand logo-host wordmark-host"><img class="official-mythbound-logo" src="../Mythbound_Wordmark.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback">MYTHBOUND ✧ ONLINE</span></div><img class="footer-whimble-logo" src="../WhimbleStudioLogoJustText.png" alt="Whimble Studio" loading="lazy" decoding="async"><p>Mythbound is a fictional game created for an interactive story experience. There are no real downloads, purchases, game accounts or online players.</p></footer>
@@ -531,18 +524,6 @@
       <div id="sheet-content"></div>
     </div>
   </div>
-
-  <template id="profile-template">
-    <div class="profile-banner"><div class="profile-rune">✥</div><span class="profile-banner-label">SAINT · CHARACTER PROFILE</span></div>
-    <div class="profile-heading"><span class="profile-avatar" data-presence="online" title="Online" role="img" aria-label="Online">✥</span><div><h2 id="sheet-title">Fighter</h2><p class="profile-byline">Saint · Lv. 84</p></div></div>
-    <div class="profile-content">
-      <div class="profile-quote">“I have enough heals. You, apparently, don't have enough brain cells.”</div>
-      <div class="profile-stat-grid"><div><span>Main class</span><strong>Saint</strong></div><div><span>Playstyle</span><strong>Raid support</strong></div><div><span>Favorite thing</span><strong>Outfit collecting</strong></div></div>
-      <h3>About my character</h3><p>Perfect dye combinations. Beautiful armor. Good healing rotations. I know what I'm doing, so please stop running into the boss.</p>
-      <div class="mb-mutual-note">✧ You and Fighter have <strong>2 mutual friends</strong>.</div>
-      <button type="button" id="profile-message" class="solid-action wide">Open Fighter's whisper <svg class="mb-diagonal-arrow" viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5 4h7v7"/></svg></button>
-    </div>
-  </template>
 
   <template id="whisper-template">
     <div class="whisper-heading"><span class="friend-avatar saint-avatar large" data-presence="online" title="Online" role="img" aria-label="Online">✥</span><div><h2 id="sheet-title">Fighter</h2><p>Saint · Lv. 84</p></div></div>
