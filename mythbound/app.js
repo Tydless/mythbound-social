@@ -35,7 +35,7 @@ document.getElementById("home-whats-new")?.addEventListener("click",()=>{
  const offset=header?Math.max(0,header.getBoundingClientRect().bottom):0;
  const top=Math.max(0,window.scrollY+target.getBoundingClientRect().top-offset-12);
  document.getElementById("home-news-title")?.focus({preventScroll:true});
- window.scrollTo({top,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+ window.scrollTo({top,behavior:(window.MythboundPreferences?.reduced()??window.matchMedia("(prefers-reduced-motion: reduce)").matches)?"instant":"smooth"});
 });
 /* An empty trailer source deliberately displays a non-interactive placeholder. */
 (function(){
@@ -81,7 +81,7 @@ function scrollToClassCodex(){
     if(!codex)return;
     const headerBottom=header?Math.max(0,header.getBoundingClientRect().bottom):0;
     const top=Math.max(0,window.scrollY+codex.getBoundingClientRect().top-headerBottom-4);
-    window.scrollTo({top,behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+    window.scrollTo({top,behavior:(window.MythboundPreferences?.reduced()??window.matchMedia("(prefers-reduced-motion: reduce)").matches)?"instant":"smooth"});
   });
 }
 document.querySelectorAll("[data-class]").forEach(b=>b.addEventListener("click",()=>{navigate("classes");selectClass(b.dataset.class);scrollToClassCodex()}));
@@ -168,7 +168,8 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
   enabled=(window.MythboundAudio?.level("music")??.3)>0;
   window.MythboundAudio?.applyMusic();
   audio.loop=true;
-  audio.autoplay=enabled;
+  let requested=window.MythboundPreferences?.get("autoplay")!==false;
+  audio.autoplay=enabled&&requested;
   audio.muted=false;
   const announce=message=>{if(live)live.textContent=message};
   function sync(){
@@ -179,7 +180,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
     // The mixer owns the accessible volume label.
   }
   function tryPlay(){
-    if(!enabled||unavailable||pending||!audio.paused)return;
+    if(!enabled||!requested||unavailable||pending||!audio.paused)return;
     pending=true;
     try{
       const p=audio.play();
@@ -198,11 +199,13 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
   }
   document.addEventListener("mythbound:music-change",()=>{
     enabled=(window.MythboundAudio?.level("music")??0)>0;
-    audio.autoplay=enabled;
+    if(enabled)requested=true;
+    audio.autoplay=enabled&&requested;
     if(enabled){tryPlay()}else{audio.pause()}
     sync();
   });
-  toggle.addEventListener("click",()=>{if(enabled)tryPlay()});
+  toggle.addEventListener("click",()=>{if(enabled){requested=true;audio.autoplay=true;tryPlay()}});
+  document.addEventListener("mythbound:preferences-change",e=>{if(e.detail?.key==="autoplay"&&e.detail.value){requested=true;audio.autoplay=enabled;tryPlay()}else if(e.detail?.key==="autoplay"){requested=false;audio.autoplay=false}});
   // Playback request stays in the user-activation event; no off/on workaround needed.
   const firstInteraction=event=>{if(enabled&&!toggle.contains(event.target))tryPlay()};
   for(const event of ["pointerdown","pointerup","touchend"])document.addEventListener(event,firstInteraction,true);
