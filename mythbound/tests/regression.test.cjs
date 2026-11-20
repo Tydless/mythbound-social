@@ -439,3 +439,13 @@ test("The nine Whimble Chronicles are upcoming Developer Diary posts, not fake p
 });
 
 test("Every planned milestone is present in reverse chronological order",()=>{const history=[...html.matchAll(/<article class="news-entry news-history-entry" id="news-([^"]+)"/g)].map(m=>m[1]);assert.deepEqual(history,["next-paths-confirmed","patch-09","patch-08","holiday-cosmetics","three-new-paths-release","website-update","animar-showcase","three-new-paths-teaser","patch-07","sixth-class-teaser","favorite-class-cosmetic","favorite-class-poll","patch-06","holiday-global-event","elemis-herder-true-release","wondrous-lands","elemis-herder-true-tease","social-milestone","guilds-confirmed","patch-05","dark-paths","blood-moonshire","patch-04","three-path-teasers","elemis-herder","first-hairstyles","patch-03","global-event","fable-woods","elemis-choice","holiday-greetings","patch-02","heavenly-realm","first-true-paths","class-poll","patch-01","first-regions","first-classes","global-launch"]);assert.equal(history.filter(id=>id.startsWith("patch-")).length,9);assert.equal((html.match(/class="news-entry diary-upcoming"/g)||[]).length,9);});
+
+test("News archive ends with previous and next page navigation outside the filtered list",()=>{
+ const page=html.slice(html.indexOf('<section id="page-news"'),html.indexOf('<section id="page-classes"'));
+ const nav=page.match(/<nav class="news-journey-nav"[\s\S]*?<\/nav>/)[0];
+ assert.ok(page.indexOf(nav)>page.lastIndexOf("</article>"));
+ assert.deepEqual([...nav.matchAll(/data-go="([^"]+)"/g)].map(m=>m[1]),["home","discover"]);
+ assert.match(nav,/←<\/span> Back to Home/);
+ assert.match(nav,/Discover the World <span aria-hidden="true">→/);
+ assert.match(read("app.js"),/navigate\(b.dataset.go\)/);
+});

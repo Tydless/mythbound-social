@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-news-history32";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-news-journey33";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css","gameplay.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -360,6 +360,10 @@
           <div class="news-image diary-cover" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="17"/><path d="m32 15-5 12-12 6 5-13Z M20 20l7 7"/></svg><span>WHIMBLE CHRONICLES · 01</span></div>
           <div><button type="button" class="eyebrow news-category-tag" data-news-tag="developer-diary" aria-label="Filter news: DEVELOPER DIARY" aria-controls="news-list">DEVELOPER DIARY</button><h2>It All Started on Pinterest</h2><p>How a little inspiration turned into an entire fictional MMORPG.</p><span class="news-meta diary-status">Coming soon</span></div>
         </article></div>
+        <nav class="news-journey-nav" aria-label="Continue exploring Mythbound">
+          <button type="button" class="outline-action news-journey-link" data-go="home"><span aria-hidden="true">←</span> Back to Home</button>
+          <button type="button" class="outline-action news-journey-link" data-go="discover">Discover the World <span aria-hidden="true">→</span></button>
+        </nav>
       </section>
 
       <section id="page-classes" class="page" aria-labelledby="classes-title" hidden>
