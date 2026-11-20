@@ -7,14 +7,16 @@ const stats=$("class-stats"),skills=$("class-skills"),detail=$("skill-detail"),p
 if(!stats||!skills||!detail||!preview)return;
 
 let active="saint",gender="male",chosen=null,activePath=0;
-const isUnrevealed=()=>active==="saint"&&activePath===3;
+const isUnrevealed=()=>activePath!==0&&SPECIALIZATIONS[active]?.[activePath]?.comingSoon===true;
+const isPending=()=>activePath!==0&&SPECIALIZATIONS[active]?.[activePath]?.pending===true;
+const hasSaintTeaser=()=>active==="saint"&&isUnrevealed();
 
 const pathData=()=>activePath===0?{name:cap(active),description:"Master the foundations of your class.",skills:DATA[active].skills,media:DATA[active].media,signatureMoves:[]}:SPECIALIZATIONS[active]?.[activePath]||{name:"Specialization "+activePath,description:"This advanced path has yet to be revealed.",skills:[],signatureMoves:[]};
 const pathCombatData=()=>{const base=DATA[active],path=pathData();return {...base,stats:path.stats||base.stats,difficulty:path.difficulty??base.difficulty,play:path.play||base.play,roles:path.roles||CLASS_ROLES[active]}};
 
 const cap=s=>s[0].toUpperCase()+s.slice(1);
 const classPage=$("page-classes");
-const {updateVoiceButton,stopVoice,playVoice}=window.createMythboundClassVoice({$,classPage,cap,isUnrevealed,getState:()=>({active,activePath,gender})});
+const {updateVoiceButton,stopVoice,playVoice}=window.createMythboundClassVoice({$,classPage,cap,isUnrevealed:hasSaintTeaser,voiceAvailable:()=>!isPending(),getState:()=>({active,activePath,gender})});
 
 
 function avatarArt(){
@@ -57,7 +59,7 @@ function renderPreview(allowTransformation=false){
  preview.style.setProperty("--preview-accent",isUnrevealed()?"#b8bed8":DATA[active].color);
  const specialization=activePath===0?null:SPECIALIZATIONS[active]?.[activePath];
  const artwork=specialization?.artwork?.[gender];
- const artworkName=artwork?specialization.name:cap(active);
+ const artworkName=specialization?.name||cap(active);
  preview.setAttribute("aria-label",gender+" "+artworkName+" class artwork preview");
  const note=document.querySelector(".preview-disclaimer");
  if(note)note.textContent="Concept illustration · final models coming later";
@@ -111,6 +113,11 @@ function renderPreview(allowTransformation=false){
   stage.append(picture);preview.append(stage);
   preview.classList.add("has-saint-art");
   picture.src=source;
+ }else if(isPending()){
+  const panel=el("div","pending-class-art"+(isUnrevealed()?" is-coming-soon":""));
+  const mark=el("span","pending-class-mark",isUnrevealed()?"?":"◇");mark.setAttribute("aria-hidden","true");
+  panel.append(mark,el("strong","",isUnrevealed()?"Coming Soon":"Artwork pending"),el("span","",artworkName));preview.append(panel);
+  if(note)note.textContent="Character design & artwork pending";
  }else{
   preview.innerHTML=avatarArt();
  }
@@ -126,7 +133,7 @@ document.addEventListener("pointerdown",e=>{if(!e.target.closest(".radar-marker"
 document.addEventListener("keydown",e=>{if(e.key==="Escape")radarDismiss?.()});
 function renderStats(){
  radarDismiss=null;
- const mystery=isUnrevealed();
+ const mystery=isUnrevealed()||isPending();
  const values=mystery?null:pathCombatData().stats, ns="http://www.w3.org/2000/svg";
  const colors=["#ee958b","#87b8f3","#9ed9a8","#f1c985","#c3a6f1"];
  const svg=document.createElementNS(ns,"svg");
@@ -170,7 +177,7 @@ function renderStats(){
   const seal=node("g",{class:"unrevealed-radar-seal","aria-hidden":"true"});
   node("circle",{cx,cy,r:34,fill:"#171c2b",stroke:"#b8bed8","stroke-dasharray":"3 6","stroke-opacity":".6"},seal);
   node("text",{x:cx,y:cy+2,"text-anchor":"middle","dominant-baseline":"middle",class:"unrevealed-radar-center"},seal,"?");
-  node("text",{x:cx,y:cy+54,"text-anchor":"middle",class:"unrevealed-radar-caption"},svg,"RATINGS UNDISCLOSED");
+  node("text",{x:cx,y:cy+54,"text-anchor":"middle",class:"unrevealed-radar-caption"},svg,isPending()&&!isUnrevealed()?"RATINGS PENDING":"RATINGS UNDISCLOSED");
   stats.replaceChildren(svg);return;
  }
  node("polygon",{points:polygon(values.map(v=>r*v/5)),fill:"url(#radar-fill)",stroke:DATA[active].color,"stroke-width":2.1,"stroke-linejoin":"round",class:"radar-shape"});
@@ -304,7 +311,7 @@ function renderAbilityMedia(path,entry){
 function skillDetail(path,entry){
  detail.replaceChildren();
  if(entry)detail.dataset.abilityGroup=entry.group;else delete detail.dataset.abilityGroup;
- if(!entry){detail.append(el("p","path-pending","Advanced abilities have yet to be revealed."));renderAbilityMedia(path,null);return}
+ if(!entry){detail.append(el("p","path-pending",isPending()?"Skills & mechanics pending.":"Advanced abilities have yet to be revealed."));renderAbilityMedia(path,null);return}
  const head=el("div","ability-detail-header"),text=el("div","ability-detail-heading");
  const category={core:"Core mechanic",standard:"Standard skill",ultimate:"Ultimate"}[entry.group];
  text.append(el("span","ability-category-label",category),el("h4","",entry.name),el("span","ability-detail-type",entry.type));
@@ -361,13 +368,20 @@ function renderPathPresentation(){
  const host=$("class-details"),mystery=isUnrevealed(),path=pathData(),wasSpecial=host.dataset.unrevealed==="true"||host.dataset.customPathHeader==="true";
  if(mystery)host.dataset.unrevealed="true";else delete host.dataset.unrevealed;
  host.style.setProperty("--class-highlight",mystery?"#b8bed8":DATA[active].color);
- $("class-codex-path-label").textContent=mystery?"UNREVEALED PATH":path.overviewType?path.type:"BASIC PATH";
+ $("class-codex-path-label").textContent=activePath===0?"BASIC PATH":path.type||"UNREVEALED PATH";
  $("path-inspect-label").textContent=mystery?"UNDISCLOSED":"SELECT TO INSPECT";
  if(mystery){
   const emblem=$("class-emblem");emblem.classList.remove("class-art-host","has-class-art");emblem.textContent="?";
-  $("class-name").textContent="Coming soon";
-  $("class-type").textContent="UNREVEALED SPECIALIZATION";
-  $("class-description").textContent="Not every path has been written in the chronicles. What lies beyond this one remains a mystery.";
+  $("class-name").textContent=path.name;
+  $("class-type").textContent=isPending()?"COMING SOON · "+path.type:"UNREVEALED SPECIALIZATION";
+  $("class-description").textContent=isPending()?path.description:"Not every path has been written in the chronicles. What lies beyond this one remains a mystery.";
+ }else if(isPending()){
+  if(typeof selectClass==="function")selectClass(active);
+  host.dataset.customPathHeader="true";
+  $("class-name").textContent=path.name;
+  $("class-type").textContent=path.type;
+  $("class-description").textContent=path.description;
+  const emblem=$("class-emblem");emblem.classList.remove("class-art-host","has-class-art");delete emblem.dataset.artSrc;emblem.textContent="◇";
  }else if(path.overviewType){
   if(wasSpecial&&typeof selectClass==="function")selectClass(active);
   host.dataset.customPathHeader="true";
@@ -376,7 +390,8 @@ function renderPathPresentation(){
   $("class-description").textContent=path.overviewDescription;
   if(active==="saint"&&SAINT_PATH_ART[activePath]&&typeof setClassArtwork==="function")setClassArtwork($("class-emblem"),active,SAINT_PATH_ART[activePath]);
  }else if(wasSpecial&&typeof selectClass==="function")selectClass(active);
- if(!path.overviewType)delete host.dataset.customPathHeader;
+ if(!path.overviewType&&!isPending())delete host.dataset.customPathHeader;
+ if(isPending())host.dataset.pending="true";else delete host.dataset.pending;
  renderClassMeta(pathCombatData());renderStats();
 }
 function renderPathAdvancement(path){
@@ -417,14 +432,17 @@ function renderPath(){
  renderPathPresentation();
  const path=pathData(),buttons=$("class-paths");
  if(buttons){
+  buttons.style.setProperty("--path-count",1+Object.keys(SPECIALIZATIONS[active]||{}).length);
   buttons.querySelectorAll("[data-path]").forEach(b=>{
    const i=Number(b.dataset.path),selected=i===activePath;
+   b.hidden=i!==0&&!SPECIALIZATIONS[active]?.[i];b.disabled=b.hidden;
    b.classList.toggle("is-current",selected);b.setAttribute("aria-pressed",String(selected));
    const info=i===0?{name:cap(active)}:SPECIALIZATIONS[active]?.[i];
    b.querySelector(".path-name").textContent=i===0?"Base class":info?.name||"???";
-   b.title=i===0?cap(active)+" · Base class":info?.name||"Specialization "+i+" — unrevealed";
+   b.dataset.comingSoon=String(!!info?.comingSoon&&active!=="saint");
+   b.title=i===0?cap(active)+" · Base class":info?info.name+(info.comingSoon&&active!=="saint"?" · Coming Soon":""):"Unrevealed specialization";
    b.setAttribute("aria-label",b.title);
-   const unknown=active==="saint"&&i===3;
+   const unknown=info?.comingSoon===true;
    b.classList.toggle("is-unrevealed-path",unknown);
    const symbol=b.querySelector(".path-symbol");
    const artwork=active==="saint"?SAINT_PATH_ART[i]:null;
@@ -432,7 +450,7 @@ function renderPath(){
    else {
     symbol.classList.remove("class-art-host","has-class-art");
     delete symbol.dataset.artSrc;
-    symbol.textContent=i===1?"◇":i===2?"✧":unknown?"?":"◈";
+    symbol.textContent=unknown?"?":i===1?"◇":i===2?"✧":"◈";
    }
   });
  }
@@ -446,6 +464,7 @@ function renderPath(){
 }
 $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener("click",()=>{
  const next=Number(b.dataset.path);
+ if(next!==0&&!SPECIALIZATIONS[active]?.[next])return;
  const previousPath=activePath;
  const changed=next!==previousPath;
  if(changed)stopVoice();
@@ -455,7 +474,7 @@ $("class-paths")?.querySelectorAll("[data-path]").forEach(b=>b.addEventListener(
   renderPreview(true);updateVoiceButton();
   // Mystery entry uses its teaser; the other paths retain their switch greetings.
   if(window.MythboundSFX?.enabled()===false)return;
-  if(isUnrevealed())playVoice("Teaser",true);
+  if(hasSaintTeaser())playVoice("Teaser",true);
   else if(active==="saint"&&(activePath===1||activePath===2||((previousPath===1||previousPath===2||previousPath===3)&&activePath===0)))playVoice("Switch",true);
  }
 }));
@@ -574,8 +593,8 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeRoleTooltips()}
 function renderClassMeta(d){
  const combat=$("class-combat"),difficulty=$("class-difficulty");
  combat.replaceChildren();difficulty.replaceChildren();
- if(isUnrevealed()){
-  const role=document.createElement("span");role.className="unrevealed-meta-label";role.textContent="ROLE · UNKNOWN";combat.append(role);
+ if(isUnrevealed()||isPending()){
+  const role=document.createElement("span");role.className="unrevealed-meta-label";role.textContent=isUnrevealed()?"ROLE · UNKNOWN":"ROLE · PENDING";combat.append(role);
   combat.setAttribute("aria-label","Combat role undisclosed");
   difficulty.setAttribute("aria-label","Difficulty undisclosed");difficulty.title="Not yet revealed";
   const label=document.createElement("span");label.className="difficulty-label";label.textContent="DIFFICULTY";

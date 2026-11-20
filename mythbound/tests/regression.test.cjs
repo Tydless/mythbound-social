@@ -360,3 +360,17 @@ test("Atlas preview and sound are exclusive to map pins; directory scrolls and l
  assert.ok(style.includes(".mw-location-tab{color:#c2cddd;border-color:#7c8a9b55}"));
  assert.ok(style.includes('.mw-location-tab:hover,#page-discover .mw-location-tab.is-active{color:var(--region-accent)'));
 });
+
+test("Announced subclass roster has ten released and two upcoming entries, with no invented mechanics",()=>{
+ const w={};new Function("window",read("class-data.js"))(w);
+ const s=w.MythboundCodexData.SPECIALIZATIONS;
+ const expected={"strider":[["Vanguard","TRUE"],["Phantom","TWISTED"],["Djinnblade","MYTHICAL"]],"breaker":[["Grandmaster","TRUE"],["Wrathborn","CORRUPTED"],["Skybreaker","MYTHICAL",true]],"elemis":[["Elementilist","TRUE"],["Trickster","TWISTED"]],"herder":[["Divine Herder","TRUE"],["Wonderherd","FABLE"]],"animar":[["Wildheart","TRUE"],["Mythbeast","MYTHICAL",true]]};
+ let released=0,upcoming=0;
+ for(const [family,list] of Object.entries(expected)){
+  assert.equal(Object.keys(s[family]).length,list.length);
+  list.forEach(([name,path,soon],i)=>{const p=s[family][i+1];assert.equal(p.name,name);assert.equal(p.type,path+" PATH");assert.equal(!!p.comingSoon,!!soon);assert.equal(p.pending,true);assert.equal(p.skills.length,0);assert.equal(p.stats,undefined);assert.equal(p.advancement,undefined);if(soon)upcoming++;else released++});
+ }
+ assert.equal(released,10);assert.equal(upcoming,2);assert.equal(s.saint[3].comingSoon,true);
+ const code=read("class-showcase.js");assert.ok(code.includes("isUnrevealed()||isPending()"));assert.ok(code.includes("b.hidden=i!==0&&!SPECIALIZATIONS[active]?.[i]"));
+ assert.ok(code.includes("isUnrevealed:hasSaintTeaser,voiceAvailable:()=>!isPending()"));
+});

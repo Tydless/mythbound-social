@@ -1,7 +1,7 @@
 /* Voice previews and music ducking; class selection remains owned by the codex. */
 (()=>{
 "use strict";
-window.createMythboundClassVoice=function({$,classPage,cap,isUnrevealed,getState}){
+window.createMythboundClassVoice=function({$,classPage,cap,isUnrevealed,voiceAvailable=()=>true,getState}){
 /* A fixed gender greeting plus three independent, cyclic voice previews.
    Assets: ../VoiceSaintMaleSwitch.mp3, ../VoiceFallenSaintFemaleSwitch.mp3, etc.
    One player at a time; missing recordings never break the codex. */
@@ -23,8 +23,8 @@ const voiceKey=()=>voiceClass()+":"+getState().gender;
 const nextVoice=()=>voiceNext[voiceKey()]||1;
 function updateVoiceButton(){
  const mystery=isUnrevealed(),{gender}=getState();
- const label=mystery?"Play "+gender+" teaser voice line":"Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
- voiceButton.disabled=false;
+ const label=!voiceAvailable()?"Voice recording pending":mystery?"Play "+gender+" teaser voice line":"Play "+voiceClassName()+" "+gender+" voice line "+nextVoice()+" of 3";
+ voiceButton.disabled=!voiceAvailable();
  teaserNote.textContent="Teaser voice line · Available";
  teaserNote.hidden=!mystery;
  voiceButton.title=label;voiceButton.setAttribute("aria-label",label);
@@ -41,6 +41,7 @@ function stopVoice(clearStatus=true){
  updateVoiceButton();
 }
 function playVoice(kind,automatic=false){
+ if(!voiceAvailable())return;
  // All preview requests on the mystery path resolve to its sole approved teaser.
  if(isUnrevealed())kind="Teaser";
  document.dispatchEvent(new Event("mythbound:class-voice-start"));
