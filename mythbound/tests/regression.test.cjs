@@ -406,16 +406,16 @@ test("Home trailer awaits a real source and release cards target their exact cla
  assert.match(read("app.js"),/if\(!source\)return;/);
 });
 
-test("Home What's new button scrolls to the newsletter without changing routes",()=>{
+test("Home What's new button scrolls to Latest News without changing routes",()=>{
  const hero=html.match(/<div class="hero-buttons">([\s\S]*?)<\/div>/)[1];
  assert.ok(hero.indexOf('data-go="discover"')<hero.indexOf('id="home-whats-new"'));
  assert.match(hero,/What is new\? <span aria-hidden="true">↓/);
- assert.match(html,/<section id="home-newsletter" class="hub-section newsletter-hub"/);
+ assert.match(html,/<section id="home-latest-news" class="home-news hub-section"/);
  const code=read("app.js");
  const start=code.indexOf('document.getElementById("home-whats-new")');
  const end=code.indexOf("\n});",start)+4;
  let click,scroll,focused=false;
- const doc={getElementById:id=>({"home-whats-new":{addEventListener:(k,f)=>{click=f}},"home-newsletter":{getBoundingClientRect:()=>({top:600})},"newsletter-title":{focus:()=>{focused=true}}})[id],querySelector:()=>({getBoundingClientRect:()=>({bottom:80})})};
+ const doc={getElementById:id=>({"home-whats-new":{addEventListener:(k,f)=>{click=f}},"home-latest-news":{getBoundingClientRect:()=>({top:600})},"home-news-title":{focus:()=>{focused=true}}})[id],querySelector:()=>({getBoundingClientRect:()=>({bottom:80})})};
  const win={scrollY:100,scrollTo:p=>{scroll=p},matchMedia:()=>({matches:false})};
  new Function("document","window",code.slice(start,end))(doc,win);click();
  assert.deepEqual(scroll,{top:608,behavior:"smooth"});assert.ok(focused);
@@ -449,3 +449,5 @@ test("News archive ends with previous and next page navigation outside the filte
  assert.match(nav,/Discover the World <span aria-hidden="true">→/);
  assert.match(read("app.js"),/navigate\(b.dataset.go\)/);
 });
+
+test("Region preview close icon uses symmetric SVG and a centered square button",()=>{assert.match(html,/id="mw-preview-close"[^>]*><svg viewBox="0 0 20 20"[^>]*><path d="M5 5l10 10M15 5L5 15"/);const atlas=read("world-atlas.css");assert.match(atlas,/\.mw-preview-close\{[^}]*display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:34px;height:34px/);assert.match(atlas,/\.mw-preview-close svg\{display:block;width:20px;height:20px;flex:none/);});
