@@ -237,7 +237,6 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
 // Original, synthesized UI foley: no downloaded sound assets or external dependencies.
 (function installMythboundInterfaceSounds(){
  let ctx,noise,last=-Infinity;const outputs=new Set();
- const audioMix=()=>window.MythboundAudio;
  function play(kind){
   // Respect the existing audio preference; no surprise sounds when muted.
   if(window.MythboundSFX?.enabled()===false)return;
@@ -256,8 +255,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
     for(let i=0;i<samples.length;i++)samples[i]=Math.random()*2-1;
    }
    const out=ctx.createGain();out.gain.value=.6*(window.MythboundSFX?.volume()??1);out.connect(ctx.destination);outputs.add(out);
-   // Each click owns its duck so rapid overlapping clicks cannot restore music early.
-   audioMix()?.duck(out,.12,.045);
+   // Ordinary interface sounds play without changing the soundtrack volume.
    function rustle(start,duration,from,to,volume,q){
     const source=ctx.createBufferSource();source.buffer=noise;
     const filter=ctx.createBiquadFilter();filter.type="bandpass";filter.Q.value=q;
@@ -276,7 +274,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
    }else{
     rustle(t,.095,1250,3800,.10,1.2);tick(t+.025,.12,940,.065);tick(t+.045,.09,1400,.025);
    }
-   setTimeout(()=>{audioMix()?.release(out);out.disconnect();outputs.delete(out)},kind==="page"?320:185);
+   setTimeout(()=>{out.disconnect();outputs.delete(out)},kind==="page"?320:185);
   }catch{}
  }
  // Capture before handlers replace skill buttons or update route selection.
@@ -290,7 +288,7 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
   if(button.dataset.class)play("select");
  },true);
  document.addEventListener("mythbound:sfx-change",()=>{for(const out of outputs)out.gain.value=.6*(window.MythboundSFX?.volume()??1)});
- window.addEventListener("pagehide",()=>{for(const out of outputs)audioMix()?.release(out);if(ctx&&ctx.state==="running")ctx.suspend().catch(()=>{})});
+ window.addEventListener("pagehide",()=>{if(ctx&&ctx.state==="running")ctx.suspend().catch(()=>{})});
 })();
 
 /* Updates: reload current route with a new cache key; session and read IDs stay in storage. */

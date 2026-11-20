@@ -100,7 +100,8 @@
 @media(max-width:340px){#page-home>.home-class-releases{grid-template-columns:1fr}}
 
 /* Home hero: secondary in-page action sits below the world link. */
-#page-home .hero-buttons{flex-direction:column;align-items:flex-start}
+#page-home .hero-buttons{flex-direction:column;align-items:center}
+@media(min-width:761px){#page-home .hero-buttons{width:min(100%,620px)}}
 #page-home #home-whats-new{display:inline-flex;align-items:center;justify-content:space-between;gap:12px;border-color:#d5c8b94d;color:#e4d5b8}
 #page-home #home-whats-new:hover{border-color:#e6c994;color:#f7d79c}
 @media(max-width:760px){#page-home .hero-buttons{align-items:center}}
@@ -122,3 +123,10 @@
 #page-news .news-journey-link:hover{border-color:#e9c993;color:#f7d79c;background:#e9c99312}
 #page-news .news-journey-link span{font-size:18px;line-height:1}
 @media(max-width:480px){#page-news .news-journey-nav{gap:10px}#page-news .news-journey-link{flex:1;min-width:0;padding:9px 8px;gap:7px;font-size:11px}}
+
+/* News pagination: the remaining articles are held in an inert template until requested. */
+#page-news .news-list{padding-bottom:26px}
+#page-news .news-pagination{display:grid;justify-items:center;gap:12px;padding:0 clamp(20px,5vw,80px) 38px;text-align:center}
+#page-news .news-pagination .outline-action{min-width:180px;min-height:44px;color:#f0d6a7;border-color:#c8a67580}
+#page-news .news-pagination .outline-action:hover{border-color:#f0d6a7}
+#page-news .news-pagination-count{font-size:12px;color:var(--muted);margin:0}

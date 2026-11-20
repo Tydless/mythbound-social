@@ -167,3 +167,15 @@
 /* Full-body sticker artwork is optional and never cropped into the circular portrait. */
 #mw-npc-preview .mw-npc-preview-art.has-fullbody{padding:6px 24px 12px;min-height:200px}
 #mw-npc-preview .mw-npc-fullbody{display:block;width:100%;height:clamp(200px,42dvh,340px);object-fit:contain;object-position:center;filter:drop-shadow(0 5px 8px #070d1860)}
+
+/* Desktop regional bestiary: three alternating vertical compositions, then the boss. Mobile retains its original rows. */
+@media(min-width:761px){
+ #page-discover .mw-creature-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:stretch;margin-top:26px}
+ #page-discover .mw-creature-row:not(.mw-boss-row){grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"art" "copy";justify-items:center;align-items:center;gap:16px;padding:10px 16px 20px;border-bottom:0;text-align:center}
+ #page-discover .mw-creature-row:nth-child(2):not(.mw-boss-row){grid-template-columns:minmax(0,1fr);grid-template-areas:"copy" "art";border-inline:1px solid color-mix(in srgb,var(--region-accent) 18%,transparent)}
+ #page-discover .mw-creature-row:not(.mw-boss-row) .mw-creature-art{grid-area:art;width:min(100%,210px);aspect-ratio:1}
+ #page-discover .mw-creature-row:not(.mw-boss-row) .mw-creature-copy,#page-discover .mw-creature-row:nth-child(2):not(.mw-boss-row) .mw-creature-copy{grid-area:copy;text-align:center;width:100%}
+ #page-discover .mw-creature-row:not(.mw-boss-row) .mw-creature-strength{justify-content:center}
+ #page-discover .mw-boss-row{grid-column:1/-1;margin-top:0}
+ #page-discover .mw-codex-overview{margin:0;max-width:900px;text-align:left}
+}
