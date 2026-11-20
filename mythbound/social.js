@@ -187,7 +187,7 @@
     stopPartyVoice();
     document.dispatchEvent(new Event("mythbound:party-voice-start"));
     playingPartyAudio=audio;
-    window.MythboundAudio?.duck("party-voice",.28);
+    window.MythboundAudio?.duck("party-voice",.12,.10,"full");
   }
   function durationText(value){
     const n=Math.max(0,Math.floor(Number.isFinite(value)?value:0));
