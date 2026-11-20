@@ -71,10 +71,19 @@ body.mythbound-login-open>#music-toggle,body.sheet-open>#music-toggle{display:no
 body.mythbound-login-open>#sfx-toggle,body.sheet-open>#sfx-toggle{display:none!important}
 @media(max-width:760px){.floating-sfx#sfx-toggle{right:calc(max(14px,env(safe-area-inset-right)) + 52px)}}
 
-/* Bare vertical audio sliders, centered over their own floating icon. */
-.audio-volume-panel{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:calc(max(20px,calc(env(safe-area-inset-bottom) + 10px)) + 48px);z-index:31;width:48px;height:126px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;padding:8px 0 2px;background:transparent;border:0;box-shadow:none}
-#sfx-volume-panel{right:calc(max(20px,env(safe-area-inset-right)) + 56px)}
+/* Volume popovers use the existing floating audio control positions. */
+.audio-volume-panel{position:fixed;right:max(20px,env(safe-area-inset-right));bottom:calc(max(20px,calc(env(safe-area-inset-bottom) + 10px)) + 55px);z-index:31;width:188px;max-width:calc(100vw - 28px);box-sizing:border-box;padding:12px 14px;border:1px solid #d7b67d80;border-radius:9px;background:#172235f7;color:#efdfc1;box-shadow:0 5px 22px #050b18a0}
 .audio-volume-panel[hidden],body.mythbound-login-open>.audio-volume-panel,body.sheet-open>.audio-volume-panel{display:none!important}
-.audio-volume-panel input[type="range"]{writing-mode:vertical-lr;direction:rtl;appearance:auto;-webkit-appearance:auto;display:block;width:26px;height:116px;margin:0;padding:0;accent-color:#e6c18b;cursor:pointer;touch-action:none;background:transparent}
-@media(max-width:760px){.audio-volume-panel{right:max(14px,env(safe-area-inset-right));bottom:calc(max(14px,calc(env(safe-area-inset-bottom) + 9px)) + 44px);width:44px}#sfx-volume-panel{right:calc(max(14px,env(safe-area-inset-right)) + 52px)}}
+.audio-volume-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:600}
+.audio-volume-heading output{color:#f3d5a5;font-variant-numeric:tabular-nums}
+.audio-volume-panel input[type="range"]{display:block;width:100%;margin:10px 0 8px;accent-color:#e6c18b;cursor:pointer;min-height:24px}
+.audio-volume-mute{display:block;margin-left:auto;padding:5px 10px;min-height:30px;border:1px solid #d7b67d65;border-radius:4px;background:#24334e;color:#f4dfb9;font-size:11px}
+.audio-volume-mute:hover{border-color:#e6c18b;background:#34445c}
 
+/* Narrow/mobile layout: only the vertical range is visible. */
+@media(max-width:760px){
+ .audio-volume-panel{right:max(14px,env(safe-area-inset-right));bottom:calc(max(14px,calc(env(safe-area-inset-bottom) + 9px)) + 44px);width:44px;height:126px;display:flex;align-items:center;justify-content:center;padding:8px 0 2px;background:transparent;border:0;box-shadow:none}
+ #sfx-volume-panel{right:calc(max(14px,env(safe-area-inset-right)) + 52px)}
+ .audio-volume-heading,.audio-volume-mute{display:none}
+ .audio-volume-panel input[type="range"]{writing-mode:vertical-lr;direction:rtl;appearance:auto;-webkit-appearance:auto;width:26px;height:116px;margin:0;padding:0;accent-color:#e6c18b;cursor:pointer;touch-action:none;background:transparent}
+}
