@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-vertical-audio35";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-responsive-audio36";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css","gameplay.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -551,10 +551,14 @@
   </template>
   <button type="button" class="music-toggle floating-sfx" id="sfx-toggle" aria-label="Sound effects volume" aria-pressed="true" title="Sound effects volume"><svg class="sfx-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z M16 9a4 4 0 0 1 0 6 M18.5 6a8 8 0 0 1 0 12"/><path class="sfx-slash" d="M3 3l18 18" stroke-width="2"/></svg></button>
   <div class="audio-volume-panel" id="music-volume-panel" hidden>
+    <div class="audio-volume-heading"><label for="music-volume">Music</label><output id="music-volume-value" for="music-volume">30%</output></div>
     <input type="range" min="0" max="100" step="1" value="30" id="music-volume" aria-label="Music volume">
+    <button type="button" class="audio-volume-mute" id="music-volume-mute">Mute</button>
   </div>
   <div class="audio-volume-panel" id="sfx-volume-panel" hidden>
+    <div class="audio-volume-heading"><label for="sfx-volume">Sound effects</label><output id="sfx-volume-value" for="sfx-volume">100%</output></div>
     <input type="range" min="0" max="100" step="1" value="100" id="sfx-volume" aria-label="Sound effects volume">
+    <button type="button" class="audio-volume-mute" id="sfx-volume-mute">Mute</button>
   </div>
   <audio id="mythbound-theme" src="../mythbound-theme.mp3" preload="auto" autoplay loop aria-hidden="true"></audio>
   <span id="music-announcement" class="screen-reader-only" role="status" aria-live="polite"></span>
