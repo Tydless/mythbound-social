@@ -21,6 +21,7 @@ function stopTransformationAudio(){
  if(recordedChoir){const old=recordedChoir;recordedChoir=null;old.pause();old.removeAttribute("src");old.load()}
  if(transformAudioSource){try{transformAudioSource.stop()}catch{}transformAudioSource=null}
  transformGain=null;
+ window.MythboundAudio?.release("class-transform");
 }
 
 // Original choir-like and mysterious sound effects.
@@ -70,7 +71,7 @@ function playRecordedChoir(){
   audio.volume=.65*sfxLevel()*Math.max(0,Math.min(1,(4.8-t)/1.35));
   requestAnimationFrame(fade);
  }
- audio.addEventListener("playing",()=>requestAnimationFrame(fade),{once:true});
+ audio.addEventListener("playing",()=>{if(recordedChoir!==audio)return;window.MythboundAudio?.duck("class-transform",.12,.065);requestAnimationFrame(fade)},{once:true});
  try{audio.play().catch(fallback)}catch{fallback()}
 }
 function playSpecialSound(kind,forceSynth=false){
@@ -81,7 +82,7 @@ function playSpecialSound(kind,forceSynth=false){
  try{const buffer=transformBuffers[kind]||(transformBuffers[kind]=specialSound(ac,kind));
  const sound=ac.createBufferSource(),gain=ac.createGain();sound.buffer=buffer;transformGain=gain;transformGainBase=kind==="archsaint"?.9:.85;gain.gain.value=transformGainBase*sfxLevel();
  sound.connect(gain);gain.connect(ac.destination);transformAudioSource=sound;
- sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound){transformAudioSource=null;transformGain=null}};sound.start()}catch{}
+ sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound){transformAudioSource=null;transformGain=null;window.MythboundAudio?.release("class-transform")}};window.MythboundAudio?.duck("class-transform",.10,.05);sound.start()}catch{stopTransformationAudio()}
 }
 
 function playTransformationAudio(fallen){
@@ -158,9 +159,9 @@ function playTransformationAudio(fallen){
   const sound=ac.createBufferSource(),gain=ac.createGain();sound.buffer=transformBuffers[key];
   transformGain=gain;transformGainBase=fallen?.85:.9;gain.gain.value=transformGainBase*sfxLevel();sound.connect(gain);gain.connect(ac.destination);
   transformAudioSource=sound;
-  sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound){transformAudioSource=null;transformGain=null}};
-  sound.start();
- }catch{}
+  sound.onended=()=>{sound.disconnect();gain.disconnect();if(transformAudioSource===sound){transformAudioSource=null;transformGain=null;window.MythboundAudio?.release("class-transform")}};
+  window.MythboundAudio?.duck("class-transform",.10,.05);sound.start();
+ }catch{stopTransformationAudio()}
 }
 document.addEventListener("visibilitychange",()=>{if(document.hidden)stopTransformationAudio()});
 window.addEventListener("pagehide",stopTransformationAudio);
