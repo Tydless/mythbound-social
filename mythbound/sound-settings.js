@@ -13,14 +13,40 @@ const mobile=matchMedia("(max-width: 760px)");
 const effective=kind=>active[kind]?levels[kind]:0;
 const ducks=new Map();
 const audio=$("mythbound-theme");
-let musicContext=null,musicGain=null;
+let musicContext=null,musicGain=null,fadeFrame=0;
+let musicTarget=null;
 
 function sfxVolume(){return effective("sfx")}
-function effectiveMusic(){return effective("music")*Math.min(1,...ducks.values())}
+// Foreground sounds have priority. Caps follow their actual mixer level, and
+// overlapping cues take the quietest target rather than stacking attenuation.
+function effectiveMusic(){
+ const base=effective("music");let target=base;
+ for(const {ratio,cap,reference} of ducks.values()){
+  const foreground=reference==="sfx"?sfxVolume():1;
+  if(foreground>0)target=Math.min(target,base*ratio,cap*foreground);
+ }
+ return target;
+}
 function applyMusic(){
  if(!audio)return;
- const v=effectiveMusic();
- try{if(musicGain){musicGain.gain.value=v;audio.volume=1}else audio.volume=v}catch{}
+ const v=effectiveMusic(),previous=musicTarget;musicTarget=v;
+ if(fadeFrame){cancelAnimationFrame(fadeFrame);fadeFrame=0}
+ try{
+  if(musicGain){
+   const now=musicContext.currentTime,param=musicGain.gain;
+   const current=param.value;
+   param.cancelScheduledValues(now);param.setValueAtTime(current,now);
+   if(v===0||previous===null||v<current)param.setValueAtTime(v,now);
+   else if(v>current)param.linearRampToValueAtTime(v,now+.32);
+   audio.volume=1;
+  }else{
+   const from=audio.volume;
+   if(v<=from||previous===null){audio.volume=v;return}
+   const start=performance.now();
+   const step=now=>{const q=Math.min(1,(now-start)/320);audio.volume=from+(v-from)*q;if(q<1)fadeFrame=requestAnimationFrame(step);else fadeFrame=0};
+   fadeFrame=requestAnimationFrame(step);
+  }
+ }catch{}
 }
  // iOS may ignore HTMLMediaElement.volume. Route the local soundtrack through
  // Web Audio after a real gesture on those devices, preserving native autoplay elsewhere.
@@ -54,7 +80,8 @@ function sync(){
 }
 function changed(kind){
  save("mythbound-"+kind+"-volume",levels[kind]);save("mythbound-"+kind+"-enabled",active[kind]);sync();
- if(kind==="music"){applyMusic();document.dispatchEvent(new Event("mythbound:music-change"))}else document.dispatchEvent(new Event("mythbound:sfx-change"));
+ applyMusic();
+ if(kind==="music")document.dispatchEvent(new Event("mythbound:music-change"));else document.dispatchEvent(new Event("mythbound:sfx-change"));
 }
 function setEnabled(kind,next){
  active[kind]=Boolean(next);
@@ -68,7 +95,7 @@ function setLevel(kind,value){
  changed(kind);
 }
 window.MythboundSFX={enabled:()=>effective("sfx")>0,volume:sfxVolume,setEnabled:next=>setEnabled("sfx",next)};
-window.MythboundAudio={level:effective,setLevel,applyMusic,duck(owner,ratio){ducks.set(owner,clamp(ratio));applyMusic()},release(owner){ducks.delete(owner);applyMusic()}};
+window.MythboundAudio={level:effective,setLevel,applyMusic,duck(owner,ratio,cap=ratio,reference="sfx"){ducks.set(owner,{ratio:clamp(ratio),cap:clamp(cap),reference});applyMusic()},release(owner){if(ducks.delete(owner))applyMusic()}};
 mobile.addEventListener("change",sync);
 
 let open=null,closeTimer=0;
