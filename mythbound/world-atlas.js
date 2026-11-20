@@ -19,6 +19,9 @@ const landscapeSketches={"fable":"<rect width=\"720\" height=\"320\" fill=\"#739
 for(const r of regions)Object.assign(r,previews[r.id]);
 // Regional encyclopedia: expandable data, independent of the map geometry and audio.
 const regionLore={"greatfields":{"lore":"Wide fields and a bright sky invite travelers into the world of Mythbound. Here, the familiar comforts of village life meet the promise of adventure. The GreatFields form the starting region and the shared setting for the six base class backgrounds.","inhabitants":"The region is envisioned as lively, with grazing animals, curious creatures and village inhabitants. Individual species and characters are still to be introduced.","locations":[],"journal":[{"title":"The beginning of your journey","text":"The GreatFields are the confirmed starting area for Mythbound's six base classes."}]},"fable":{"lore":"The forest draws its spirit from childhood fables and enchanted woodland stories. Tiny villages, winding trails and ancient trees form a landscape meant to reward curiosity. The forest's hidden creatures and their stories will be explored as the region develops.","inhabitants":"Fable creatures and woodland inhabitants are central to this region's concept. Their individual designs and lore are not yet established.","locations":[],"journal":[]},"wondrous":{"lore":"Inspired by the impossible worlds of Wonderland and Oz, the Wondrous Lands are a place of playful contradictions, curious paths and unexpected discoveries. The region's peculiar logic is part of its identity.","inhabitants":"Whimsical beings and unusual characters belong to this region's vision. Individual inhabitants will be introduced in future entries.","locations":[],"journal":[]},"dunes":{"lore":"The Wild Dunes draw their enchantment from the legends and tales of the Arabian Nights. Golden sands, magical oases and splendid palaces set the stage for discoveries both beautiful and mysterious.","inhabitants":"The region's mythical beings and desert communities have yet to be defined.","locations":[],"journal":[]},"bloodmoon":{"lore":"The darkest of Mythbound's regions draws on Asian folklore and the haunting presence of spirits and mythical beings. Among its shadowed paths stands the Blood Moonshrine, tied to the forbidden magic of the Fallen Saint.","inhabitants":"Yokai-inspired spirits and mythical creatures are part of the region's concept. Specific species, settlements and encounters remain to be decided.","locations":[{"title":"The Blood Moonshrine","text":"The shrine associated with the Fallen Saint's pact with the Blood Moon. Its wider location details and encounters have yet to be revealed."}],"journal":[{"title":"When Heaven Remains Silent","text":"The Fallen Saint's class advancement story: forsaken by the heavens, the Saint seeks an answer at the Blood Moonshrine and makes a forbidden pact."}]},"heavenly":{"lore":"A celestial realm beyond the mortal world, imagined as a place of heavenly beauty and mystery. Divine magic and the Archsaint's calling are connected to the heavens; the nature of the realm and its access remain open.","inhabitants":"Celestial inhabitants are planned, but their appearance, culture and origins have not yet been established.","locations":[],"journal":[{"title":"When Heaven Answers","text":"The Archsaint's class advancement story is connected to a divine calling. Further regional story details are still to be revealed."}]}};
+// Add confirmed NPCs here: {id, name, portrait, role, description, location, details:[{label,value}]}.
+// Empty regions have six visual preview slots, not six canon characters.
+const regionNPCs={greatfields:[],fable:[],wondrous:[],dunes:[],bloodmoon:[],heavenly:[]};
 const find=id=>regions.find(r=>r.id===id);
 let selected="greatfields";
 const make=(tag,cls,value)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(value!==undefined)node.textContent=value;return node};
@@ -127,6 +130,46 @@ function card(title,description,kind=""){
  const article=make("article","mw-codex-entry"+(kind?" "+kind:""));
  article.append(make("h4","",title),make("p","",description));return article;
 }
+// Regional NPC gallery and reusable, keyboard-accessible profile dialog.
+const npcDialog=make("dialog","mw-npc-dialog");
+npcDialog.setAttribute("aria-labelledby","mw-npc-title");
+const npcClose=make("button","mw-npc-close");npcClose.type="button";npcClose.setAttribute("aria-label","Close NPC profile");
+npcClose.innerHTML='<svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>';
+const npcContent=make("div","mw-npc-content");npcDialog.append(npcClose,npcContent);document.body.append(npcDialog);
+let npcOpener=null;
+npcClose.addEventListener("click",()=>npcDialog.close());
+npcDialog.addEventListener("click",e=>{if(e.target===npcDialog){const b=npcDialog.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom)npcDialog.close()}});
+npcDialog.addEventListener("close",()=>{if(npcOpener?.isConnected)npcOpener.focus({preventScroll:true});npcOpener=null});
+if(typeof MutationObserver!=="undefined")new MutationObserver(()=>{if(world.hidden&&npcDialog.open)npcDialog.close()}).observe(world,{attributes:true,attributeFilter:["hidden"]});
+function npcPortrait(npc){
+ const face=make("span","mw-npc-portrait");
+ const placeholder=make("span","mw-npc-silhouette");placeholder.setAttribute("aria-hidden","true");placeholder.innerHTML='<svg viewBox="0 0 64 64" fill="currentColor" aria-hidden="true"><circle cx="32" cy="23" r="12"/><path d="M9 59c0-15 9-25 23-25s23 10 23 25Z"/></svg>';face.append(placeholder);
+ if(npc?.portrait){const img=make("img");img.alt="";img.loading="lazy";img.addEventListener("load",()=>placeholder.hidden=true,{once:true});img.addEventListener("error",()=>img.remove(),{once:true});img.src=npc.portrait;face.append(img)}
+ return face;
+}
+function openNPC(npc,r,trigger){
+ npcOpener=trigger;npcDialog.style.setProperty("--npc-accent",r.color);npcContent.replaceChildren();
+ const title=make("h2","",npc?.name||"Yet to be revealed");title.id="mw-npc-title";
+ npcContent.append(npcPortrait(npc),make("span","mw-npc-kicker",r.name),title);
+ if(npc?.role)npcContent.append(make("p","mw-npc-role",npc.role));
+ npcContent.append(make("p","mw-npc-description",npc?.description||"This character has not been introduced yet."));
+ const fields=[...(npc?.location?[{label:"Location",value:npc.location}]:[]),...(npc?.details||[])];
+ if(fields.length){const dl=make("dl","mw-npc-details");for(const f of fields){dl.append(make("dt","",f.label),make("dd","",f.value))}npcContent.append(dl)}
+ npcDialog.showModal();npcClose.focus({preventScroll:true});
+}
+function renderNPCs(r){
+ const roster=regionNPCs[r.id]||[];
+ body.append(make("h4","mw-codex-panel-heading","Inhabitants of "+r.name));
+ const gallery=make("div","mw-npc-gallery");gallery.setAttribute("role","group");gallery.setAttribute("aria-label","Regional NPCs");
+ const entries=roster.length?roster:Array.from({length:6},()=>null);
+ entries.forEach((npc,i)=>{
+  const name=npc?.name||"Coming soon";
+  const btn=make("button","mw-npc-tile"+(npc?"":" is-pending"));btn.type="button";btn.setAttribute("aria-haspopup","dialog");btn.setAttribute("aria-label",npc?name:"Unrevealed NPC slot "+(i+1));btn.append(npcPortrait(npc),make("span","mw-npc-name",name));
+  btn.addEventListener("click",()=>openNPC(npc,r,btn));gallery.append(btn);
+ });
+ body.append(gallery);
+ if(!roster.length)body.append(make("p","mw-npc-empty","Character profiles will be revealed as the world unfolds."));
+}
 function showTab(key){
  if(!sections.includes(key))return;
  activeTab=key;const r=find(selected),lore=regionLore[selected];
@@ -147,8 +190,7 @@ function showTab(key){
   for(const [title,desc] of [["Cities & settlements","Settlement entries forthcoming."],["Dungeons & raids","Encounter entries forthcoming."],["Landmarks & hidden places","Discovery entries forthcoming."]])list.append(card(title,desc,"is-pending"));
   body.append(list);
  }else if(key==="inhabitants"){
-  body.append(make("h4","mw-codex-panel-heading","Inhabitants of "+r.name),make("p","mw-codex-intro",lore.inhabitants));
-  const list=make("div","mw-codex-entries");list.append(card("People & cultures","Individual communities and characters forthcoming.","is-pending"),card("Creatures & wildlife","Regional species and bestiary entries forthcoming.","is-pending"));body.append(list);
+  renderNPCs(r);
  }else{
   body.append(make("h4","mw-codex-panel-heading","Regional journal"),make("p","mw-codex-intro","Follow the stories, discoveries and events of this land."));
   const list=make("div","mw-codex-journal");
