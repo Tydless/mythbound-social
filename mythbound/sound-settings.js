@@ -64,12 +64,13 @@ for(const kind of ["music","sfx"]){
  toggle.addEventListener("pointerenter",e=>{if(e.pointerType!=="touch"&&e.pointerType!=="pen")show(kind)});
  toggle.addEventListener("pointerleave",later);
  toggle.addEventListener("focus",()=>show(kind));toggle.addEventListener("blur",later);
- toggle.addEventListener("click",()=>show(kind));
+ toggle.addEventListener("click",e=>{show(kind);if(e.detail===0)input.focus()});
+ toggle.addEventListener("keydown",e=>{if(e.key==="ArrowUp"||e.key==="ArrowDown"){e.preventDefault();show(kind);input.focus()}});
  panel.addEventListener("pointerenter",()=>clearTimeout(closeTimer));panel.addEventListener("pointerleave",later);
  panel.addEventListener("focusin",()=>clearTimeout(closeTimer));panel.addEventListener("focusout",later);
  input.addEventListener("input",()=>setLevel(kind,Number(input.value)/100));
 }
 document.addEventListener("pointerdown",e=>{if(open&&!$(open+"-volume-panel")?.contains(e.target)&&!e.target.closest("#music-toggle,#sfx-toggle"))hide()},true);
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&open){const kind=open;hide();if($(kind+"-volume-panel")?.contains(document.activeElement))$(kind+"-toggle")?.focus();hide()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&open){const kind=open;const hadFocus=$(kind+"-volume-panel")?.contains(document.activeElement);if(hadFocus)$(kind+"-toggle")?.focus();hide()}});
 sync();applyMusic();
 })();
