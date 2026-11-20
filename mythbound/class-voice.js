@@ -52,7 +52,7 @@ function playVoice(kind,automatic=false){
  const fail=()=>{if(voicePlaying!==audio)return;stopVoice(false);voiceStatus.textContent="Voice preview unavailable — recording pending or playback blocked."};
  audio.addEventListener("playing",()=>{
   if(voicePlaying!==audio)return;
-  window.MythboundAudio?.duck("class-voice",.28);
+  window.MythboundAudio?.duck("class-voice",.12,.10,automatic?"sfx":"full");
  },{once:true});
  audio.addEventListener("ended",()=>{if(voicePlaying===audio)stopVoice()},{once:true});
  audio.addEventListener("error",fail,{once:true});
