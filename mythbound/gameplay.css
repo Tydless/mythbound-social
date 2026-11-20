@@ -1,0 +1,32 @@
+/* Gameplay has its own layout; other page designs and atlas interactions are untouched. */
+#page-gameplay{--gp-gold:#dfbf86;--gp-muted:#c1ccdc;background:radial-gradient(ellipse at 50% 0,#293b5057,transparent 58%),#101827}
+#page-gameplay .gp-shell{max-width:1250px;margin:auto;padding:0 clamp(18px,5vw,72px) 76px}
+#page-gameplay .gp-intro{text-align:center;max-width:700px;margin:auto;padding:clamp(42px,6vw,80px) 0 clamp(30px,4vw,50px)}
+#page-gameplay .gp-intro h1{font:500 clamp(34px,5vw,56px)/1.2 'Cinzel',Georgia,serif;color:#f4e4c6;margin:0}
+#page-gameplay .gp-ornament{display:flex;align-items:center;justify-content:center;gap:14px;margin:20px auto;color:var(--gp-gold);font-size:15px}
+#page-gameplay .gp-ornament:before,#page-gameplay .gp-ornament:after{content:"";height:1px;width:72px;background:linear-gradient(90deg,transparent,#dfbf86)}
+#page-gameplay .gp-ornament:after{transform:scaleX(-1)}
+#page-gameplay .gp-intro p{font-size:clamp(14px,1.5vw,16px);color:var(--gp-muted);line-height:1.75;margin:0}
+#page-gameplay .gp-features{display:grid;gap:20px}
+#page-gameplay .gp-feature{--gp-accent:#b7cf95;display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr);border:1px solid color-mix(in srgb,var(--gp-accent) 36%,#273348);background:linear-gradient(135deg,#1f2c3e,#162132);box-shadow:0 10px 24px #080e1b35;overflow:hidden;min-height:245px}
+#page-gameplay .gp-friends{--gp-accent:#9acbd3}
+#page-gameplay .gp-guilds{--gp-accent:#dfbf86}
+#page-gameplay .gp-classes{--gp-accent:#c3afe3}
+#page-gameplay .gp-visual{position:relative;display:grid;place-items:center;isolation:isolate;min-width:0;min-height:190px;overflow:hidden;background:radial-gradient(ellipse at 50% 52%,color-mix(in srgb,var(--gp-accent) 18%,#213247),transparent 65%),linear-gradient(135deg,#26384b,#142131);border-right:1px solid color-mix(in srgb,var(--gp-accent) 25%,transparent);color:var(--gp-accent)}
+#page-gameplay .gp-world-art{background:linear-gradient(135deg,#172b3770,#142131d4),url('../mythbound-home-watercolor.jpg') center/cover no-repeat}
+#page-gameplay .gp-visual:before{content:"";position:absolute;inset:12px;z-index:-1;border:1px solid color-mix(in srgb,var(--gp-accent) 22%,transparent)}
+#page-gameplay .gp-sigil{position:relative;display:grid;place-items:center;width:116px;aspect-ratio:1;border:1px solid color-mix(in srgb,var(--gp-accent) 50%,transparent);border-radius:50%;background:#1421317a;box-shadow:0 0 35px color-mix(in srgb,var(--gp-accent) 11%,transparent)}
+#page-gameplay .gp-sigil:before{content:"";position:absolute;inset:-8px;border:1px dashed color-mix(in srgb,var(--gp-accent) 38%,transparent);border-radius:50%}
+#page-gameplay .gp-sigil svg{width:65px;height:65px}
+#page-gameplay .gp-copy{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:0;padding:clamp(21px,3.4vw,42px)}
+#page-gameplay .gp-copy h2{font:600 clamp(21px,2.8vw,32px)/1.25 'Cinzel',Georgia,serif;color:#f1dfc3;margin:0 0 13px}
+#page-gameplay .gp-copy p{font-size:14px;line-height:1.7;color:var(--gp-muted);margin:0 0 15px}
+#page-gameplay .gp-system{width:100%;padding:13px 0 0;border-top:1px solid color-mix(in srgb,var(--gp-accent) 28%,transparent)}
+#page-gameplay .gp-system h3{font:600 15px/1.4 'Cinzel',Georgia,serif;color:var(--gp-accent);margin:0 0 6px}
+#page-gameplay .gp-system p{font-size:13px;margin:0 0 6px}
+#page-gameplay .gp-pending{display:block;color:#aebbd0;font-size:11px;font-style:italic}
+#page-gameplay .gp-action{display:inline-flex;align-items:center;justify-content:space-between;gap:16px;color:var(--gp-accent);border-color:color-mix(in srgb,var(--gp-accent) 52%,transparent);font-size:12px;padding:9px 15px}
+#page-gameplay .gp-action:hover{background:color-mix(in srgb,var(--gp-accent) 12%,#172335);border-color:var(--gp-accent)}
+@media(min-width:761px) and (max-width:1080px){.site-header .main-nav{gap:2px}.site-header .main-nav .nav-item{padding-inline:5px;font-size:12px}}
+@media(min-width:761px) and (max-width:880px){.site-header{flex-wrap:wrap;gap:4px 12px}.site-header .main-nav{order:3;flex:0 0 100%;justify-content:center;gap:clamp(10px,3vw,25px);margin:0}.site-header .header-actions{margin-left:auto}}
+@media(max-width:760px){#page-gameplay .gp-shell{padding-bottom:48px}#page-gameplay .gp-features{gap:14px}#page-gameplay .gp-feature{grid-template-columns:1fr}#page-gameplay .gp-visual{min-height:155px;border-right:0;border-bottom:1px solid color-mix(in srgb,var(--gp-accent) 25%,transparent)}#page-gameplay .gp-sigil{width:90px}#page-gameplay .gp-sigil svg{width:51px;height:51px}#page-gameplay .gp-copy{padding:23px 19px}#page-gameplay .gp-copy h2{font-size:23px}}

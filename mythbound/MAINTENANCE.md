@@ -13,6 +13,7 @@ This folder contains the fictional MMORPG portal. The root Afterhours project an
 - `portal-atlas.css`, `portal-social.css`: atlas presentation and social UI overrides.
 - `class-specializations.css`: Saint paths, skills, backgrounds and presentation.
 - `portal-finishing.css`: carousel and Whimble footer.
+- `gameplay.css`: gameplay guide styling and compact navigation for the fifth main menu item. Gameplay page content lives in `index.html`; mechanics are intentionally open.
 - `class-mobile-effects.css`: touch-specific effects and mobile layout safeguards.
 - `class-data.js`: class stats, abilities, specialization data, icons, scenes.
 - `class-voice.js`: gender-specific voice lines, narrator audio lifecycle and music ducking.

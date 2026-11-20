@@ -367,3 +367,15 @@ test("Announced subclass roster has ten released and two upcoming entries, with 
  const code=read("class-showcase.js");assert.ok(code.includes("isUnrevealed()||isPending()"));assert.ok(code.includes("b.hidden=i!==0&&!SPECIALIZATIONS[active]?.[i]"));
  assert.ok(code.includes("isUnrevealed:hasSaintTeaser,voiceAvailable:()=>!isPending()"));
 });
+
+test("Gameplay navigation and guide expose the four announced feature areas",()=>{
+ const code=read("app.js"),style=read("gameplay.css");
+ assert.match(html,/<button[^>]+data-page="gameplay"[^>]*>Gameplay<\/button>/);
+ assert.match(code,/const valid=\[[^\]]*"gameplay"/);
+ const page=html.slice(html.indexOf('<section id="page-gameplay"'),html.indexOf('<section id="page-profile"'));
+ for(const label of ["Exploration","Explore with Friends","Symbiosis System","Join or Found a Guild","Guild advantages","Class Changes"])assert.ok(page.includes(label));
+ assert.match(page,/data-go="discover"/);assert.match(page,/data-go="classes"/);
+ assert.match(page,/System details forthcoming/);assert.match(page,/specific benefits forthcoming/);
+ assert.doesNotMatch(page,/marriage|housing|\bpets\b/i);
+ assert.ok(css.includes("gameplay.css"));assert.ok(style.includes("#page-gameplay"));
+});

@@ -45,12 +45,12 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-world-codex26";
-    for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-gameplay27";
+    for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css","gameplay.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
   </script>
-  <noscript><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="account.css"><link rel="stylesheet" href="portal-layout.css"><link rel="stylesheet" href="class-codex.css"><link rel="stylesheet" href="portal-polish.css"><link rel="stylesheet" href="class-portrait.css"><link rel="stylesheet" href="portal-atlas.css"><link rel="stylesheet" href="portal-social.css"><link rel="stylesheet" href="class-specializations.css"><link rel="stylesheet" href="portal-finishing.css"><link rel="stylesheet" href="class-mobile-effects.css"></noscript>
+  <noscript><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="account.css"><link rel="stylesheet" href="portal-layout.css"><link rel="stylesheet" href="class-codex.css"><link rel="stylesheet" href="portal-polish.css"><link rel="stylesheet" href="class-portrait.css"><link rel="stylesheet" href="portal-atlas.css"><link rel="stylesheet" href="portal-social.css"><link rel="stylesheet" href="class-specializations.css"><link rel="stylesheet" href="portal-finishing.css"><link rel="stylesheet" href="class-mobile-effects.css"><link rel="stylesheet" href="gameplay.css"></noscript>
 </head>
 <body class="mythbound-login-open">
   <button type="button" id="mb-studio-intro" aria-label="Whimble Studio presents Mythbound Online. Click or press Escape to skip the introduction.">
@@ -136,6 +136,7 @@
       <button type="button" data-page="news" class="nav-item">News</button>
       <button type="button" data-page="classes" class="nav-item">Classes</button>
       <button type="button" data-page="discover" class="nav-item">The World</button>
+      <button type="button" data-page="gameplay" class="nav-item">Gameplay</button>
       <button type="button" id="mobile-inbox" class="nav-item mobile-menu-item mobile-social-item">Inbox <span id="mobile-inbox-count" class="mobile-inbox-count" hidden>0</span></button>
       <button type="button" id="mobile-friends" class="nav-item mobile-menu-item mobile-social-item">Friends</button>
       <button type="button" id="mobile-refresh" class="nav-item mobile-menu-item"><span>Check for updates</span><span aria-hidden="true">↻</span></button>
@@ -315,6 +316,58 @@
           </section>
           <p class="concept-disclaimer">Preview values and skill effects are illustrative game-design concepts, not finalized balance numbers. Male and female base avatars have the exact same class abilities and stats.</p>
         </section>
+      </section>
+
+      <section id="page-gameplay" class="page mb-gameplay" aria-labelledby="gameplay-title" hidden>
+        <div class="gp-shell">
+          <header class="gp-intro">
+            <h1 id="gameplay-title">Gameplay</h1>
+            <div class="gp-ornament" aria-hidden="true">✧</div>
+            <p>Discover a world of possibilities. Find your own way to adventure, share the journey with friends and choose the path that will shape your legend.</p>
+          </header>
+          <div class="gp-features">
+            <article class="gp-feature gp-exploration" aria-labelledby="gp-exploration-title">
+              <div class="gp-visual gp-world-art" aria-hidden="true"><div class="gp-sigil"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="24"/><circle cx="32" cy="32" r="19" stroke-dasharray="1 5"/><path d="M43 20 37 37 21 44 27 27Z M27 27l10 10M32 3v5m0 48v5M3 32h5m48 0h5"/></svg></div></div>
+              <div class="gp-copy">
+                <h2 id="gp-exploration-title">Exploration</h2>
+                <p>From the familiar fields of home to lands of myth and wonder, discover the world at your own pace. Explore settlements, hidden landmarks, dungeons and the stories waiting beyond the next horizon.</p>
+                <button type="button" class="outline-action gp-action" data-go="discover">Discover the world <span aria-hidden="true">→</span></button>
+              </div>
+            </article>
+            <article class="gp-feature gp-friends" aria-labelledby="gp-friends-title">
+              <div class="gp-visual" aria-hidden="true"><div class="gp-sigil"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="20" cy="21" r="7"/><circle cx="44" cy="21" r="7"/><path d="M7 46v-3a13 13 0 0 1 17-12M57 46v-3a13 13 0 0 0-17-12M32 30l8 10-8 10-8-10Z M32 21v4m0 30v5M3 22h4m50 0h4"/><path d="M14 48q5 7 11 6m25-6q-5 7-11 6"/></svg></div></div>
+              <div class="gp-copy">
+                <h2 id="gp-friends-title">Explore with Friends</h2>
+                <p>Share your adventures with fellow travelers, explore together and take on dungeons and raids as a party.</p>
+                <div class="gp-system">
+                  <h3>Symbiosis System</h3>
+                  <p>A dedicated cooperative system for shared adventures.</p>
+                  <span class="gp-pending">System details forthcoming</span>
+                </div>
+              </div>
+            </article>
+            <article class="gp-feature gp-guilds" aria-labelledby="gp-guilds-title">
+              <div class="gp-visual" aria-hidden="true"><div class="gp-sigil"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M32 5 53 13v17c0 14-11 22-21 29C22 52 11 44 11 30V13Z M32 13 45 19v11c0 9-6 16-13 21-7-5-13-12-13-21V19Z M32 21v22M23 30h18m-13 5 4-5 4 5"/></svg></div></div>
+              <div class="gp-copy">
+                <h2 id="gp-guilds-title">Join or Found a Guild</h2>
+                <p>Find a community of kindred adventurers or create a guild of your own. Build friendships, organize adventures and find companions for your next challenge.</p>
+                <div class="gp-system">
+                  <h3>Guild advantages</h3>
+                  <p>Shared adventures, a regular group of players and a place to belong.</p>
+                  <span class="gp-pending">Guild mechanics and specific benefits forthcoming</span>
+                </div>
+              </div>
+            </article>
+            <article class="gp-feature gp-classes" aria-labelledby="gp-classes-title">
+              <div class="gp-visual" aria-hidden="true"><div class="gp-sigil"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M32 56V30m0 0L14 12m18 18L50 12M14 12v11m0-11h11M50 12H39m11 0v11M27 53h10"/><circle cx="32" cy="30" r="7"/><path d="M32 4v8m-4-4h8M8 39l4 4-4 4-4-4Z M56 39l4 4-4 4-4-4Z"/></svg></div></div>
+              <div class="gp-copy">
+                <h2 id="gp-classes-title">Class Changes</h2>
+                <p>Begin with one of six base classes and discover the advanced Paths that can shape your class into something new. Each class offers its own specializations and a different way to express your playstyle.</p>
+                <button type="button" class="outline-action gp-action" data-go="classes">Explore all classes <span aria-hidden="true">→</span></button>
+              </div>
+            </article>
+          </div>
+        </div>
       </section>
 
       <section id="page-profile" class="page mb-player-page" aria-labelledby="own-profile-name" hidden>

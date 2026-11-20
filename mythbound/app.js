@@ -17,7 +17,7 @@ const whisperButton=document.getElementById("floating-whisper");
 const headerWhisper=document.getElementById("header-whisper");
 let previousFocus=null;
 function navigate(page,replace=false){
-  const valid=["home","discover","news","classes","profile"];
+  const valid=["home","discover","news","classes","gameplay","profile"];
   if(!valid.includes(page)||(page==="profile"&&window.MythboundAccount?.isSignedIn()===false))page="home";
   pages.forEach(p=>{const active=p.id==="page-"+page;p.hidden=!active;p.classList.toggle("is-visible",active)});
   navButtons.forEach(b=>{const active=b.dataset.page===page;b.classList.toggle("is-active",active);if(active)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
