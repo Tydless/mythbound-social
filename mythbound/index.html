@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-journey28";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-home-releases29";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css","gameplay.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -162,11 +162,30 @@
           <div class="hero-copy"><h1 id="home-title" class="hero-title-logo logo-host"><img class="official-mythbound-logo" src="../Mythbound_Six_Paths_Transparent.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback">Mythbound Online</span></h1><button type="button" id="mobile-download" class="download-button mobile-hero-download">Download <svg class="mb-diagonal-arrow" viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5 4h7v7"/></svg></button><p>Beyond the veil of remembered stories, six paths await. Find your calling. Forge your legend. Leave a trace in the world of Mythbound.</p><div class="hero-buttons"><button type="button" data-go="discover" class="outline-action">Discover the world <span aria-hidden="true">→</span></button></div></div>
           
         </div>
-        <div class="section-heading"><h2>Choose the legend you become</h2><p>Every path tells a different story. No two journeys need feel the same.</p></div>
-        <div class="preview-classes">
-          <button type="button" data-class="saint" class="preview-class"><span class="preview-symbol">✥</span><strong>Saint</strong><small>Grace and protection</small></button>
-          <button type="button" data-class="animar" class="preview-class"><span class="preview-symbol">◈</span><strong>Animar</strong><small>Master many forms</small></button>
-          <button type="button" data-class="herder" class="preview-class"><span class="preview-symbol">❃</span><strong>Herder</strong><small>Never travel alone</small></button>
+        <section class="home-trailer hub-section" aria-labelledby="home-trailer-title">
+          <div class="hub-heading"><h2 id="home-trailer-title">Official Game Trailer</h2><p>Step into the world of Mythbound Online.</p></div>
+          <div class="home-trailer-frame">
+            <div class="home-trailer-placeholder" id="home-trailer-placeholder">
+              <span class="home-trailer-seal" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="24" cy="24" r="21"/><path d="m19 14 15 10-15 10Z"/></svg></span>
+              <strong id="home-trailer-status">Coming Soon</strong>
+              <span>Official trailer</span>
+            </div>
+            <!-- Set data-trailer-src to the approved trailer asset when it is ready. -->
+            <video id="home-trailer-video" data-trailer-src="" controls playsinline preload="metadata" hidden aria-label="Mythbound Online official game trailer"></video>
+          </div>
+        </section>
+        <div class="section-heading"><h2>New Paths Await</h2><p>Discover the latest additions to the class roster.</p></div>
+        <div class="preview-classes home-class-releases">
+          <button type="button" data-class="animar" data-class-path="0" class="preview-class home-class-release" aria-label="Explore Animar, latest base class">
+            <span class="home-release-label">Latest Base Class</span>
+            <span class="preview-symbol" aria-hidden="true">◈</span>
+            <span class="home-release-copy"><strong>Animar</strong><small>Master many forms</small><span class="home-release-link">Explore class <span aria-hidden="true">→</span></span></span>
+          </button>
+          <button type="button" data-class="strider" data-class-path="3" class="preview-class home-class-release home-djinnblade" aria-label="Explore Djinnblade, latest subclass, Strider Mythical Path">
+            <span class="home-release-label">Latest Subclass</span>
+            <span class="preview-symbol home-subclass-symbol" aria-hidden="true">◈</span>
+            <span class="home-release-copy"><strong>Djinnblade</strong><small>Strider · Mythical Path</small><span class="home-release-link">Explore subclass <span aria-hidden="true">→</span></span></span>
+          </button>
         </div>
         <section class="home-news hub-section" aria-labelledby="home-news-title">
  <div class="hub-heading"><h2 id="home-news-title">Latest news</h2><p>Discover what is happening beyond the gates.</p></div>

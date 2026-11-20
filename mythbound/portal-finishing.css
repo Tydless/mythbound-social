@@ -69,3 +69,32 @@
 @media(max-width:760px){
  .site-header #account-button>.account-sigil.mb-account-portrait{transform:translateY(-1.5px)}
 }
+
+/* Home: official trailer and the two newest class releases. */
+#page-home .home-trailer{text-align:center;padding-top:var(--home-hub-heading-space);padding-bottom:0}
+#page-home .home-trailer .hub-heading{display:flex;flex-direction:column;align-items:center;gap:9px;margin:0 0 26px;padding:0}
+#page-home .home-trailer .hub-heading h2{margin:0;color:#f2dfbb;line-height:1.25}
+#page-home .home-trailer .hub-heading p{margin:0;color:#b9c5d3}
+#page-home .home-trailer-frame{position:relative;isolation:isolate;width:min(100%,900px);aspect-ratio:16/9;margin:auto;overflow:hidden;border:1px solid #c7ab755e;background:#111c2c;box-shadow:0 12px 36px #060b1660}
+#page-home .home-trailer-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:linear-gradient(0deg,#101827d9,#1018278c),url('../mythbound-home-watercolor.jpg') center/cover no-repeat;color:#eedab8}
+#page-home .home-trailer-placeholder:after{content:"";position:absolute;inset:10px;border:1px solid #d8bc8d38;pointer-events:none}
+#page-home .home-trailer-seal{width:clamp(42px,7vw,72px);aspect-ratio:1;color:#e6c994;opacity:.85}
+#page-home .home-trailer-seal svg{display:block;width:100%;height:100%}
+#page-home .home-trailer-placeholder strong{font:600 clamp(19px,2.8vw,30px)/1.2 'Cinzel',Georgia,serif}
+#page-home .home-trailer-placeholder>span:last-child{font-size:11px;letter-spacing:.11em;color:#c3ceda}
+#page-home .home-trailer-frame video{display:block;width:100%;height:100%;object-fit:contain;background:#080e19}
+#page-home>.home-class-releases{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+#page-home .home-class-release{--release-tone:#a9d3c5;position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;min-height:clamp(245px,27vw,335px);padding:22px 16px 25px;gap:16px;border:1px solid color-mix(in srgb,var(--release-tone) 42%,#26364b);background:radial-gradient(ellipse at 50% 36%,#4d82776b,transparent 63%),linear-gradient(145deg,#263d47,#172236);color:#f1dfc3}
+#page-home .home-djinnblade{--release-tone:#8fbce4;background:radial-gradient(ellipse at 50% 36%,#5b7aa36b,transparent 63%),linear-gradient(145deg,#26364d,#172236)}
+#page-home .home-class-release:before{content:"";position:absolute;inset:8px;border:1px solid color-mix(in srgb,var(--release-tone) 16%,transparent);pointer-events:none;z-index:-1}
+#page-home .home-class-release:hover{border-color:var(--release-tone)}
+#page-home .home-release-label{font:600 11px/1.4 'DM Sans',system-ui,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:var(--release-tone)}
+#page-home .home-class-release .preview-symbol{display:grid;place-items:center;width:clamp(66px,8vw,104px);height:clamp(66px,8vw,104px);margin:0;color:var(--release-tone);font-size:64px;line-height:1}
+#page-home .home-class-release .preview-symbol img{max-width:100%;max-height:100%;object-fit:contain}
+#page-home .home-subclass-symbol{border:1px dashed #8fbce47a;border-radius:50%;font-size:42px!important}
+#page-home .home-release-copy{display:flex;flex-direction:column;align-items:center;gap:5px}
+#page-home .home-release-copy strong{font:600 clamp(22px,3vw,33px)/1.2 'Cinzel',Georgia,serif}
+#page-home .home-release-copy small{font-size:12px;color:#becbdc}
+#page-home .home-release-link{display:flex;gap:8px;align-items:center;color:var(--release-tone);font-size:12px;font-weight:600;margin-top:9px}
+@media(max-width:650px){#page-home .home-trailer .hub-heading{margin-bottom:18px}#page-home>.home-class-releases{gap:10px;padding-inline:23px;padding-bottom:40px}#page-home .home-class-release{min-height:210px;padding:16px 9px 19px;gap:10px}#page-home .home-release-label{font-size:9px;letter-spacing:.06em}#page-home .home-release-copy strong{font-size:clamp(16px,4.9vw,24px)}#page-home .home-release-copy small{font-size:10px}#page-home .home-release-link{font-size:10px;gap:4px}}
+@media(max-width:340px){#page-home>.home-class-releases{grid-template-columns:1fr}}

@@ -22,10 +22,22 @@ function navigate(page,replace=false){
   pages.forEach(p=>{const active=p.id==="page-"+page;p.hidden=!active;p.classList.toggle("is-visible",active)});
   navButtons.forEach(b=>{const active=b.dataset.page===page;b.classList.toggle("is-active",active);if(active)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
   if(replace)history.replaceState(null,"","#"+page);else if(location.hash!=="#"+page)history.pushState(null,"","#"+page);
+  if(page!=="home"){const trailer=document.getElementById("home-trailer-video");if(trailer&&!trailer.paused)trailer.pause()}
   window.scrollTo({top:0,behavior:"instant"});
 }
 navButtons.forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.page)));
 document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>navigate(b.dataset.go)));
+/* An empty trailer source deliberately displays a non-interactive placeholder. */
+(function(){
+ const video=document.getElementById("home-trailer-video"),placeholder=document.getElementById("home-trailer-placeholder"),status=document.getElementById("home-trailer-status");
+ if(!video||!placeholder||!status)return;
+ const source=(video.dataset.trailerSrc||"").trim();
+ if(!source)return;
+ video.addEventListener("loadedmetadata",()=>{video.hidden=false;placeholder.hidden=true});
+ video.addEventListener("error",()=>{video.hidden=true;placeholder.hidden=false;status.textContent="Trailer currently unavailable"});
+ video.src=source;
+})();
+
 window.addEventListener("popstate",()=>navigate(location.hash.slice(1)||"home",true));
 function setClassArtwork(host,name,variant=null){
   const data=variant||CLASS_DATA[name];if(!host||!data)return;
@@ -40,7 +52,8 @@ function setClassArtwork(host,name,variant=null){
   host.replaceChildren(fallback,img);img.src=src;
 }
 document.querySelectorAll(".class-tile, .preview-class").forEach(button=>{
-  setClassArtwork(button.querySelector(".class-glyph, .preview-symbol"),button.dataset.class);
+  // A subclass without approved icon art keeps its own neutral symbol, not the base class icon.
+  if(Number(button.dataset.classPath||0)===0)setClassArtwork(button.querySelector(".class-glyph, .preview-symbol"),button.dataset.class);
 });
 function selectClass(name){
   const c=CLASS_DATA[name];if(!c)return;

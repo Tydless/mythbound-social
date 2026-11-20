@@ -391,3 +391,15 @@ test("The visitor journey leads from Home to World to Gameplay to Classes",()=>{
  assert.match(world,/<button[^>]+data-go="gameplay"/);
  assert.match(read("app.js"),/navigate\(b.dataset.go\)/);
 });
+
+test("Home trailer awaits a real source and release cards target their exact class paths",()=>{
+ const home=html.slice(html.indexOf('id="page-home"'),html.indexOf('id="page-discover"'));
+ assert.ok(home.indexOf('id="home-trailer-video"')<home.indexOf('class="preview-classes home-class-releases"'));
+ assert.match(home,/<video[^>]+data-trailer-src=""[^>]+controls[^>]+hidden/);
+ const cards=[...home.matchAll(/data-class="([^"]+)" data-class-path="([^"]+)"/g)].map(m=>[m[1],m[2]]);
+ assert.deepEqual(cards,[["animar","0"],["strider","3"]]);
+ const w={};new Function("window",read("class-data.js"))(w);
+ assert.equal(w.MythboundCodexData.SPECIALIZATIONS.strider[3].name,"Djinnblade");
+ assert.match(read("class-showcase.js"),/activePath=Number.isInteger\(requested\)&&SPECIALIZATIONS\[family\]\?\.\[requested\]\?requested:0/);
+ assert.match(read("app.js"),/if\(!source\)return;/);
+});

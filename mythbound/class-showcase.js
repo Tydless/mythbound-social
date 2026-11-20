@@ -617,7 +617,9 @@ function draw(){
 document.querySelectorAll("[data-class]").forEach(button=>{
  button.addEventListener("click",()=>{
   if(!DATA[button.dataset.class])return;
-  stopVoice();active=button.dataset.class;activePath=0;chosen=null;gender="male";draw();updateVoiceButton();
+  const family=button.dataset.class,requested=Number(button.dataset.classPath||0);
+  // Homepage release links may open a particular specialization in one click.
+  stopVoice();active=family;activePath=Number.isInteger(requested)&&SPECIALIZATIONS[family]?.[requested]?requested:0;chosen=null;gender="male";draw();updateVoiceButton();
  });
 });
 document.querySelectorAll(".gender-option").forEach(button=>button.addEventListener("click",()=>{
