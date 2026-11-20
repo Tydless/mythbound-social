@@ -177,5 +177,4 @@
  #page-discover .mw-creature-row:not(.mw-boss-row) .mw-creature-copy,#page-discover .mw-creature-row:nth-child(2):not(.mw-boss-row) .mw-creature-copy{grid-area:copy;text-align:center;width:100%}
  #page-discover .mw-creature-row:not(.mw-boss-row) .mw-creature-strength{justify-content:center}
  #page-discover .mw-boss-row{grid-column:1/-1;margin-top:0}
- #page-discover .mw-codex-overview{margin:0;max-width:900px;text-align:left}
 }

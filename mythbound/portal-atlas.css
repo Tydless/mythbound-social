@@ -85,6 +85,8 @@
 #page-discover .mw-codex-tabs button:focus-visible{outline:1px solid var(--region-accent);outline-offset:-4px}
 #page-discover .mw-codex-panel{min-height:310px;padding:clamp(20px,4vw,44px);background:radial-gradient(ellipse at 0 0,color-mix(in srgb,var(--region-accent) 6%,transparent),transparent 65%)}
 #page-discover .mw-codex-overview{max-width:760px;margin:auto}
+/* Desktop overview uses the same left padding as the other regional tabs. */
+@media(min-width:761px){#page-discover .mw-codex-overview{margin:0;max-width:900px;text-align:left}}
 #page-discover .mw-codex-panel h4{font:600 clamp(16px,2vw,21px)/1.35 'Cinzel',Georgia,serif;color:var(--region-accent);margin:0 0 10px}
 #page-discover .mw-codex-overview p,#page-discover .mw-codex-intro{font-size:14px;line-height:1.75;color:#c8d2df;margin:0 0 24px}
 #page-discover .mw-codex-next{margin-top:4px}
