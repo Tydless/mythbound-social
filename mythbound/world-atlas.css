@@ -162,3 +162,7 @@
  #page-discover .mw-boss-row .mw-creature-art{width:min(132px,100%)}
 }
 @media(max-width:350px){#page-discover .mw-creature-row:nth-child(2):not(.mw-boss-row){grid-template-columns:minmax(0,1fr) 82px}}
+
+/* Full-body sticker artwork is optional and never cropped into the circular portrait. */
+#mw-npc-preview .mw-npc-preview-art.has-fullbody{padding:6px 24px 12px;min-height:200px}
+#mw-npc-preview .mw-npc-fullbody{display:block;width:100%;height:clamp(200px,42dvh,340px);object-fit:contain;object-position:center;filter:drop-shadow(0 5px 8px #070d1860)}

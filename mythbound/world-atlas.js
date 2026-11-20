@@ -20,7 +20,12 @@ for(const r of regions)Object.assign(r,previews[r.id]);
 // Regional encyclopedia: expandable data, independent of the map geometry and audio.
 const regionLore={"greatfields":{"lore":"Wide fields and a bright sky invite travelers into the world of Mythbound. Here, the familiar comforts of village life meet the promise of adventure. The GreatFields form the starting region and the shared setting for the six base class backgrounds.","inhabitants":"The region is envisioned as lively, with grazing animals, curious creatures and village inhabitants. Individual species and characters are still to be introduced.","locations":[],"journal":[{"title":"The beginning of your journey","text":"The GreatFields are the confirmed starting area for Mythbound's six base classes."}]},"fable":{"lore":"The forest draws its spirit from childhood fables and enchanted woodland stories. Tiny villages, winding trails and ancient trees form a landscape meant to reward curiosity. The forest's hidden creatures and their stories will be explored as the region develops.","inhabitants":"Fable creatures and woodland inhabitants are central to this region's concept. Their individual designs and lore are not yet established.","locations":[],"journal":[]},"wondrous":{"lore":"Inspired by the impossible worlds of Wonderland and Oz, the Wondrous Lands are a place of playful contradictions, curious paths and unexpected discoveries. The region's peculiar logic is part of its identity.","inhabitants":"Whimsical beings and unusual characters belong to this region's vision. Individual inhabitants will be introduced in future entries.","locations":[],"journal":[]},"dunes":{"lore":"The Wild Dunes draw their enchantment from the legends and tales of the Arabian Nights. Golden sands, magical oases and splendid palaces set the stage for discoveries both beautiful and mysterious.","inhabitants":"The region's mythical beings and desert communities have yet to be defined.","locations":[],"journal":[]},"bloodmoon":{"lore":"The darkest of Mythbound's regions draws on Asian folklore and the haunting presence of spirits and mythical beings. Among its shadowed paths stands the Blood Moonshrine, tied to the forbidden magic of the Fallen Saint.","inhabitants":"Yokai-inspired spirits and mythical creatures are part of the region's concept. Specific species, settlements and encounters remain to be decided.","locations":[{"title":"The Blood Moonshrine","text":"The shrine associated with the Fallen Saint's pact with the Blood Moon. Its wider location details and encounters have yet to be revealed."}],"journal":[{"title":"When Heaven Remains Silent","text":"The Fallen Saint's class advancement story: forsaken by the heavens, the Saint seeks an answer at the Blood Moonshrine and makes a forbidden pact."}]},"heavenly":{"lore":"A celestial realm beyond the mortal world, imagined as a place of heavenly beauty and mystery. Divine magic and the Archsaint's calling are connected to the heavens; the nature of the realm and its access remain open.","inhabitants":"Celestial inhabitants are planned, but their appearance, culture and origins have not yet been established.","locations":[],"journal":[{"title":"When Heaven Answers","text":"The Archsaint's class advancement story is connected to a divine calling. Further regional story details are still to be revealed."}]}};
 // Add individual city/settlement records to regionLore[id].locations:
-// {id, type:"city"|"settlement", title, text, npcs:[{id,name,portrait,role,description,location,details:[{label,value}]}]}.
+// Special adventurer artwork uses separate portrait and full-body transparent PNGs.
+regionLore.greatfields.locations.push({
+ id:"greatfields-settlements",type:"settlement",title:"Cities & settlements",text:"Settlement entries forthcoming.",pending:true,
+ npcs:[{id:"special-adventurer",name:"Little Adventurer",role:"Special NPC",description:"A young adventurer accompanied by Pipo.",portrait:"../special-adventurer-portrait.png",fullBody:"../special-adventurer-fullbody.png",location:"The GreatFields"}]
+});
+// {id, type:"city"|"settlement", title, text, npcs:[{id,name,portrait,fullBody,role,description,location,details:[{label,value}]}]}.
 // Each city owns its NPC roster. Unrevealed cities show layout placeholders only.
 // Creature entries accept transparent PNG art, and confirmed names, descriptions, and strength (1–5).
 // These sample bestiary entries are explicitly provisional design suggestions, not established world lore.
@@ -215,7 +220,15 @@ function openNPC(npc,r,trigger,keyboard=false){
  npcOpener=trigger;trigger.setAttribute("aria-expanded","true");
  npcDialog.style.setProperty("--region-accent",r.color);npcDialog.style.setProperty("--npc-accent",r.color);npcContent.replaceChildren();
  const title=make("h2","",npc?.name||"Yet to be revealed");title.id="mw-npc-title";
- const portrait=make("div","mw-npc-preview-art");portrait.append(npcPortrait(npc));npcContent.append(portrait,make("span","mw-kicker mw-npc-kicker",r.name),title);
+ const portrait=make("div","mw-npc-preview-art");
+ if(npc?.fullBody){
+  portrait.classList.add("has-fullbody");
+  const img=make("img","mw-npc-fullbody");img.alt="Full-body illustration of "+npc.name;
+  img.addEventListener("load",()=>positionNPC(),{once:true});
+  img.addEventListener("error",()=>{portrait.classList.remove("has-fullbody");portrait.replaceChildren(npcPortrait(npc));positionNPC()},{once:true});
+  img.src=npc.fullBody;portrait.append(img);
+ }else portrait.append(npcPortrait(npc));
+ npcContent.append(portrait,make("span","mw-kicker mw-npc-kicker",r.name),title);
  if(npc?.role)npcContent.append(make("p","mw-npc-role",npc.role));
  npcContent.append(make("p","mw-npc-description",npc?.description||"This character has not been introduced yet."));
  const fields=[...(npc?.location?[{label:"Location",value:npc.location}]:[]),...(npc?.details||[])];
@@ -228,7 +241,7 @@ function renderNPCs(r,city,container){
  const roster=city.npcs||[];
  container.append(make("h5","mw-city-npc-heading","NPCs"));
  const gallery=make("div","mw-npc-gallery");gallery.setAttribute("role","group");gallery.setAttribute("aria-label","NPCs in "+city.title);
- const entries=roster.length?roster:Array.from({length:6},()=>null);
+ const entries=[...roster,...Array.from({length:Math.max(0,6-roster.length)},()=>null)];
  entries.forEach((npc,i)=>{
   const name=npc?.name||"Coming soon";
   const btn=make("button","mw-npc-tile"+(npc?"":" is-pending"));btn.type="button";btn.setAttribute("aria-haspopup","dialog");btn.setAttribute("aria-controls","mw-npc-preview");btn.setAttribute("aria-expanded","false");btn.setAttribute("aria-label",npc?name:"Unrevealed NPC slot "+(i+1));btn.append(npcPortrait(npc),make("span","mw-npc-name",name));
