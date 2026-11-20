@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-gameplay27";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-journey28";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css","gameplay.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -159,7 +159,7 @@
         <div class="hero">
           <div class="mobile-landscape-layer" aria-hidden="true"><img src="../mythbound-home-watercolor.jpg" alt="" decoding="async"></div>
           <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="star star-one">✧</div><div class="star star-two">✦</div><div class="world-gate"><div class="gate-center">✶</div></div><div class="horizon"></div><div class="land land-one"></div><div class="land land-two"></div></div>
-          <div class="hero-copy"><h1 id="home-title" class="hero-title-logo logo-host"><img class="official-mythbound-logo" src="../Mythbound_Six_Paths_Transparent.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback">Mythbound Online</span></h1><button type="button" id="mobile-download" class="download-button mobile-hero-download">Download <svg class="mb-diagonal-arrow" viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5 4h7v7"/></svg></button><p>Beyond the veil of remembered stories, six paths await. Find your calling. Forge your legend. Leave a trace in the world of Mythbound.</p><div class="hero-buttons"><button type="button" data-go="classes" class="solid-action">Explore the classes <svg class="mb-diagonal-arrow" viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5 4h7v7"/></svg></button><button type="button" data-go="discover" class="outline-action">Discover the world <span aria-hidden="true">→</span></button></div></div>
+          <div class="hero-copy"><h1 id="home-title" class="hero-title-logo logo-host"><img class="official-mythbound-logo" src="../Mythbound_Six_Paths_Transparent.png" alt="Mythbound Online" onload="this.parentElement.classList.add('logo-ready')" onerror="this.hidden=true"><span class="logo-fallback">Mythbound Online</span></h1><button type="button" id="mobile-download" class="download-button mobile-hero-download">Download <svg class="mb-diagonal-arrow" viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5 4h7v7"/></svg></button><p>Beyond the veil of remembered stories, six paths await. Find your calling. Forge your legend. Leave a trace in the world of Mythbound.</p><div class="hero-buttons"><button type="button" data-go="discover" class="outline-action">Discover the world <span aria-hidden="true">→</span></button></div></div>
           
         </div>
         <div class="section-heading"><h2>Choose the legend you become</h2><p>Every path tells a different story. No two journeys need feel the same.</p></div>
@@ -248,6 +248,12 @@
               </div>
               <div id="mw-codex-panel" class="mw-codex-panel" role="tabpanel" aria-labelledby="mw-tab-region" tabindex="0"></div>
             </div>
+          </section>
+          <section class="mw-gameplay-invitation" aria-labelledby="mw-gameplay-invitation-title">
+            <div class="mw-ornament" aria-hidden="true">✧</div>
+            <h2 id="mw-gameplay-invitation-title">Curious what awaits you?</h2>
+            <p>You've discovered the world. Now explore what you can do within it and make the adventure your own.</p>
+            <button type="button" class="outline-action" data-go="gameplay">Discover gameplay <span aria-hidden="true">→</span></button>
           </section>
         </div>
       </section>

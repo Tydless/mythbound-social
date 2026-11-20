@@ -379,3 +379,15 @@ test("Gameplay navigation and guide expose the four announced feature areas",()=
  assert.doesNotMatch(page,/marriage|housing|\bpets\b/i);
  assert.ok(css.includes("gameplay.css"));assert.ok(style.includes("#page-gameplay"));
 });
+
+test("The visitor journey leads from Home to World to Gameplay to Classes",()=>{
+ const nav=html.slice(html.indexOf('<nav id="primary-navigation"'),html.indexOf('</nav>',html.indexOf('<nav id="primary-navigation"')));
+ assert.deepEqual([...nav.matchAll(/data-page="([^"]+)"/g)].map(m=>m[1]),["home","news","discover","gameplay","classes"]);
+ const hero=html.match(/<div class="hero-buttons">([\s\S]*?)<\/div>/)[1];
+ assert.equal((hero.match(/<button\b/g)||[]).length,1);
+ assert.match(hero,/data-go="discover"/);
+ const world=html.slice(html.indexOf('<section id="page-discover"'),html.indexOf('<section id="page-news"'));
+ assert.ok(world.indexOf('class="mw-gameplay-invitation"')>world.indexOf('id="mw-codex-panel"'));
+ assert.match(world,/<button[^>]+data-go="gameplay"/);
+ assert.match(read("app.js"),/navigate\(b.dataset.go\)/);
+});
