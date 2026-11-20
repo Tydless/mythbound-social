@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-npc-art47";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-map-regions48";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css","gameplay.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -247,7 +247,7 @@
                 <div id="mw-map-markers" class="mw-map-markers" role="group" aria-label="Select a region"></div>
                 <span class="mw-map-corner nw">FIELD ATLAS · 01</span><span class="mw-map-corner se">ILLUSTRATIVE GEOGRAPHY</span>
               </div>
-              <div class="mw-atlas-bottom"><div class="mw-legend" aria-label="Map legend"><span><b>◇</b>Region</span><span><b>✦</b>Starting region</span><span><b>○</b>Realm</span></div><span>Choose a region to explore its entry.</span></div>
+              <div class="mw-atlas-bottom"><div class="mw-legend" aria-label="Map legend"><span><b>◇</b>Region</span><span><b>✦</b>Starting region</span><span><b>○</b>Realm</span></div><span>Select any part of a region or its icon to explore.</span></div>
               <div id="mw-region-preview" class="mw-region-preview" popover="manual" role="dialog" aria-labelledby="mw-preview-title"><div id="mw-preview-landscape" class="mw-preview-landscape"></div><button id="mw-preview-close" class="mw-preview-close" type="button" aria-label="Close region preview"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M5 5l10 10M15 5L5 15"/></svg></button><div class="mw-preview-body"><span id="mw-preview-type" class="mw-kicker"></span><h2 id="mw-preview-title"></h2><p id="mw-preview-description"></p><div class="mw-preview-meta"><div><span class="mw-preview-label">Area difficulty <small>· provisional</small></span><strong id="mw-preview-difficulty"></strong></div><div id="mw-preview-dots" class="mw-preview-dots" aria-hidden="true"></div></div><button id="mw-preview-guide" class="outline-action" type="button">Explore region</button></div></div>
             </div>
           </section>

@@ -150,7 +150,13 @@ if(preview){
  if(typeof preview.showPopover!=="function"){preview.removeAttribute("popover");preview.hidden=true;document.body.append(preview)}
  $("mw-preview-close").addEventListener("click",()=>closePreview(true));
  $("mw-preview-guide").addEventListener("click",()=>{closePreview();showTab("region");scrollToRegionBanner()});
- document.addEventListener("pointerdown",e=>{if(opener&&!preview.contains(e.target)&&!opener.contains(e.target))closePreview()},true);
+ document.addEventListener("pointerdown",e=>{
+  if(!opener||preview.contains(e.target)||opener.contains(e.target))return;
+  const terrain=e.target.closest?.("[data-terrain]");
+  // A region surface and its icon share one preview toggle and anchor.
+  if(terrain?.dataset.terrain===opener.dataset.atlasRegion)return;
+  closePreview();
+ },true);
  document.addEventListener("keydown",e=>{if(opener&&e.key==="Escape"){e.preventDefault();closePreview(true)}});
  window.addEventListener("resize",positionPreview);
  window.addEventListener("scroll",positionPreview,{passive:true});
@@ -344,14 +350,28 @@ for(const r of releaseOrder.map(find).filter(Boolean)){
  const btn=make("button","mw-location-tab",r.name);btn.type="button";btn.dataset.atlasRegion=r.id;btn.style.setProperty("--region-accent",r.color);btn.setAttribute("aria-pressed","false");
  btn.addEventListener("click",()=>{closePreview();choose(r.id);showTab("region")});directory.append(btn);
 }
+const terrainById=new Map([...world.querySelectorAll(".mw-terrain [data-terrain]")].map(path=>[path.dataset.terrain,path]));
 for(const r of regions){
  const pin=make("button","mw-map-pin");pin.type="button";pin.dataset.atlasRegion=r.id;
  pin.style.setProperty("--pin-x",r.x+"%");pin.style.setProperty("--pin-y",r.y+"%");pin.style.setProperty("--region-accent",r.color);
  pin.setAttribute("aria-haspopup","dialog");pin.setAttribute("aria-expanded","false");pin.setAttribute("aria-controls","mw-region-preview");pin.setAttribute("aria-label","Explore "+r.name);pin.setAttribute("aria-pressed","false");
  const symbol=make("span","mw-pin-symbol",r.symbol);symbol.setAttribute("aria-hidden","true");
  const label=make("span","mw-pin-label",r.name);pin.append(symbol,label);pin.addEventListener("click",()=>openPreview(r.id,pin,{sound:true}));markers.append(pin);
-
+ const terrain=terrainById.get(r.id);
+ if(!terrain)continue;
+ terrain.style.setProperty("--region-accent",r.color);
+ const highlight=on=>{terrain.classList.toggle("is-hovered",on);pin.classList.toggle("is-hovered",on)};
+ for(const target of [terrain,pin]){
+  target.addEventListener("pointerenter",e=>{if(e.pointerType!=="touch")highlight(true)});
+  target.addEventListener("pointerleave",()=>highlight(false));
+  target.addEventListener("pointercancel",()=>highlight(false));
+ }
+ pin.addEventListener("focus",()=>terrain.classList.add("is-focused"));
+ pin.addEventListener("blur",()=>terrain.classList.remove("is-focused"));
+ // Keep one accessible keyboard button per region. Pointer clicks anywhere in
+ // the SVG land shape use the exact same behavior and marker-anchored preview.
+ terrain.addEventListener("click",()=>openPreview(r.id,pin,{sound:true}));
 }
-// Only map marker buttons open the preview and play the regional cue.
+// Both map surfaces and marker buttons open the preview and play the regional cue.
 choose(selected);
 })();
