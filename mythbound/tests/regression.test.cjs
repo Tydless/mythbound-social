@@ -421,3 +421,18 @@ test("Home What's new button scrolls to the newsletter without changing routes",
  assert.deepEqual(scroll,{top:608,behavior:"smooth"});assert.ok(focused);
  win.matchMedia=()=>({matches:true});click();assert.equal(scroll.behavior,"instant");
 });
+
+test("The nine Whimble Chronicles are upcoming Developer Diary posts, not fake published articles",()=>{
+ const entries=[["pinterest","It All Started on Pinterest"],["vision","From Vision to Reality"],["inspirations","A Love Letter to Fantasy"],["two-pixels","The Art of Two Pixels"],["navigation","A Website That Tells a Story"],["many-paths","The Many Paths We Walk"],["voice","Giving Legends a Voice"],["chatgpt","My Unexpected Development Partner"],["dream-game","The Game I Wish Existed"]];
+ const cards=[...html.matchAll(/<article class="news-entry diary-upcoming"[^>]*>([\s\S]*?)<\/article>/g)];
+ assert.equal(cards.length,9);
+ entries.forEach(([id,title],i)=>{
+  assert.ok(cards[i][0].includes('id="news-diary-'+id+'"'));
+  assert.ok(cards[i][0].includes('data-news-category="developer-diary"'));
+  assert.ok(cards[i][0].includes('data-diary-status="planned"'));
+  assert.ok(cards[i][0].includes('<h2>'+title+'</h2>'));
+  assert.ok(cards[i][0].includes("Coming soon"));
+  assert.ok(!cards[i][0].includes("data-news-toggle"));
+ });
+ assert.ok(html.includes('id="news-devlog"'));
+});
