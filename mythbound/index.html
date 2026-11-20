@@ -45,7 +45,7 @@
   </style>
   <script>
   // Manual refresh changes both the document URL and core asset URLs.
-  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-responsive-audio36";
+  (function(){const key=new URLSearchParams(location.search).get("_mbupdate")||"",v=/^\d{10,15}$/.test(key)?key:"20261120-npc-gallery37";
     for(const f of ["styles.css","account.css","world-atlas.css","portal-layout.css","class-codex.css","portal-polish.css","class-portrait.css","portal-atlas.css","portal-social.css","class-specializations.css","portal-finishing.css","class-mobile-effects.css","gameplay.css"])document.write('<link rel="stylesheet" href="'+f+'?v='+v+'">');
     for(const f of ["sound-settings.js","app.js","class-data.js","class-voice.js","class-transform-audio.js","class-portrait-effects.js","class-showcase.js","account.js","social.js","world-region-audio.js","world-atlas.js"])document.write('<script defer src="'+f+'?v='+v+'"><\/script>');
   })();
@@ -561,6 +561,7 @@
     <button type="button" class="audio-volume-mute" id="sfx-volume-mute">Mute</button>
   </div>
   <audio id="mythbound-theme" src="../mythbound-theme.mp3" preload="auto" autoplay loop aria-hidden="true"></audio>
+  <script>/* Apply saved soundtrack preference before deferred scripts load. */(function(){const a=document.getElementById("mythbound-theme");try{const raw=localStorage.getItem("mythbound-music-volume"),v=raw===null?.3:Number(raw);a.volume=Number.isFinite(v)?Math.max(0,Math.min(1,v)):.3;if(localStorage.getItem("mythbound-music-enabled")==="false"||v===0){a.autoplay=false;a.pause();a.muted=true}}catch{}})();</script>
   <span id="music-announcement" class="screen-reader-only" role="status" aria-live="polite"></span>
 
 <script>
