@@ -12,7 +12,7 @@
     return new Set();
   }
   let readIds=loadRead();
-  function unreadCount(thread){return incoming.filter(m=>(!thread||m.thread===thread)&&!readIds.has(m.id)).length}
+  function unreadCount(thread){return incoming.filter(m=>(!thread||m.thread===thread)&&!readIds.has(m.id)&&!isMuted(m.thread)&&!isArchived(m.thread)).length}
   const unreadLabel=n=>n+" unread message"+(n===1?"":"s");
   const people={
     fighter:{name:"Fighter",file:"ProfileSaintFemale.png",glyph:"✥",info:"Saint · Lv. 84",status:"Online",online:true,level:84,className:"Saint",banner:"../BannerSaint.png",accent:"#e8c895",availability:"Inbox Open",quote:"I have enough heals. You, apparently, don't have enough brain cells.",about:"Perfect dye combinations. Beautiful armor. Good healing rotations. I know what I'm doing, so please stop running into the boss.",playstyle:"Raid support",favorite:"Outfit collecting"},
@@ -20,12 +20,23 @@
     responsible:{name:"Responsible Buddy",glyph:"",info:"Lv. 12",status:"Last online 39 days ago",online:false,level:12,accent:"#b3bfd0",availability:"Don’t disturb",quote:"I was forced to do this."}
   };
   const oldChats=[
-    {name:"MoonMoth",file:"ProfileElemis.png",preview:"You're good, honestly. We should run that again...",date:"2 days ago"},
-    {name:"WoollyWanderer",file:"ProfileHerder.png",preview:"Thanks for helping with the quest!",date:"4 days ago"},
-    {name:"CritHappens",file:"ProfileBreaker.png",preview:"gg! sorry about that last pull lol",date:"6 days ago"},
-    {name:"LunarBlade",file:"ProfileStrider.png",preview:"Do you still have that spare material?",date:"1 week ago"},
-    {name:"Rook_07",preview:"Hey, are you in a guild yet?",date:"2 weeks ago"}
+    {id:"moonmoth",name:"MoonMoth",file:"ProfileElemis.png",preview:"You're good, honestly. We should run that again...",date:"2 days ago"},
+    {id:"woolly",name:"WoollyWanderer",file:"ProfileHerder.png",preview:"Thanks for helping with the quest!",date:"4 days ago"},
+    {id:"crit",name:"CritHappens",file:"ProfileBreaker.png",preview:"gg! sorry about that last pull lol",date:"6 days ago"},
+    {id:"lunar",name:"LunarBlade",file:"ProfileStrider.png",preview:"Do you still have that spare material?",date:"1 week ago"},
+    {id:"rook",name:"Rook_07",preview:"Hey, are you in a guild yet?",date:"2 weeks ago"}
   ];
+  const contacts={...people,...Object.fromEntries(oldChats.map(p=>[p.id,p]))};
+  const stateKey="mythbound-social-actions-v1";
+  let socialState={muted:[],requests:[],archived:[],replies:{}};
+  try{const v=JSON.parse(sessionStorage.getItem(stateKey)||"null");if(v&&typeof v==="object"){
+    for(const k of ["muted","requests","archived"])if(Array.isArray(v[k]))socialState[k]=v[k].filter(id=>Object.hasOwn(contacts,id));
+    if(v.replies&&typeof v.replies==="object")for(const id of Object.keys(contacts))if(Array.isArray(v.replies[id]))socialState.replies[id]=v.replies[id].filter(x=>typeof x?.text==="string").slice(-100);
+  }}catch{}
+  const saved=()=>{try{sessionStorage.setItem(stateKey,JSON.stringify(socialState))}catch{}};
+  const isFriend=id=>Object.hasOwn(people,id);
+  const isMuted=id=>socialState.muted.includes(id);
+  const isArchived=id=>socialState.archived.includes(id);
   const make=(tag,cls,value)=>{
     const el=document.createElement(tag);if(cls)el.className=cls;if(value!==undefined)el.textContent=value;return el;
   };
@@ -44,6 +55,38 @@
     }
     return wrap;
   }
+  let activeMenu=null,menuTrigger=null,toastTimer=0,currentView="inbox";
+  const sheet=content.closest(".sheet");
+  const menu=make("div","mb-contact-menu");menu.hidden=true;menu.setAttribute("role","group");menu.setAttribute("aria-label","Player actions");sheet.append(menu);
+  const toast=make("div","mb-social-toast");toast.hidden=true;toast.setAttribute("role","status");toast.setAttribute("aria-live","polite");sheet.append(toast);
+  function notify(message){clearTimeout(toastTimer);toast.textContent=message;toast.hidden=false;toastTimer=setTimeout(()=>toast.hidden=true,3200)}
+  function closeContactMenu(restore=false){const old=menuTrigger;menu.hidden=true;menu.replaceChildren();activeMenu=null;menuTrigger=null;old?.setAttribute("aria-expanded","false");if(restore&&old?.isConnected)old.focus({preventScroll:true})}
+  function placeMenu(){if(!menuTrigger?.isConnected){closeContactMenu();return}const b=menuTrigger.getBoundingClientRect(),host=sheet.getBoundingClientRect();if(b.bottom<host.top||b.top>host.bottom){closeContactMenu();return}const m=menu.getBoundingClientRect();menu.style.left=Math.max(host.left+8,Math.min(b.left,host.right-m.width-8))+"px";menu.style.top=Math.max(host.top+8,Math.min(b.bottom+6,host.bottom-m.height-8))+"px"}
+  function syncMuteStyles(){content.querySelectorAll("[data-contact-id]").forEach(el=>el.classList.toggle("mb-muted",isMuted(el.dataset.contactId)));syncUnread()}
+  function contactButton(id,large=false){
+    const p=contacts[id],button=make("button","mb-contact-avatar");button.type="button";button.setAttribute("aria-label","Actions for "+p.name);button.setAttribute("aria-expanded","false");button.append(avatar(p,large));button.addEventListener("click",e=>{e.stopPropagation();openContactMenu(id,button)});return button;
+  }
+  function openContactMenu(id,trigger){
+    if(!contacts[id]||window.MythboundAccount?.isSignedIn()===false)return;
+    if(activeMenu===id&&menuTrigger===trigger){closeContactMenu(true);return}closeContactMenu();activeMenu=id;menuTrigger=trigger;trigger.setAttribute("aria-expanded","true");
+    menu.append(make("strong","mb-contact-menu-title",contacts[id].name));
+    function item(label,action){const b=make("button","",label);b.type="button";b.addEventListener("click",action);menu.append(b)}
+    if(isFriend(id))item("View profile",()=>{closeContactMenu();openFriend(id)});
+    item("Send Whisper",()=>{closeContactMenu();openContactWhisper(id)});
+    item(isMuted(id)?"Unmute":"Mute",()=>{if(isMuted(id))socialState.muted=socialState.muted.filter(x=>x!==id);else socialState.muted.push(id);saved();syncMuteStyles();closeContactMenu(true)});
+    item(isFriend(id)?"Already friends":socialState.requests.includes(id)?"Request Sent":"Send Friend Request",()=>{
+      if(isFriend(id)){notify("Already friends");return}
+      if(socialState.requests.includes(id)){notify("Already sent");return}
+      socialState.requests.push(id);saved();notify("Request successfully sent");menu.querySelectorAll("button").forEach(b=>{if(b.textContent==="Send Friend Request")b.textContent="Request Sent"});
+    });
+    item("Report",()=>{closeContactMenu();openReport(id)});
+    menu.hidden=false;placeMenu();menu.querySelector("button")?.focus({preventScroll:true});
+  }
+  document.addEventListener("pointerdown",e=>{if(activeMenu&&!menu.contains(e.target)&&!menuTrigger?.contains(e.target))closeContactMenu()},true);
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&activeMenu){e.preventDefault();e.stopImmediatePropagation();closeContactMenu(true)}},true);
+  sheet.addEventListener("scroll",()=>{if(activeMenu)closeContactMenu()},{passive:true,capture:true});
+  window.addEventListener("resize",()=>{if(activeMenu)placeMenu()});
+  new MutationObserver(()=>{if(overlay.hidden)closeContactMenu();else if(menuTrigger&&!menuTrigger.isConnected)closeContactMenu()}).observe(overlay,{attributes:true,attributeFilter:["hidden"]});
   function markSeen(thread="fighter"){
     if(window.MythboundAccount?.isSignedIn()===false)return;
     for(const id of loadRead())readIds.add(id);
@@ -52,7 +95,7 @@
     syncUnread();
   }
   function resetReadState(){
-    readIds.clear();
+    readIds.clear();socialState={muted:[],requests:[],archived:[],replies:{}};saved();
     try{sessionStorage.removeItem(readKey)}catch{}
     syncUnread();
   }
@@ -68,7 +111,7 @@
     const sub=$("mb-inbox-unread-summary");if(sub)sub.textContent=n?unreadLabel(n)+" · Whispers & party conversations":"All caught up · Whispers & party conversations";
     document.querySelectorAll("[data-mb-inbox-thread]").forEach(row=>{
       const count=unreadCount(row.dataset.mbInboxThread);row.classList.toggle("mb-is-unread",count>0);badge(row.querySelector(".mb-thread-count"),count);
-      row.setAttribute("aria-label",(row.querySelector(".mb-inbox-top strong")?.textContent||"Conversation")+(count?", "+unreadLabel(count):", read"));
+      (row.querySelector(".mb-contact-open")||row).setAttribute("aria-label",(row.querySelector(".mb-inbox-top strong")?.textContent||"Conversation")+(count?", "+unreadLabel(count):", read"));
       if(row.dataset.mbInboxThread==="fighter"){const date=row.querySelector(".mb-inbox-date");if(date)date.textContent=count?"Just now":"Today"}
     });
     document.querySelectorAll(".mb-inbox-tab-count").forEach(el=>badge(el,n));
@@ -93,55 +136,84 @@
     if(window.MythboundAccount?.isSignedIn()===false)return;
     if(overlay.hidden)previousFocus=document.activeElement;
     overlay.classList.remove("mb-launcher-modal");
-    content.replaceChildren(...nodes);
+    closeContactMenu();content.replaceChildren(...nodes);
     $("sheet-kicker").textContent=kicker;
     overlay.hidden=false;document.body.classList.add("sheet-open");content.closest(".sheet").scrollTop=0;$("sheet-close").focus({preventScroll:true});
   }
   function friendRow(id){
-    const p=people[id],button=make("button","mb-inbox-row mb-social-friend");button.type="button";
+    const p=people[id],row=make("div","mb-inbox-row mb-social-friend");row.dataset.contactId=id;row.classList.toggle("mb-muted",isMuted(id));
+    const button=make("button","mb-contact-open");button.type="button";
     const words=make("span","mb-inbox-words");words.append(make("strong","",p.name),make("small","",p.info));if(!p.online)words.append(make("small","mb-offline",p.status));
-    button.append(avatar(p),words,make("span","mb-row-chevron","›"));
-    button.addEventListener("click",()=>openFriend(id));return button;
+    button.append(words,make("span","mb-row-chevron","›"));row.append(contactButton(id),button);
+    button.addEventListener("click",()=>openFriend(id));return row;
   }
-  function groupAvatar(){
-    const g=make("span","mb-group-avatar");g.setAttribute("aria-hidden","true");
-    g.append(avatar(people.fighter),avatar(people.chaotic),avatar(people.responsible));return g;
+  function groupAvatar(interactive=false){
+    const g=make("span","mb-group-avatar"+(interactive?" mb-group-interactive":""));
+    if(!interactive)g.setAttribute("aria-hidden","true");
+    for(const id of ["fighter","chaotic","responsible"])g.append(interactive?contactButton(id):avatar(people[id]));return g;
   }
   function inboxRow(p,options={}){
-    const row=make(options.locked?"div":"button","mb-inbox-row"+(options.pinned?" mb-pinned":"")+(options.locked?" mb-archived":""));
-    if(!options.locked){row.type="button";row.addEventListener("click",options.onClick)}
-    else row.setAttribute("aria-label",p.name+", archived conversation preview, "+p.preview);
+    const id=options.thread,row=make("div","mb-inbox-row"+(options.pinned?" mb-pinned":""));const button=make("button","mb-contact-open");button.type="button";button.addEventListener("click",options.onClick);
     const words=make("span","mb-inbox-words"),top=make("span","mb-inbox-top");
-    top.append(make("strong","",p.name),make("small","mb-inbox-date",p.date));
-    words.append(top,make("small","mb-message-preview",p.preview));
-    row.append(options.pinned?groupAvatar():avatar(p),words);
-    if(options.thread){row.dataset.mbInboxThread=options.thread;const n=unreadCount(options.thread),b=make("span","mb-unread-badge mb-thread-count");row.classList.toggle("mb-is-unread",n>0);badge(b,n);row.append(b)}
-    if(options.locked)row.title="Archived conversation · preview only";
+    top.append(make("strong","",p.name),make("small","mb-inbox-date",p.date));words.append(top,make("small","mb-message-preview",p.preview));
+    row.append(options.pinned?groupAvatar(true):contactButton(id),button);button.append(words);
+    if(id){row.dataset.mbInboxThread=id;if(!options.pinned){row.dataset.contactId=id;row.classList.toggle("mb-muted",isMuted(id))}const n=unreadCount(id),b=make("span","mb-unread-badge mb-thread-count");row.classList.toggle("mb-is-unread",n>0);badge(b,n);button.append(b)}
     return row;
   }
-  function openInbox(){
-    if(window.MythboundAccount?.isSignedIn()===false)return;
-    const head=heading("Inbox","Whispers & party conversations");head.querySelector("p").id="mb-inbox-unread-summary";
+  function inboxTabs(active){
     const tabs=make("div","mb-inbox-tabs");
-    const chat=make("button","is-active","Messages");chat.type="button";chat.setAttribute("aria-pressed","true");chat.append(make("span","mb-unread-badge mb-inbox-tab-count"));
-    const friends=make("button","","Friends · 3");friends.type="button";friends.setAttribute("aria-pressed","false");friends.addEventListener("click",openFriends);
-    tabs.append(chat,friends);
+    for(const [id,label,action] of [["inbox","Messages",openInbox],["friends","Friends · 3",openFriends],["archives","Archives",openArchives]]){
+      const b=make("button",id===active?"is-active":"",label);b.type="button";b.setAttribute("aria-pressed",String(id===active));if(id==="inbox")b.append(make("span","mb-unread-badge mb-inbox-tab-count"));b.addEventListener("click",action);tabs.append(b)
+    }return tabs
+  }
+  function threadRow(id){
+    const p=contacts[id],last=socialState.replies[id]?.at(-1);
+    const incomingText=id==="fighter"?incoming.filter(m=>m.thread==="fighter").at(-1)?.text:p.preview;
+    return inboxRow({...p,preview:last?"You: "+last.text:incomingText||"Start a conversation",date:last?"Today":id==="fighter"?(unreadCount("fighter")?"Just now":"Today"):p.date||"Today"},{thread:id,onClick:()=>openContactWhisper(id)})
+  }
+  function openInbox(){
+    if(window.MythboundAccount?.isSignedIn()===false)return;currentView="inbox";
+    const head=heading("Inbox","Whispers & party conversations");head.querySelector("p").id="mb-inbox-unread-summary";
     const list=make("div","mb-inbox-list");
     list.append(make("div","mb-inbox-label","PINNED · PARTY CHAT"));
     list.append(inboxRow({name:"The Usual Suspects",preview:"Chaotic Buddy: THE LOOT WAS MINE FIRST",date:"Yesterday"},{pinned:true,thread:"party",onClick:openGroup}));
     list.append(make("div","mb-inbox-label","WHISPERS"));
-    const latest=incoming.filter(m=>m.thread==="fighter").slice(-1)[0];list.append(inboxRow({...people.fighter,preview:latest?.text||"",date:unreadCount("fighter")?"Just now":"Today"},{thread:"fighter",onClick:openWhisper}));
-    oldChats.forEach(p=>list.append(inboxRow(p,{locked:true})));
-    list.append(make("p","mb-social-note","Older conversation previews are archived."));
-    display([head,tabs,list],"MYTHBOUND · SOCIAL");syncUnread();
+    for(const id of ["fighter",...oldChats.map(p=>p.id),...["chaotic","responsible"].filter(id=>socialState.replies[id]?.length)])if(!isArchived(id))list.append(threadRow(id));
+    display([head,inboxTabs("inbox"),list],"MYTHBOUND · SOCIAL");syncUnread();
+  }
+  function openArchives(){
+    currentView="archives";const head=heading("Archives","Reported conversations"),list=make("div","mb-inbox-list");
+    if(!socialState.archived.length)list.append(make("p","mb-social-note","No archived conversations yet."));
+    for(const id of socialState.archived)list.append(threadRow(id));
+    display([head,inboxTabs("archives"),list],"MYTHBOUND · SOCIAL");syncUnread()
+  }
+  function openContactWhisper(id){
+    if(!contacts[id]||window.MythboundAccount?.isSignedIn()===false)return;
+    if(id==="fighter"){openWhisper();return}
+    currentView="whisper";
+    const p=contacts[id],head=heading(p.name,p.info||"Whispers");head.prepend(contactButton(id,true));
+    const log=make("div","conversation mb-local-conversation");log.setAttribute("role","log");
+    function render(){log.replaceChildren();if(p.preview)log.append(make("p","timestamp",p.date.toUpperCase()),make("div","received-message",p.preview));for(const msg of socialState.replies[id]||[]){log.append(make("p","timestamp","TODAY"),make("div","mb-local-sent",msg.text))}}
+    render();
+    const form=make("form","reply-form"),label=make("label","","Your reply"),input=make("textarea");input.id="mb-local-reply";label.htmlFor=input.id;input.rows=2;input.maxLength=500;input.placeholder="Write a reply…";input.required=true;
+    const send=make("button","solid-action wide","Send Whisper");send.type="submit";
+    form.append(label,input,make("p","reply-hint","Fictional conversation · replies stay on this device."),send);
+    form.addEventListener("submit",e=>{e.preventDefault();const text=input.value.trim();if(!text)return;(socialState.replies[id]??=[]).push({text});socialState.replies[id]=socialState.replies[id].slice(-100);saved();input.value="";render();log.scrollTop=log.scrollHeight;notify("Message sent")});
+    display([back(isArchived(id)?"Back to archives":"Back to inbox",isArchived(id)?openArchives:openInbox),head,log,form],"MYTHBOUND · SOCIAL");
+  }
+  function openReport(id){
+    const p=contacts[id],head=heading("Report "+p.name,"Are you sure you want to report this conversation?");
+    const form=make("form","mb-report-form"),fields=make("fieldset");fields.append(make("legend","","Choose a reason"));
+    for(const reason of ["Insult","Discrimination","Spam","Annoying","Because why not?"]){const label=make("label","mb-report-reason"),radio=make("input");radio.type="radio";radio.name="report-reason";radio.value=reason;radio.required=true;label.append(radio,make("span","",reason));fields.append(label)}
+    const buttons=make("div","mb-report-actions"),cancel=make("button","outline-action","Cancel"),submit=make("button","solid-action","Report");cancel.type="button";submit.type="submit";
+    cancel.addEventListener("click",()=>openContactWhisper(id));buttons.append(cancel,submit);form.append(fields,make("p","reply-hint","This is a fictional report. No real report is submitted."),buttons);
+    form.addEventListener("submit",e=>{e.preventDefault();if(!form.querySelector("input:checked"))return;if(!isArchived(id))socialState.archived.push(id);saved();markSeen(id);openInbox();notify("Thanks, we’ll look into it.")});
+    display([head,form],"MYTHBOUND · REPORT");
   }
   function openFriends(){
     if(window.MythboundAccount?.isSignedIn()===false)return;
     const head=heading("Friends","2 online · 3 friends");
-    const tabs=make("div","mb-inbox-tabs");
-    const chat=make("button","","Messages");chat.type="button";chat.setAttribute("aria-pressed","false");chat.append(make("span","mb-unread-badge mb-inbox-tab-count"));chat.addEventListener("click",openInbox);
-    const friends=make("button","is-active","Friends · 3");friends.type="button";friends.setAttribute("aria-pressed","true");
-    tabs.append(chat,friends);
+    currentView="friends";const tabs=inboxTabs("friends");
     const list=make("div","mb-inbox-list");
     for(const id of ["fighter","chaotic","responsible"])list.append(friendRow(id));
     display([head,tabs,list],"MYTHBOUND · SOCIAL");syncUnread();
@@ -152,7 +224,7 @@
     const profile=make("article","mb-unified-profile mb-friend-profile");profile.style.setProperty("--profile-accent",p.accent);
     const banner=make("header","mb-profile-banner");
     if(p.banner)banner.style.setProperty("--profile-banner",'url("'+p.banner+'")');
-    const identity=make("div","mb-profile-identity"),photo=avatar(p,true),name=make("div","mb-profile-name");
+    const identity=make("div","mb-profile-identity"),photo=contactButton(id,true),name=make("div","mb-profile-name");
     const title=make("h2","",p.name);title.id="sheet-title";
     name.append(title,make("p","mb-profile-presence",p.status));identity.append(photo,name);banner.append(identity);
     const wrap=make("div","mb-profile-main");
@@ -167,7 +239,6 @@
     availability.append(make("h3","","Status"),make("span","mb-profile-status",p.availability));
     availability.lastChild.dataset.availability=p.availability;wrap.append(availability);
     const bio=make("section","mb-profile-bio");bio.append(make("p","profile-quote","“"+p.quote+"”"));
-    if(p.about)bio.append(make("h3","","About my character"),make("p","",p.about));
     if(p.playstyle||p.favorite){const extras=make("dl","mb-profile-extras");for(const [label,value] of [["Playstyle",p.playstyle],["Favorite thing",p.favorite]])if(value){const item=make("div");item.append(make("dt","",label),make("dd","",value));extras.append(item)}bio.append(extras)}
     wrap.append(bio,make("p","mb-mutual-note","✧ You and "+p.name+" have 2 mutual friends."));
     if(id==="fighter"){const message=make("button","solid-action wide","Open Fighter’s whisper ↗");message.type="button";message.addEventListener("click",openWhisper);wrap.append(message)}
@@ -269,7 +340,7 @@
     if(window.MythboundAccount?.isSignedIn()===false)return;
     const player=nickname();
     const head=heading("The Usual Suspects","4 members · "+player+", Fighter, Chaotic Buddy, Responsible Buddy");
-    head.prepend(groupAvatar());
+    head.prepend(groupAvatar(true));
     const log=make("div","mb-group-log");log.setAttribute("role","log");
     const savedAvatar=$("rail-player-avatar")?.querySelector("img")?.getAttribute("src");
     const playerPerson={name:player,file:savedAvatar?.startsWith("../")?savedAvatar.slice(3):undefined,glyph:"✧"};
@@ -291,20 +362,20 @@
     function voice(recording){
       const p=recording.person==="player"?playerPerson:people[recording.person];
       const row=make("div","mb-chat-row mb-voice-row"+(recording.person==="player"?" mb-chat-own":"")),col=make("div","mb-chat-col"),meta=make("div","mb-chat-meta");
-      row.hidden=true;meta.append(make("strong","",p.name+(recording.person==="player"?" · You":"")),make("time","",recording.time));
+      row.hidden=true;if(recording.person!=="player"){row.dataset.contactId=recording.person;row.classList.toggle("mb-muted",isMuted(recording.person))}meta.append(make("strong","",p.name+(recording.person==="player"?" · You":"")),make("time","",recording.time));
       const control=createPartyVoice(recording,p,available=>{
         if(!row.isConnected)return;
         if(available)ready.add(recording.id);else ready.delete(recording.id);
         updateVoiceRows();
       });
-      col.append(meta,control.bubble);row.append(avatar(p),col);log.append(row);
+      col.append(meta,control.bubble);row.append(recording.person==="player"?avatar(p):contactButton(recording.person),col);log.append(row);
       voiceRows.set(recording.id,{row,recording});voiceLoads.push(control.load);
     }
     const stamp=s=>log.append(make("p","mb-chat-date",s));
     function msg(id,time,value){
       const p=people[id],row=make("div","mb-chat-row"),col=make("div","mb-chat-col"),meta=make("div","mb-chat-meta");
       meta.append(make("strong","",p.name),make("time","",time));
-      col.append(meta,make("div","mb-chat-bubble",value));row.append(avatar(p),col);log.append(row);
+      col.append(meta,make("div","mb-chat-bubble",value));row.dataset.contactId=id;row.classList.toggle("mb-muted",isMuted(id));row.append(contactButton(id),col);log.append(row);
     }
     stamp("39 DAYS AGO");
     msg("chaotic","20:43","get online. we need a fourth");
@@ -337,7 +408,7 @@
     log.scrollTop=log.scrollHeight;
   }
   // Entry points for existing site controls; the original Fighter reply redirect stays intact.
-  window.MythboundSocial={openInbox,openFriends,openFriend,markSeen,syncUnread,unreadCount,renderFighterMessages,resetReadState};
+  window.MythboundSocial={openInbox,openFriends,openFriend,markSeen,syncUnread,unreadCount,renderFighterMessages,resetReadState,attachFighterMenu(){const heading=content.querySelector(".whisper-heading");if(heading){heading.prepend(contactButton("fighter",true));heading.querySelector(".friend-avatar")?.remove()}},closeContactMenu};
   $("chaotic-friend")?.addEventListener("click",()=>openFriend("chaotic"));
   $("responsible-friend")?.addEventListener("click",()=>openFriend("responsible"));
   $("all-friends")?.addEventListener("click",openFriends);
