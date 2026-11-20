@@ -19,11 +19,13 @@
   if(!screen||!form||!name||!password||!grid||!submit||!account)return;
   const PROFILE_KEY="mythbound-local-profile-v1", SESSION_KEY="mythbound-roleplay-session-v1";
   let profile=null, signedIn=false, guest=false, editing=false, selected="";
+  const availabilityOptions=["Inbox Open","Don’t disturb","Only in-game"];
+  const validAvailability=value=>availabilityOptions.includes(value)?value:availabilityOptions[0];
   function getAvatar(id){return choices.find(c=>c.id===id)}
   try{
     const data=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null");
     if(data&&typeof data.nickname==="string"&&data.nickname.trim())
-      profile={nickname:data.nickname.trim().slice(0,24),avatar:getAvatar(data.avatar)?data.avatar:""};
+      profile={nickname:data.nickname.trim().slice(0,24),avatar:getAvatar(data.avatar)?data.avatar:"",availability:validAvailability(data.availability)};
   }catch{}
   try{const session=sessionStorage.getItem(SESSION_KEY);signedIn=!!getAvatar(profile?.avatar)&&session==="1";guest=session==="0"}catch{}
   window.MythboundAccount={isSignedIn:()=>signedIn};
@@ -52,6 +54,7 @@
     if(byId("own-profile-name"))byId("own-profile-name").textContent=profile.nickname;
     byId("own-profile-avatar")?.replaceChildren(portrait(avatar));
     if(byId("own-profile-portrait-label"))byId("own-profile-portrait-label").textContent=avatar.label;
+    if(byId("own-profile-status"))byId("own-profile-status").value=validAvailability(profile.availability);
     const rail=byId("rail-player-name"), railAvatar=byId("rail-player-avatar");
     if(rail)rail.textContent=profile.nickname;
     if(railAvatar)railAvatar.replaceChildren(portrait(avatar));
@@ -129,7 +132,7 @@
     if(!nickname||!avatar)return;
     const returningFromGuest=guest;
     const newPlaythrough=!signedIn&&!editing;
-    profile={nickname:nickname.slice(0,24),avatar:avatar.id};signedIn=true;guest=false;
+    profile={nickname:nickname.slice(0,24),avatar:avatar.id,availability:validAvailability(profile?.availability)};signedIn=true;guest=false;
     try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));sessionStorage.setItem(SESSION_KEY,"1")}catch{}
     if(newPlaythrough)window.MythboundSocial?.resetReadState();
     renderSession();hide();
@@ -137,6 +140,7 @@
     (editing&&location.hash==="#profile"?byId("own-edit-profile"):account)?.focus({preventScroll:true});
   });
   account.addEventListener("click",()=>{if(signedIn)navigate("profile");else show(false)});
+  byId("own-profile-status")?.addEventListener("change",e=>{if(!signedIn||!profile)return;profile.availability=validAvailability(e.target.value);try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile))}catch{}});
   byId("own-edit-profile")?.addEventListener("click",()=>{if(signedIn)show(true)});
   byId("own-profile-friends")?.addEventListener("click",()=>window.MythboundSocial?.openFriends());
   byId("own-profile-inbox")?.addEventListener("click",()=>window.MythboundSocial?.openInbox());
