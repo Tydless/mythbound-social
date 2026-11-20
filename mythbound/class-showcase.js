@@ -122,7 +122,6 @@ function renderPreview(allowTransformation=false){
  }else{
   preview.innerHTML=avatarArt();
  }
- const caption=$("preview-caption");if(caption)caption.textContent=gender.toUpperCase()+" · DEFAULT FORM";
  document.querySelectorAll(".gender-option").forEach(b=>{
   const on=b.dataset.gender===gender;
   b.classList.toggle("is-active",on);

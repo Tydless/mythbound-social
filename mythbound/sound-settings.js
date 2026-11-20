@@ -25,6 +25,8 @@ window.MythboundPreferences={get:key=>prefs[key],reduced:()=>prefs.motion||syste
 systemMotion.addEventListener("change",()=>{prefSync();document.dispatchEvent(new CustomEvent("mythbound:preferences-change",{detail:{key:"motion",value:prefs.motion||systemMotion.matches}}))});
 const effective=kind=>active[kind]?levels[kind]:0;
 const ducks=new Map();
+// Audio policy: interface and transformation effects never attenuate the theme.
+const duckOwners=new Set(["class-voice","party-voice","region"]);
 const audio=$("mythbound-theme");
 let musicContext=null,musicGain=null,fadeFrame=0;
 let musicTarget=null;
@@ -110,7 +112,7 @@ function setLevel(kind,value){
  changed(kind);
 }
 window.MythboundSFX={enabled:()=>effective("sfx")>0,volume:sfxVolume,setEnabled:next=>setEnabled("sfx",next)};
-window.MythboundAudio={level:effective,setLevel,applyMusic,duck(owner,ratio,cap=ratio,reference="sfx"){ducks.set(owner,{ratio:clamp(ratio),cap:clamp(cap),reference});applyMusic()},release(owner){if(ducks.delete(owner))applyMusic()}};
+window.MythboundAudio={level:effective,setLevel,applyMusic,duck(owner,ratio,cap=ratio,reference="sfx"){if(!duckOwners.has(owner))return;ducks.set(owner,{ratio:clamp(ratio),cap:clamp(cap),reference});applyMusic()},release(owner){if(ducks.delete(owner))applyMusic()}};
 mobile.addEventListener("change",()=>{hide();sync()});
 
 let open=null,closeTimer=0,mobileMusicArmed=false;

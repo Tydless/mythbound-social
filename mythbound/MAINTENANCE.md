@@ -35,3 +35,16 @@ Run `node --test mythbound/tests/regression.test.cjs` from repository root. Brow
 ## Scope of initial refactor
 
 The approved working snapshot is 27cfb88559f8358e620d0d7193651a808f37b7e8. All preexisting CSS declarations and their order were retained; whitespace/comments and file boundaries changed only. No visual overrides were deleted speculatively. Further cascade deduplication and legacy DOM removal require browser coverage and belong in subsequent small commits.
+
+## Maintenance II — 2026-11-20
+
+Approved baseline: `e9fc45bb6d8632eee9a5fd5233879b2d0584090f` (branch `backup/before-maintenance-ii-2026-11-20`). Work only on `maintenance-ii` until tests and visual checks are reviewed. Never force-push the baseline or delete original assets. Browser storage is not part of Git; preserve all keys and semantics.
+
+- `mobile-navigation.js`: mobile header/menu controller (formerly inline).
+- `news.js`: home slideshow, category filtering, pagination and article deep links (formerly inline).
+- `newsletter.js`: local simulated subscription controller (formerly inline).
+- `interface-audio.js`: synthesized navigation and selection cues; never ducks music.
+- `sound-settings.js`: sole music duck policy; only region, class-voice and party-voice are allowed owners.
+- CSS: edit existing owning selectors in their actual load order. Remove only proven unused definitions, or rules verified by desktop/mobile comparison; do not treat all repeated selectors as safe to delete.
+
+The remaining overlapping style rules are intentionally retained until browser comparisons confirm equivalence. No original artwork, audio, gameplay data or storage keys are removed or renamed. The fictional portal is not an authentication or multiplayer backend.
