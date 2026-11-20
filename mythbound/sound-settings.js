@@ -37,6 +37,8 @@ function unlockMusic(){
  }catch{}
 }
 document.addEventListener("pointerdown",unlockMusic,true);
+document.addEventListener("pointerup",unlockMusic,true);
+document.addEventListener("touchend",unlockMusic,true);
 document.addEventListener("keydown",unlockMusic,true);
 document.addEventListener("click",unlockMusic,true);
 function sync(){
