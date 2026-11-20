@@ -67,18 +67,27 @@ test("Skill section headings identify the path without duplicating the class nam
  assert.doesNotMatch(html,/id="path-type"/);
 });
 
-test("Independent volume preferences and overlapping music ducking preserve the latest volume",()=>{
- const win={},saved=new Map(),music={volume:1};
- const doc={getElementById:id=>id==="mythbound-theme"?music:null,querySelector:()=>null,addEventListener(){},dispatchEvent(){}};
- new Function("window","document","localStorage","Event",read("sound-settings.js"))(win,doc,{getItem:k=>saved.get(k)??null,setItem:(k,v)=>saved.set(k,String(v))},class Event{});
+test("Independent volume preferences, approved duck owners and overlapping foreground audio",()=>{
+ const win={},saved=new Map(),music={volume:1},elements=new Map(),frames=new Map();let clock=0,frameId=0;
+ const element=()=>({style:{setProperty(){}},classList:{toggle(){}},setAttribute(){},addEventListener(){}});
+ const doc={documentElement:element(),getElementById(id){if(id==="mythbound-theme")return music;if(!elements.has(id))elements.set(id,{...element(),id});return elements.get(id)},addEventListener(){},dispatchEvent(){}};
+ const media=()=>({matches:false,addEventListener(){}});
+ const raf=f=>{frames.set(++frameId,f);return frameId},cancel=id=>frames.delete(id);
+ const settle=()=>{for(let i=0;frames.size&&i<10;i++){clock+=400;const jobs=[...frames.values()];frames.clear();jobs.forEach(f=>f(clock))}};
+ new Function("window","document","localStorage","Event","matchMedia","requestAnimationFrame","cancelAnimationFrame","performance",read("sound-settings.js"))(win,doc,{getItem:k=>saved.get(k)??null,setItem:(k,v)=>saved.set(k,String(v))},class Event{},media,raf,cancel,{now:()=>clock});
  const mixer=win.MythboundAudio;
- assert.equal(mixer.level("music"),.3);assert.equal(win.MythboundSFX.volume(),1);
- mixer.duck("region",.45);mixer.setLevel("music",.6);assert.ok(Math.abs(music.volume-.27)<.0001);
- mixer.duck("voice",.28);mixer.release("region");assert.ok(Math.abs(music.volume-.168)<.0001);
- mixer.release("voice");assert.equal(music.volume,.6);
+ const near=(expected)=>{settle();assert.ok(Math.abs(music.volume-expected)<.0001)};
+ assert.equal(mixer.level("music"),.3);assert.equal(win.MythboundSFX.volume(),1);near(.3);
+ for(const owner of ["interface","class-transform",{}]){mixer.duck(owner,.01);near(.3)}
+ mixer.duck("region",.45);mixer.setLevel("music",.6);near(.27);
+ mixer.duck("class-voice",.28);mixer.release("region");near(.168);
+ mixer.duck("party-voice",.1,.1,"full");near(.06);mixer.release("party-voice");near(.168);
+ mixer.release("class-voice");near(.6);
  mixer.setLevel("sfx",.4);win.MythboundSFX.setEnabled(false);assert.equal(win.MythboundSFX.volume(),0);
  assert.equal(saved.get("mythbound-sfx-volume"),"0.4");win.MythboundSFX.setEnabled(true);assert.equal(win.MythboundSFX.volume(),.4);
+ assert.doesNotMatch(read("interface-audio.js")+read("class-transform-audio.js"),/\.duck\(/);
 });
+
 test("Path identities use shared categories without revealing the mystery path",()=>{
  const code=read("class-showcase.js"),icon={},panel={dataset:{}},heading={closest:()=>panel};
  const render=new Function("$",code.slice(code.indexOf("function renderPathIdentity("),code.indexOf("function renderPath(){"))+";return renderPathIdentity")(id=>id==="path-detail-title"?heading:icon);
@@ -258,7 +267,8 @@ test("Path and advancement symbols are centered with explicit SVG geometry",()=>
 });
 
 test("News rotates every five seconds and swipes wrap without opening articles",()=>{
- const code=html.slice(html.indexOf("function swipeDirection"),html.indexOf("showFeatured(0);schedule();"));
+ const news=read("news.js");
+ const code=news.slice(news.indexOf("function swipeDirection"),news.indexOf("showFeatured(0);schedule();"));
  const fn= new Function("card","showFeatured","schedule","openArticle","items","Date","event", "let gesture=null,suppressClickUntil=0,index=0;"+code+";return ()=>index;");
  const handlers={},calls=[],card={addEventListener(n,f){handlers[n]=f}};
  let schedules=0,now=100;
@@ -272,7 +282,7 @@ test("News rotates every five seconds and swipes wrap without opening articles",
  start(100,100);assert.equal(end(95,210),false);assert.equal(calls.length,0);
  start(100,100);assert.equal(end(103,104),false);card.onclick({detail:1,preventDefault(){}});assert.equal(calls.pop(),"one");
  assert.ok(schedules>=8);assert.equal(index(),0);
- assert.match(html,/const interval=5000;/);
+ assert.match(news,/const interval=5000;/);
  assert.match(read("portal-finishing.css"),/touch-action:pan-y pinch-zoom/);
 });
 
@@ -297,22 +307,23 @@ test("Home decorative subtitles are removed, while news titles remain",()=>{
  for(const label of ["A GLIMPSE BEYOND THE VEIL","LETTERS FROM THE THRESHOLD","BEYOND THE GAME","CHRONICLE I · THE FIRST AWAKENING"])assert.ok(!home.includes(label));
  assert.ok(html.includes("Letters from the Threshold — developer diary"));
 });
-test("News filters show every matching category and Home deep-links reveal hidden articles",()=>{
- const keys=["cosmetics","patch-notes","announcement","community","developer-diary"];
- const buttons=["all",...keys].map(newsFilter=>({dataset:{newsFilter},classList:{toggle(n,v){this.active=v}},setAttribute(n,v){this[n]=v},addEventListener(n,f){this.click=f}}));
- const articles=keys.map(newsCategory=>({dataset:{newsCategory},hidden:false}));
- const tags=keys.map(newsTag=>({dataset:{newsTag},addEventListener(n,f){this.click=f}}));
- const home={addEventListener(n,f){this.click=f}},status={hidden:true};
- const doc={querySelectorAll(s){return s==="[data-news-filter]"?buttons:s==="#news-list .news-entry"?articles:s==="[data-news-tag]"?tags:s==='#page-home [data-go="news"]'?[home]:[]},getElementById(){return status}};
- const code=html.slice(html.indexOf(" function filterNews(category)"),html.indexOf(" function toggleArticle(id,open)"));
+test("News pagination mounts ten matching articles at a time and retains article identities",()=>{
+ const news=read("news.js"),keys=["all","cosmetics","patch-notes"];
+ const buttons=keys.map(newsFilter=>({dataset:{newsFilter},classList:{toggle(){}},setAttribute(n,v){this[n]=v},addEventListener(n,f){this.click=f}}));
+ const list={children:[],querySelectorAll(){return this.children.slice()},insertBefore(node,before){node.remove();const at=before?this.children.indexOf(before):this.children.length;this.children.splice(at,0,node)}};
+ const entries=Array.from({length:25},(_,i)=>({id:"news-"+i,dataset:{newsCategory:i%2?"cosmetics":"patch-notes"},querySelectorAll(){return []},remove(){const at=list.children.indexOf(this);if(at>=0)list.children.splice(at,1)},focus(){}}));
+ list.children=entries.slice(0,10);
+ const archive={content:{querySelectorAll(){return entries.slice(10)}}};
+ const more={addEventListener(n,f){this.click=f}},count={},pagination={},status={},home={addEventListener(n,f){this.click=f}};
+ const doc={getElementById:id=>({"news-list":list,"news-archive":archive,"news-pagination":pagination,"news-load-more":more,"news-pagination-count":count,"news-filter-status":status})[id],querySelectorAll:s=>s==="[data-news-filter]"?buttons:s==='#page-home [data-go="news"]'?[home]:[]};
+ const code=news.slice(news.indexOf(" const newsList="),news.indexOf(" function toggleArticle(id,open)"));
  new Function("document",code)(doc);
- for(let i=0;i<keys.length;i++){
-  buttons[i+1].click();assert.equal(articles.filter(a=>!a.hidden).length,1);assert.equal(articles[i].hidden,false);assert.equal(buttons[i+1]["aria-pressed"],"true");assert.equal(status.hidden,true);
-  tags[(i+1)%keys.length].click();assert.equal(articles[(i+1)%keys.length].hidden,false);
- }
- buttons[0].click();assert.ok(articles.every(a=>!a.hidden));buttons[1].click();home.click();assert.ok(articles.every(a=>!a.hidden));
- assert.ok(html.includes('function openArticle(id){\n  filterNews("all");'));
- for(const [i,key] of keys.entries()){assert.ok(html.includes('data-news-category="'+key+'"'));assert.ok(html.includes('data-news-tag="'+key+'"'))}
+ assert.deepEqual(list.children,entries.slice(0,10));assert.equal(more.hidden,false);
+ more.click();assert.deepEqual(list.children,entries.slice(0,20));more.click();assert.deepEqual(list.children,entries);assert.equal(more.hidden,true);
+ buttons[1].click();const filtered=entries.filter(a=>a.dataset.newsCategory==="cosmetics");assert.deepEqual(list.children,filtered.slice(0,10));more.click();assert.deepEqual(list.children,filtered);assert.equal(more.hidden,true);
+ home.click();assert.deepEqual(list.children,entries.slice(0,10));
+ assert.match(news,/displayLimit=Math\.ceil\(\(index\+1\)\/batchSize\)\*batchSize;renderNews\(\)/);
+ assert.equal((html.slice(html.indexOf('<div class="news-list" id="news-list">'),html.indexOf('<template id="news-archive">')).match(/<article\b/g)||[]).length,10);
 });
 
 test("Home two-line headings have balanced spacing at desktop and mobile widths",()=>{
@@ -346,8 +357,10 @@ test("World encyclopedia replaces disconnected sections without changing map pin
  assert.ok(!html.includes('id="mw-chronicles"'));
  assert.ok(!html.includes('class="mw-jump"'));
  assert.ok(html.includes('id="mw-region-interface"'));
- for(const tab of ["region","locations","inhabitants","journal"])assert.ok(html.includes('data-region-tab="'+tab+'"'));
+ for(const tab of ["region","locations","creatures","journal"])assert.ok(html.includes('data-region-tab="'+tab+'"'));
  assert.ok(code.includes('pin.addEventListener("click",()=>openPreview(r.id,pin,{sound:true}))'));
+ assert.ok(code.includes('terrain.addEventListener("click",()=>openPreview(r.id,pin,{sound:true}))'));
+ assert.ok(!code.includes("mw-pin-symbol"));
  assert.ok(code.includes('showTab("region");moveTo($("mw-regions"))'));
  assert.ok(code.includes('if(sound)window.MythboundRegionAudio?.play(id)'));
  assert.ok(code.includes('btn.style.setProperty("--region-accent",r.color)'));

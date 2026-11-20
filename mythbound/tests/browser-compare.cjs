@@ -29,7 +29,7 @@ async function visit(browser,url,mobile,tag){
  const page=await ctx.newPage(),errors=[];
  page.on("pageerror",e=>errors.push(e.message));
  await page.goto(url);
- await page.locator("#mb-studio-intro").click({timeout:10000});
+ if(await page.locator("#mb-studio-intro").isVisible())await page.locator("#mb-studio-intro").click({timeout:10000});
  await page.locator("#player-nickname").fill("RegressionTraveler");
  await page.locator("#avatar-choices button").first().click();
  await page.locator("#player-login-button").click();
@@ -65,14 +65,22 @@ async function visit(browser,url,mobile,tag){
  }
  await navigate("discover");
  await page.locator("#mw-region-directory button").first().click();
- await snap("world",["#mw-interactive-map","#mw-region-detail","#mw-region-directory"]);
+ await snap("world",["#mw-interactive-map","#mw-region-interface","#mw-region-directory"]);
  assert.deepEqual(errors,[],tag+" uncaught page errors");
+ await page.locator('#mw-tab-creatures').click();
+ await snap("creatures",["#mw-codex-panel",".mw-creature-list",".mw-creature-row"]);
+ await navigate("news");
+ assert.equal(await page.locator("#news-list .news-entry").count(),10);
+ await page.locator("#news-load-more").click();
+ assert.equal(await page.locator("#news-list .news-entry").count(),20);
+ await snap("news",["#news-list","#news-pagination"]);
+ assert.deepEqual(errors,[],tag+" uncaught page errors after news");
  await ctx.close();return snapshots;
 }
 (async()=>{
  let a,b;
  try{
-  execFileSync("git",["worktree","add","--detach",baseline,"27cfb88559f8358e620d0d7193651a808f37b7e8"],{cwd:root,stdio:"ignore"});
+  execFileSync("git",["worktree","add","--detach",baseline,"e9fc45bb6d8632eee9a5fd5233879b2d0584090f"],{cwd:root,stdio:"ignore"});
   a=await serve(baseline);b=await serve(root);
   for(const [name,type] of [["chromium",chromium],["webkit",webkit]]){
    const browser=await type.launch();
