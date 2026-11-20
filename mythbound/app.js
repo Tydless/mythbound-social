@@ -88,23 +88,22 @@ document.querySelectorAll("[data-class]").forEach(b=>b.addEventListener("click",
 function closePanel(){overlay.hidden=true;overlay.classList.remove("mb-launcher-modal");document.body.classList.remove("sheet-open");if(previousFocus&&document.contains(previousFocus))previousFocus.focus()}
 function openPanel(templateId){
   if(window.MythboundAccount?.isSignedIn()===false)return;
-  previousFocus=document.activeElement;
+  if(overlay.hidden)previousFocus=document.activeElement;
   overlay.classList.remove("mb-launcher-modal");
   document.getElementById("sheet-kicker").textContent="MYTHBOUND · SOCIAL";
   sheetContent.replaceChildren(document.getElementById(templateId).content.cloneNode(true));
   overlay.hidden=false;document.body.classList.add("sheet-open");
-  document.getElementById("sheet-close").focus();
-  if(templateId==="profile-template"){document.getElementById("profile-message").addEventListener("click",openWhisper)}
+  sheetContent.closest(".sheet").scrollTop=0;document.getElementById("sheet-close").focus({preventScroll:true});
   if(templateId==="whisper-template"){document.getElementById("reply-form").addEventListener("submit",handleReply)}
 }
-function openProfile(){openPanel("profile-template")}
+function openProfile(){window.MythboundSocial?.openFriend("fighter")}
 function openWhisper(){if(window.MythboundAccount?.isSignedIn()===false)return;openPanel("whisper-template");window.MythboundSocial?.renderFighterMessages();window.MythboundSocial?.markSeen("fighter")}
 document.getElementById("fighter-friend").addEventListener("click",openProfile);
 document.getElementById("rail-whisper").addEventListener("click",openWhisper);
 headerWhisper.addEventListener("click",()=>window.MythboundSocial?.openInbox());
 document.getElementById("header-friends")?.addEventListener("click",()=>window.MythboundSocial?.openFriends());
 whisperButton.addEventListener("click",()=>window.MythboundSocial?.openInbox());
-// Own account is handled by account.js; Fighter retains his separate profile.
+// Own account is handled by account.js; all friends use the shared character profile.
 // The fictional launcher responds to the current roleplay session, not real installation or account data.
 document.getElementById("download-button").addEventListener("click",()=>{
   const signedIn=window.MythboundAccount?.isSignedIn()===true;
