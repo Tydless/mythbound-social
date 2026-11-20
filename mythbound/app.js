@@ -85,7 +85,7 @@ function scrollToClassCodex(){
   });
 }
 document.querySelectorAll("[data-class]").forEach(b=>b.addEventListener("click",()=>{navigate("classes");selectClass(b.dataset.class);scrollToClassCodex()}));
-function closePanel(){overlay.hidden=true;overlay.classList.remove("mb-launcher-modal");document.body.classList.remove("sheet-open");if(previousFocus&&document.contains(previousFocus))previousFocus.focus()}
+function closePanel(){window.MythboundSocial?.closeContactMenu();overlay.hidden=true;overlay.classList.remove("mb-launcher-modal");document.body.classList.remove("sheet-open");if(previousFocus&&document.contains(previousFocus))previousFocus.focus()}
 function openPanel(templateId){
   if(window.MythboundAccount?.isSignedIn()===false)return;
   if(overlay.hidden)previousFocus=document.activeElement;
@@ -97,7 +97,7 @@ function openPanel(templateId){
   if(templateId==="whisper-template"){document.getElementById("reply-form").addEventListener("submit",handleReply)}
 }
 function openProfile(){window.MythboundSocial?.openFriend("fighter")}
-function openWhisper(){if(window.MythboundAccount?.isSignedIn()===false)return;openPanel("whisper-template");window.MythboundSocial?.renderFighterMessages();window.MythboundSocial?.markSeen("fighter")}
+function openWhisper(){if(window.MythboundAccount?.isSignedIn()===false)return;openPanel("whisper-template");window.MythboundSocial?.attachFighterMenu();window.MythboundSocial?.renderFighterMessages();window.MythboundSocial?.markSeen("fighter")}
 document.getElementById("fighter-friend").addEventListener("click",openProfile);
 document.getElementById("rail-whisper").addEventListener("click",openWhisper);
 headerWhisper.addEventListener("click",()=>window.MythboundSocial?.openInbox());
@@ -127,7 +127,7 @@ document.addEventListener("keydown",e=>{
   if(overlay.hidden)return;
   if(e.key==="Escape")closePanel();
   if(e.key!=="Tab")return;
-  const visible=[...overlay.querySelectorAll('button:not([disabled]),a[href],textarea')];
+  const visible=[...overlay.querySelectorAll('button:not([disabled]),a[href],textarea,input:not([disabled]),select:not([disabled])')].filter(el=>!el.closest('[hidden]')&&el.getClientRects().length);
   if(!visible.length)return;
   const first=visible[0],last=visible[visible.length-1];
   if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
