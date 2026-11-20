@@ -125,3 +125,32 @@ body.mythbound-guest .mb-header-friends{display:none!important}
 .mb-self-profile .mb-profile-model{min-height:280px}
 @media(min-width:761px){.mb-self-profile .mb-profile-banner{min-height:240px;padding:32px}.mb-self-profile .mb-profile-main{padding:28px 32px}.mb-self-profile .mb-profile-model-art{width:150px}.mb-self-profile .mb-profile-facts dd{font-size:20px}}
 @media(max-width:480px){.mb-profile-banner{padding:20px 16px;min-height:150px}.mb-profile-main{padding:16px 16px 24px}.mb-profile-overview{gap:10px}.mb-profile-model{min-height:190px}.mb-self-profile .mb-profile-model{min-height:215px}.mb-self-profile .mb-profile-identity{flex-wrap:wrap}.mb-self-profile .mb-edit-profile{margin-left:auto}.mb-profile-facts dd{font-size:15px}.mb-profile-status,.mb-profile-availability select{padding:7px 9px}}
+
+/* Individual portrait actions and normal, interactive whisper histories. */
+.mb-contact-avatar{display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0;background:none;border:0;border-radius:50%;color:inherit;cursor:pointer;line-height:1}
+.mb-contact-avatar:hover{filter:brightness(1.15)}
+.mb-contact-avatar:focus-visible{outline:2px solid #e8c895;outline-offset:2px}
+.mb-contact-open{display:flex;align-items:center;flex:1;min-width:0;gap:8px;padding:0;border:0;background:none;color:inherit;text-align:left}
+.mb-inbox-row:hover{background:#7289ae1b}
+.mb-inbox-row.mb-muted .mb-contact-open,.mb-inbox-row.mb-muted>.mb-contact-avatar,.mb-chat-row.mb-muted .mb-chat-col,.mb-chat-row.mb-muted>.mb-contact-avatar{opacity:.5}
+.mb-contact-open .mb-inbox-words{min-width:0}
+.mb-contact-open .mb-message-preview{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mb-group-avatar.mb-group-interactive>.mb-contact-avatar{position:absolute;width:34px;height:35px}
+.mb-group-avatar.mb-group-interactive>.mb-contact-avatar:nth-child(1){top:0;left:9px;z-index:3}
+.mb-group-avatar.mb-group-interactive>.mb-contact-avatar:nth-child(2){top:13px;left:0;z-index:2}
+.mb-group-avatar.mb-group-interactive>.mb-contact-avatar:nth-child(3){top:13px;left:22px;z-index:1}
+.mb-group-interactive .mb-social-avatar,.mb-chat-row>.mb-contact-avatar .mb-social-avatar{width:34px;height:35px}
+.mb-contact-menu{position:fixed;z-index:12;width:190px;max-width:calc(100vw - 22px);max-height:calc(100dvh - 24px);overflow:auto;padding:6px;background:#233148;border:1px solid #d7b67d85;border-radius:7px;box-shadow:0 10px 28px #060b17b0}
+.mb-contact-menu-title{display:block;padding:9px 10px 7px;color:#e8d0a8;font:600 13px/1.3 'Cinzel',Georgia,serif;overflow-wrap:anywhere}
+.mb-contact-menu button{display:block;width:100%;min-height:36px;padding:7px 10px;background:transparent;border:0;border-top:1px solid #b9c9df20;color:#e2eaf3;font-size:12px;text-align:left;border-radius:3px}
+.mb-contact-menu button:hover,.mb-contact-menu button:focus-visible{background:#394960;color:#ffe5b5}
+.mb-contact-menu button:last-child{color:#e6aaa9}
+.mb-social-toast{position:fixed;z-index:14;bottom:max(20px,env(safe-area-inset-bottom));right:12px;width:min(350px,calc(100vw - 24px));padding:13px 16px;background:#29394f;border:1px solid #d7b67d;color:#f6e3bf;border-radius:7px;box-shadow:0 8px 26px #050b18a0;text-align:center;font-size:13px;pointer-events:none}
+.mb-local-conversation{display:flex;flex-direction:column;align-items:stretch}
+.mb-local-sent{align-self:flex-end;max-width:86%;padding:12px 15px;background:#46503d;border:1px solid #c5ae7759;border-radius:14px 4px 14px 14px;color:#f3e9d7;white-space:pre-wrap;overflow-wrap:anywhere}
+.mb-report-form{padding:20px 23px}.mb-report-form fieldset{border:0;padding:0;margin:0}.mb-report-form legend{color:#e8d0a8;font:600 15px 'Cinzel',Georgia,serif;margin-bottom:12px}
+.mb-report-reason{display:flex;align-items:center;gap:12px;min-height:44px;border-bottom:1px solid #b9c9df26;color:#dce5ee;font-size:14px;cursor:pointer}
+.mb-report-reason input{accent-color:#e2bf88;width:17px;height:17px}
+.mb-report-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.mb-inbox-tabs{flex-wrap:wrap}
+@media(max-width:390px){.mb-inbox-tabs{padding-inline:12px;gap:5px}.mb-inbox-tabs button{padding-inline:10px}}
