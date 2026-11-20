@@ -39,6 +39,7 @@ const {revealSpecialPath,revealSaint,burnPortrait,useMobilePortraitEffects,revea
 
 
 
+document.addEventListener("mythbound:preferences-change",e=>{if(["motion","effects"].includes(e.detail?.key)&&!classPage.hidden)renderPreview(false)});
 function renderPreview(allowTransformation=false){
  // Real artwork for both Saint appearances, with the old concept silhouette
  // as a fallback until the two image files have been uploaded to GitHub.
@@ -76,7 +77,7 @@ function renderPreview(allowTransformation=false){
   // Only a change between the holy and corrupted paths triggers a transformation.
   // Gender changes and ordinary class selection are instantaneous.
   const special=activePath===1?"archsaint":isUnrevealed()?"mystery":null;
-  const animate=fxMode!=="off"&&allowTransformation&&(!!special||!!oldImage)&&(!oldImage||oldImage.src!==new URL(source,document.baseURI).href)&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const animate=window.MythboundPreferences?.visualEffects()!==false&&fxMode!=="off"&&allowTransformation&&(!!special||!!oldImage)&&(!oldImage||oldImage.src!==new URL(source,document.baseURI).href)&&!(window.MythboundPreferences?.reduced()??window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   if(animate){
    prepareTransformationAudio();
    if(oldImage){oldImage.setAttribute("aria-hidden","true");oldImage.alt="";oldImage.classList.remove("portrait-incoming");oldImage.classList.add("portrait-previous");stage.append(oldImage)}
@@ -546,7 +547,7 @@ function drawEnvironment(){
  clearTimeout(environmentFadeTimer);
  const candidates=special?[special.src]:["../Environment"+cap(classId)+".jpg","../Environment"+cap(classId)+".png"];
  if(classId==="saint"&&!special)candidates.push("../mythbound-home-watercolor.jpg");
- const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const reduced=(window.MythboundPreferences?.reduced()??window.matchMedia("(prefers-reduced-motion: reduce)").matches);
  let faded=initial||reduced,loaded=false,asset=null;
  host.classList.add("environment-fading");
  function commit(){
