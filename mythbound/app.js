@@ -165,24 +165,20 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
   const live=document.getElementById("music-announcement");
   if(!audio||!toggle||!label)return;
   let enabled=true, blocked=false, unavailable=false, pending=false;
-  try{enabled=localStorage.getItem("mythbound-music-enabled")!=="false"}catch{}
+  enabled=(window.MythboundAudio?.level("music")??.3)>0;
   window.MythboundAudio?.applyMusic();
   audio.loop=true;
   audio.muted=false;
   const announce=message=>{if(live)live.textContent=message};
   function save(){
-    try{localStorage.setItem("mythbound-music-enabled",String(enabled))}catch{}
+    // Volume is persisted by sound-settings.js.
   }
   function sync(){
     const isPlaying=enabled&&!audio.paused;
     toggle.setAttribute("aria-pressed",String(enabled));
     toggle.classList.toggle("needs-gesture",enabled&&!isPlaying);
     label.textContent=!enabled?"Music Off":isPlaying?"Music On":"Play Music";
-    toggle.setAttribute("aria-label",!enabled
-      ?"Enable Mythbound soundtrack"
-      :isPlaying?"Mute Mythbound soundtrack":"Play Mythbound soundtrack");
-    toggle.title=!enabled?"Turn soundtrack on":unavailable?"Soundtrack file unavailable"
-      :isPlaying?"Mute soundtrack":"Click to play: your browser may require interaction";
+    // The mixer owns the accessible volume label.
   }
   function tryPlay(){
     if(!enabled||unavailable||pending||!audio.paused)return;
@@ -202,19 +198,12 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
       }else{pending=false;sync()}
     }catch{pending=false;blocked=true;sync()}
   }
-  toggle.addEventListener("click",()=>{
-    if(!enabled){
-      enabled=true;unavailable=false;save();tryPlay();announce("Music enabled.");
-    }else if(audio.paused){
-      // A blocked autoplay click must START music, not switch the default on state off.
-      tryPlay();
-      announce("Starting Mythbound background music.");
-    }else{
-      enabled=false;save();audio.pause();
-      announce("Music muted.");
-    }
+  document.addEventListener("mythbound:music-change",()=>{
+    enabled=(window.MythboundAudio?.level("music")??0)>0;
+    if(enabled){tryPlay()}else{audio.pause()}
     sync();
   });
+  toggle.addEventListener("click",()=>{if(enabled)tryPlay()});
   // Playback request stays in the user-activation event; no off/on workaround needed.
   document.addEventListener("pointerdown",event=>{if(enabled&&!toggle.contains(event.target))tryPlay()},true);
   document.addEventListener("keydown",event=>{if(enabled&&!toggle.contains(event.target))tryPlay()},true);
