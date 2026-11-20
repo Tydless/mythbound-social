@@ -168,11 +168,9 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
   enabled=(window.MythboundAudio?.level("music")??.3)>0;
   window.MythboundAudio?.applyMusic();
   audio.loop=true;
+  audio.autoplay=enabled;
   audio.muted=false;
   const announce=message=>{if(live)live.textContent=message};
-  function save(){
-    // Volume is persisted by sound-settings.js.
-  }
   function sync(){
     const isPlaying=enabled&&!audio.paused;
     toggle.setAttribute("aria-pressed",String(enabled));
@@ -200,17 +198,20 @@ const route=location.hash.slice(1);navigate(route||"home",true);selectClass("sai
   }
   document.addEventListener("mythbound:music-change",()=>{
     enabled=(window.MythboundAudio?.level("music")??0)>0;
+    audio.autoplay=enabled;
     if(enabled){tryPlay()}else{audio.pause()}
     sync();
   });
   toggle.addEventListener("click",()=>{if(enabled)tryPlay()});
   // Playback request stays in the user-activation event; no off/on workaround needed.
-  document.addEventListener("pointerdown",event=>{if(enabled&&!toggle.contains(event.target))tryPlay()},true);
+  const firstInteraction=event=>{if(enabled&&!toggle.contains(event.target))tryPlay()};
+  for(const event of ["pointerdown","pointerup","touchend"])document.addEventListener(event,firstInteraction,true);
   document.addEventListener("keydown",event=>{if(enabled&&!toggle.contains(event.target))tryPlay()},true);
   document.addEventListener("click",event=>{if(enabled&&!toggle.contains(event.target))tryPlay()},true);
   audio.addEventListener("play",()=>{blocked=false;sync()});
   audio.addEventListener("pause",sync);
-  audio.addEventListener("canplay",()=>{if(enabled)tryPlay()});
+  audio.addEventListener("loadeddata",()=>{if(enabled&&!blocked)tryPlay()});
+  audio.addEventListener("canplay",()=>{if(enabled&&!blocked)tryPlay()});
   audio.addEventListener("error",()=>{unavailable=true;pending=false;sync();announce("The music file could not be loaded.")});
   window.addEventListener("pageshow",()=>{if(enabled)tryPlay()});
   document.addEventListener("visibilitychange",()=>{if(!document.hidden&&enabled)tryPlay()});
