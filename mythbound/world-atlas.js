@@ -324,7 +324,10 @@ for(const b of tabs.querySelectorAll("[data-region-tab]")){
   e.preventDefault();showTab(sections[i]);$("mw-tab-"+sections[i]).focus();
  });
 }
-for(const r of regions){
+// Directory order follows the fictional News announcement chronology (first two share a date).
+// Keep map marker order and coordinates independent.
+const releaseOrder=["greatfields","dunes","heavenly","fable","bloodmoon","wondrous"];
+for(const r of releaseOrder.map(find).filter(Boolean)){
  const btn=make("button","mw-location-tab",r.name);btn.type="button";btn.dataset.atlasRegion=r.id;btn.style.setProperty("--region-accent",r.color);btn.setAttribute("aria-pressed","false");
  btn.addEventListener("click",()=>{closePreview();choose(r.id);showTab("region")});directory.append(btn);
 }
