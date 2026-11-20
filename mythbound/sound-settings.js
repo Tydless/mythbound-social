@@ -96,10 +96,10 @@ function setLevel(kind,value){
 }
 window.MythboundSFX={enabled:()=>effective("sfx")>0,volume:sfxVolume,setEnabled:next=>setEnabled("sfx",next)};
 window.MythboundAudio={level:effective,setLevel,applyMusic,duck(owner,ratio,cap=ratio,reference="sfx"){ducks.set(owner,{ratio:clamp(ratio),cap:clamp(cap),reference});applyMusic()},release(owner){if(ducks.delete(owner))applyMusic()}};
-mobile.addEventListener("change",sync);
+mobile.addEventListener("change",()=>{hide();sync()});
 
-let open=null,closeTimer=0;
-function hide(){clearTimeout(closeTimer);for(const k of ["music","sfx"]){const p=$(k+"-volume-panel"),b=$(k+"-toggle");if(p)p.hidden=true;b?.setAttribute("aria-expanded","false")}open=null}
+let open=null,closeTimer=0,mobileMusicArmed=false;
+function hide(){clearTimeout(closeTimer);mobileMusicArmed=false;for(const k of ["music","sfx"]){const p=$(k+"-volume-panel"),b=$(k+"-toggle");if(p)p.hidden=true;b?.setAttribute("aria-expanded","false")}open=null}
 function show(kind){clearTimeout(closeTimer);if(open!==kind)hide();open=kind;const p=$(kind+"-volume-panel"),b=$(kind+"-toggle");if(p)p.hidden=false;b?.setAttribute("aria-expanded","true");sync()}
 function later(){clearTimeout(closeTimer);closeTimer=setTimeout(()=>{if(open&&!$(open+"-volume-panel")?.contains(document.activeElement)&&document.activeElement!==$(open+"-toggle"))hide()},230)}
 for(const kind of ["music","sfx"]){
@@ -111,7 +111,14 @@ for(const kind of ["music","sfx"]){
  toggle.addEventListener("focus",()=>show(kind));toggle.addEventListener("blur",later);
  toggle.addEventListener("click",e=>{
   show(kind);
-  if(mobile.matches){if(e.detail===0)input.focus();return}
+  if(mobile.matches){
+   // Focus/hover can reveal the panel before a tap, so arm only on a real activation.
+   if(kind==="music"){
+    if(mobileMusicArmed){setEnabled("music",effective("music")===0)}
+    else{mobileMusicArmed=true;if(e.detail===0)input.focus()}
+   }else if(e.detail===0)input.focus();
+   return;
+  }
   // A blocked soundtrack receives a playback attempt from app.js, not a mute.
   if(kind==="music"&&effective(kind)>0&&audio?.paused)return;
   setEnabled(kind,effective(kind)===0);
