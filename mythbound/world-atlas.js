@@ -155,7 +155,7 @@ function scrollToRegionBanner(){
  const target=$("mw-region-interface");
  if(!target)return;
  const top=window.scrollY+target.getBoundingClientRect().top-headerBottom()-10;
- window.scrollTo({top:Math.max(0,top),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+ window.scrollTo({top:Math.max(0,top),behavior:(window.MythboundPreferences?.reduced()??matchMedia("(prefers-reduced-motion: reduce)").matches)?"instant":"smooth"});
 }
 let activeTab="region";
 const tabs=$("mw-codex-tabs"),body=$("mw-codex-panel");
