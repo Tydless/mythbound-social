@@ -52,18 +52,21 @@ function previewPlacement(anchor,width,height,vw,vh,header=0){
  if(available>=100)return {x:centeredX,y:useBelow?below:topEdge,maxHeight:available};
  return {x:centeredX,y:clamp(useBelow?below:above,topEdge,bottomEdge-height)};
 }
-function positionPreview(){
- if(!opener)return;
- const anchor=opener.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=window.innerHeight;
- if(anchor.bottom<0||anchor.top>vh||anchor.right<0||anchor.left>vw){closePreview();return}
+function headerBottom(){
  const header=document.querySelector(".site-header");
- const headerBottom=header?Math.max(0,header.getBoundingClientRect().bottom):0;
- preview.style.maxHeight="";
- const size=preview.getBoundingClientRect();
- const pos=previewPlacement(anchor,size.width,size.height,vw,vh,headerBottom);
- if(pos.maxHeight)preview.style.maxHeight=pos.maxHeight+"px";
- preview.style.left=Math.round(pos.x)+"px";preview.style.top=Math.round(pos.y)+"px";
+ return header?Math.max(0,header.getBoundingClientRect().bottom):0;
 }
+function positionFloating(card,trigger,close){
+ if(!trigger)return;
+ const anchor=trigger.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=window.innerHeight;
+ if(!trigger.isConnected||anchor.bottom<headerBottom()||anchor.top>vh||anchor.right<0||anchor.left>vw){close();return}
+ card.style.maxHeight="";
+ const size=card.getBoundingClientRect();
+ const pos=previewPlacement(anchor,size.width,size.height,vw,vh,headerBottom());
+ if(pos.maxHeight)card.style.maxHeight=pos.maxHeight+"px";
+ card.style.left=Math.round(pos.x)+"px";card.style.top=Math.round(pos.y)+"px";
+}
+function positionPreview(){positionFloating(preview,opener,closePreview)}
 function closePreview(restore=false){
  if(!opener)return;
  const old=opener;opener=null;old.setAttribute("aria-expanded","false");
@@ -99,14 +102,19 @@ if(preview){
  // Native manual popover is non-modal and in the top layer, avoiding atlas clipping.
  if(typeof preview.showPopover!=="function"){preview.removeAttribute("popover");preview.hidden=true;document.body.append(preview)}
  $("mw-preview-close").addEventListener("click",()=>closePreview(true));
- $("mw-preview-guide").addEventListener("click",()=>{closePreview();showTab("region");moveTo($("mw-regions"))});
+ $("mw-preview-guide").addEventListener("click",()=>{closePreview();showTab("region");scrollToRegionBanner()});
  document.addEventListener("pointerdown",e=>{if(opener&&!preview.contains(e.target)&&!opener.contains(e.target))closePreview()},true);
  document.addEventListener("keydown",e=>{if(opener&&e.key==="Escape"){e.preventDefault();closePreview(true)}});
  window.addEventListener("resize",positionPreview);
  window.addEventListener("scroll",positionPreview,{passive:true});
  if(typeof MutationObserver!=="undefined")new MutationObserver(()=>{if(world.hidden)closePreview()}).observe(world,{attributes:true,attributeFilter:["hidden"]});
 }
-function moveTo(el){el.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"})}
+function scrollToRegionBanner(){
+ const target=$("mw-region-interface");
+ if(!target)return;
+ const top=window.scrollY+target.getBoundingClientRect().top-headerBottom()-10;
+ window.scrollTo({top:Math.max(0,top),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"});
+}
 let activeTab="region";
 const tabs=$("mw-codex-tabs"),body=$("mw-codex-panel");
 const sections=["region","locations","inhabitants","journal"];
@@ -130,32 +138,49 @@ function card(title,description,kind=""){
  const article=make("article","mw-codex-entry"+(kind?" "+kind:""));
  article.append(make("h4","",title),make("p","",description));return article;
 }
-// Regional NPC gallery and reusable, keyboard-accessible profile dialog.
-const npcDialog=make("dialog","mw-npc-dialog");
-npcDialog.setAttribute("aria-labelledby","mw-npc-title");
-const npcClose=make("button","mw-npc-close");npcClose.type="button";npcClose.setAttribute("aria-label","Close NPC profile");
+// Non-modal NPC previews use the same anchored positioning and visual language as map regions.
+const npcDialog=make("div","mw-npc-preview");npcDialog.id="mw-npc-preview";
+npcDialog.setAttribute("role","dialog");npcDialog.setAttribute("aria-labelledby","mw-npc-title");
+npcDialog.setAttribute("popover","manual");
+const npcClose=make("button","mw-preview-close");npcClose.type="button";npcClose.setAttribute("aria-label","Close NPC profile");
 npcClose.innerHTML='<svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15"/></svg>';
-const npcContent=make("div","mw-npc-content");npcDialog.append(npcClose,npcContent);document.body.append(npcDialog);
+const npcContent=make("div","mw-preview-body mw-npc-content");npcDialog.append(npcClose,npcContent);document.body.append(npcDialog);
+if(typeof npcDialog.showPopover!=="function"){npcDialog.removeAttribute("popover");npcDialog.hidden=true}
 let npcOpener=null;
-npcClose.addEventListener("click",()=>npcDialog.close());
-npcDialog.addEventListener("click",e=>{if(e.target===npcDialog){const b=npcDialog.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom)npcDialog.close()}});
-npcDialog.addEventListener("close",()=>{if(npcOpener?.isConnected)npcOpener.focus({preventScroll:true});npcOpener=null});
-if(typeof MutationObserver!=="undefined")new MutationObserver(()=>{if(world.hidden&&npcDialog.open)npcDialog.close()}).observe(world,{attributes:true,attributeFilter:["hidden"]});
+function closeNPC(restore=false){
+ if(!npcOpener)return;
+ const old=npcOpener;npcOpener=null;old.setAttribute("aria-expanded","false");
+ if(typeof npcDialog.hidePopover==="function"){if(npcDialog.matches(":popover-open"))npcDialog.hidePopover()}else npcDialog.hidden=true;
+ if(restore&&old.isConnected)old.focus({preventScroll:true});
+}
+function positionNPC(){positionFloating(npcDialog,npcOpener,closeNPC)}
+npcClose.addEventListener("click",()=>closeNPC(true));
+document.addEventListener("pointerdown",e=>{if(npcOpener&&!npcDialog.contains(e.target)&&!npcOpener.contains(e.target))closeNPC()},true);
+document.addEventListener("keydown",e=>{if(npcOpener&&e.key==="Escape"){e.preventDefault();closeNPC(true)}});
+window.addEventListener("resize",positionNPC);
+window.addEventListener("scroll",positionNPC,{passive:true});
+if(typeof MutationObserver!=="undefined")new MutationObserver(()=>{if(world.hidden)closeNPC()}).observe(world,{attributes:true,attributeFilter:["hidden"]});
 function npcPortrait(npc){
  const face=make("span","mw-npc-portrait");
  const placeholder=make("span","mw-npc-silhouette");placeholder.setAttribute("aria-hidden","true");placeholder.innerHTML='<svg viewBox="0 0 64 64" fill="currentColor" aria-hidden="true"><circle cx="32" cy="23" r="12"/><path d="M9 59c0-15 9-25 23-25s23 10 23 25Z"/></svg>';face.append(placeholder);
  if(npc?.portrait){const img=make("img");img.alt="";img.loading="lazy";img.addEventListener("load",()=>placeholder.hidden=true,{once:true});img.addEventListener("error",()=>img.remove(),{once:true});img.src=npc.portrait;face.append(img)}
  return face;
 }
-function openNPC(npc,r,trigger){
- npcOpener=trigger;npcDialog.style.setProperty("--npc-accent",r.color);npcContent.replaceChildren();
+function openNPC(npc,r,trigger,keyboard=false){
+ if(npcOpener===trigger){closeNPC();return}
+ if(npcOpener)closeNPC();
+ closePreview();
+ npcOpener=trigger;trigger.setAttribute("aria-expanded","true");
+ npcDialog.style.setProperty("--region-accent",r.color);npcDialog.style.setProperty("--npc-accent",r.color);npcContent.replaceChildren();
  const title=make("h2","",npc?.name||"Yet to be revealed");title.id="mw-npc-title";
- npcContent.append(npcPortrait(npc),make("span","mw-npc-kicker",r.name),title);
+ const portrait=make("div","mw-npc-preview-art");portrait.append(npcPortrait(npc));npcContent.append(portrait,make("span","mw-kicker mw-npc-kicker",r.name),title);
  if(npc?.role)npcContent.append(make("p","mw-npc-role",npc.role));
  npcContent.append(make("p","mw-npc-description",npc?.description||"This character has not been introduced yet."));
  const fields=[...(npc?.location?[{label:"Location",value:npc.location}]:[]),...(npc?.details||[])];
  if(fields.length){const dl=make("dl","mw-npc-details");for(const f of fields){dl.append(make("dt","",f.label),make("dd","",f.value))}npcContent.append(dl)}
- npcDialog.showModal();npcClose.focus({preventScroll:true});
+ npcDialog.style.left="0px";npcDialog.style.top="0px";
+ if(typeof npcDialog.showPopover==="function")npcDialog.showPopover();else npcDialog.hidden=false;
+ positionNPC();if(keyboard&&npcOpener)npcClose.focus({preventScroll:true});
 }
 function renderNPCs(r){
  const roster=regionNPCs[r.id]||[];
@@ -164,14 +189,15 @@ function renderNPCs(r){
  const entries=roster.length?roster:Array.from({length:6},()=>null);
  entries.forEach((npc,i)=>{
   const name=npc?.name||"Coming soon";
-  const btn=make("button","mw-npc-tile"+(npc?"":" is-pending"));btn.type="button";btn.setAttribute("aria-haspopup","dialog");btn.setAttribute("aria-label",npc?name:"Unrevealed NPC slot "+(i+1));btn.append(npcPortrait(npc),make("span","mw-npc-name",name));
-  btn.addEventListener("click",()=>openNPC(npc,r,btn));gallery.append(btn);
+  const btn=make("button","mw-npc-tile"+(npc?"":" is-pending"));btn.type="button";btn.setAttribute("aria-haspopup","dialog");btn.setAttribute("aria-controls","mw-npc-preview");btn.setAttribute("aria-expanded","false");btn.setAttribute("aria-label",npc?name:"Unrevealed NPC slot "+(i+1));btn.append(npcPortrait(npc),make("span","mw-npc-name",name));
+  btn.addEventListener("click",e=>openNPC(npc,r,btn,e.detail===0));gallery.append(btn);
  });
  body.append(gallery);
  if(!roster.length)body.append(make("p","mw-npc-empty","Character profiles will be revealed as the world unfolds."));
 }
 function showTab(key){
  if(!sections.includes(key))return;
+ closeNPC();
  activeTab=key;const r=find(selected),lore=regionLore[selected];
  if(!r||!lore)return;
  tabs.querySelectorAll("[data-region-tab]").forEach(b=>{
